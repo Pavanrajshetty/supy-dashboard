@@ -9,5 +9,16 @@
     "impressions": 1921,
     "clicks": 19,
     "leads": 2
+  },
+  {
+    "date": "2026-03-22",
+    "geo": "Australia",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "spend": 294.37,
+    "impressions": 2841,
+    "clicks": 25,
+    "leads": 1
   }
 ]
