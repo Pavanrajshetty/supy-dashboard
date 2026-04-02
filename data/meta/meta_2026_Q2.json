@@ -1,1 +1,112 @@
-test
+[
+  {
+    "date": "2026-03-22",
+    "geo": "Saudi Arabia",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_name": "LAL_Consolidated_KSA_Facebook_NA",
+    "ad_name": "LAL_Consolidated_KSA_Facebook_Video_Ad",
+    "spend": 60.86,
+    "impressions": 1921,
+    "clicks": 19,
+    "leads": 2
+  },
+  {
+    "date": "2026-03-22",
+    "geo": "Australia",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "spend": 294.37,
+    "impressions": 2841,
+    "clicks": 25,
+    "leads": 1
+  },
+  {
+    "date": "2026-03-22",
+    "geo": "New Zealand",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_name": "LAL_Admin_NZ_Facebook_Lead",
+    "ad_name": "LAL_Admin_NZ_Facebook_Lead_Ad",
+    "spend": 226.55,
+    "impressions": 3311,
+    "clicks": 36,
+    "leads": 0
+  },
+  {
+    "date": "2026-03-22",
+    "geo": "Hong Kong",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "adset_name": "LAL_Admin_HK_Facebook_Leadgen_Launch",
+    "ad_name": "LAL_Admin_HK _Facebook_Lead_Ad",
+    "spend": 112.22,
+    "impressions": 1339,
+    "clicks": 11,
+    "leads": 0
+  },
+  {
+    "date": "2026-03-22",
+    "geo": "Morocco",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "spend": 44.13,
+    "impressions": 7553,
+    "clicks": 70,
+    "leads": 3
+  },
+  {
+    "date": "2026-03-22",
+    "geo": "Singapore",
+    "campaign_name": "Supy_Facebook_Singapore_Meta",
+    "adset_name": "Meta_Singapore_Facebook_Leadgen_Broad",
+    "ad_name": "Interest_Singapore _Facebook_Lead_Ad",
+    "spend": 190.16,
+    "impressions": 1948,
+    "clicks": 20,
+    "leads": 1
+  },
+  {
+    "date": "2026-03-22",
+    "geo": "Macau",
+    "campaign_name": "Supy_Facebook_Macau_Meta",
+    "adset_name": "Meta_Macau_Facebook_Leadgen_Broad",
+    "ad_name": "Interest_Macau_Facebook_Lead_Ad",
+    "spend": 66.8,
+    "impressions": 4945,
+    "clicks": 25,
+    "leads": 0
+  },
+  {
+    "date": "2026-03-22",
+    "geo": "Taiwan",
+    "campaign_name": "Supy_Facebook_Taiwan_Meta",
+    "adset_name": "Meta_Taiwan_Facebook_Leadgen_Broad",
+    "ad_name": "Interest_ Macau_Facebook_Lead_Ad",
+    "spend": 39.37,
+    "impressions": 1243,
+    "clicks": 7,
+    "leads": 0
+  },
+  {
+    "date": "2026-03-22",
+    "geo": "Malaysia",
+    "campaign_name": "Supy_Facebook_Malaysia_Meta",
+    "adset_name": "Meta_Malaysia_Facebook_Leadgen_Enterprise_Broad",
+    "ad_name": "Meta_Malaysia_Facebook_Leadgen_Enterprise_Broad_ad",
+    "spend": 64.12,
+    "impressions": 3192,
+    "clicks": 12,
+    "leads": 0
+  },
+  {
+    "date": "2026-03-22",
+    "geo": "Philippines",
+    "campaign_name": "Supy_Facebook_Philippines_Meta",
+    "adset_name": "Meta_Philippines_Facebook_Leadgen_Enterprise_Broad",
+    "ad_name": "Interest_Philippines_Facebook_Lead_Ad",
+    "spend": 166.78,
+    "impressions": 26286,
+    "clicks": 221,
+    "leads": 2
+  }
+]
