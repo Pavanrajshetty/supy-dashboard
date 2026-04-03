@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
    CONSTANTS
    ============================================================ */
 const GITHUB_RAW =
-  "https://raw.githubusercontent.com/Pavanrajshetty/supy-dashboard/main/data/meta/meta_data.json";
+  "https://raw.githubusercontent.com/Pavanrajshetty/supy-dashboard/main/data/meta/meta_2026_Q2.json";
 
 const TIME_RANGES = [
   { label: "Yesterday",   value: "1d"  },
