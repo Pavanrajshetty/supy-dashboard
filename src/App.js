@@ -55,16 +55,16 @@ const SQL_DATA = [
   { id:1,  company:"The Grill House Group",   country:"UAE",      geo:"GCC",     campaign:"GCC-TOFU-Meta",  sqlDate:"2026-03-28", createdDate:"2026-03-20", dealValue:28000, stage:"Proposal",   owner:"Sara K.",   quarter:"Q1", month:"Mar" },
   { id:2,  company:"Nando's MENA",             country:"KSA",      geo:"GCC",     campaign:"GCC-BOFU-Meta",  sqlDate:"2026-03-25", createdDate:"2026-03-15", dealValue:15500, stage:"Negotiation",owner:"Ahmed R.",  quarter:"Q1", month:"Mar" },
   { id:3,  company:"Cravia Inc.",              country:"UAE",      geo:"GCC",     campaign:"GCC-TOFU-Meta",  sqlDate:"2026-03-22", createdDate:"2026-03-10", dealValue:22000, stage:"Closed Won", owner:"Sara K.",   quarter:"Q1", month:"Mar" },
-  { id:4,  company:"The Chefs Table",          country:"UK",       geo:"Europe",  campaign:"EU-TOFU-Meta",   sqlDate:"2026-03-20", createdDate:"2026-03-08", dealValue:9200,  stage:"Discovery", owner:"Liam T.",   quarter:"Q1", month:"Mar" },
+  { id:4,  company:"The Chefs Table",          country:"UK",       geo:"Europe",  campaign:"EU-TOFU-Meta",   sqlDate:"2026-03-20", createdDate:"2026-03-08", dealValue:9200,  stage:"Discovery",  owner:"Liam T.",   quarter:"Q1", month:"Mar" },
   { id:5,  company:"Zahle Restaurant Group",   country:"Algeria",  geo:"N.Africa",campaign:"NA-TOFU-Meta",   sqlDate:"2026-03-18", createdDate:"2026-03-05", dealValue:18700, stage:"Proposal",   owner:"Maya L.",   quarter:"Q1", month:"Mar" },
   { id:6,  company:"Foodmark Philippines",     country:"PHL",      geo:"SEA",     campaign:"SEA-TOFU-Meta",  sqlDate:"2026-03-15", createdDate:"2026-03-01", dealValue:11400, stage:"Negotiation",owner:"Ana G.",    quarter:"Q1", month:"Mar" },
   { id:7,  company:"Almaza Hospitality",       country:"Egypt",    geo:"N.Africa",campaign:"NA-BOFU-Meta",   sqlDate:"2026-03-12", createdDate:"2026-02-28", dealValue:31000, stage:"Closed Won", owner:"Maya L.",   quarter:"Q1", month:"Mar" },
   { id:8,  company:"Max's Restaurant Chain",   country:"PHL",      geo:"SEA",     campaign:"SEA-TOFU-Meta",  sqlDate:"2026-03-10", createdDate:"2026-02-25", dealValue:14200, stage:"Proposal",   owner:"Ana G.",    quarter:"Q1", month:"Mar" },
-  { id:9,  company:"Desert Rose Dining",       country:"UAE",      geo:"GCC",     campaign:"GCC-TOFU-Meta",  sqlDate:"2026-03-08", createdDate:"2026-02-20", dealValue:19500, stage:"Discovery", owner:"Sara K.",   quarter:"Q1", month:"Feb" },
+  { id:9,  company:"Desert Rose Dining",       country:"UAE",      geo:"GCC",     campaign:"GCC-TOFU-Meta",  sqlDate:"2026-03-08", createdDate:"2026-02-20", dealValue:19500, stage:"Discovery",  owner:"Sara K.",   quarter:"Q1", month:"Feb" },
   { id:10, company:"Fusion Kitchen AU",        country:"AUS",      geo:"APAC",    campaign:"APAC-TOFU-Meta", sqlDate:"2026-02-28", createdDate:"2026-02-15", dealValue:12800, stage:"Proposal",   owner:"Liam T.",   quarter:"Q1", month:"Feb" },
   { id:11, company:"Nile Group Holdings",      country:"Egypt",    geo:"N.Africa",campaign:"NA-TOFU-Meta",   sqlDate:"2026-02-20", createdDate:"2026-02-08", dealValue:23400, stage:"Negotiation",owner:"Maya L.",   quarter:"Q1", month:"Feb" },
   { id:12, company:"SkyLine Catering",         country:"KSA",      geo:"GCC",     campaign:"GCC-BOFU-Meta",  sqlDate:"2026-02-15", createdDate:"2026-02-01", dealValue:17600, stage:"Closed Won", owner:"Ahmed R.",  quarter:"Q1", month:"Feb" },
-  { id:13, company:"Hanoi Street Kitchen",     country:"SGP",      geo:"SEA",     campaign:"SEA-TOFU-Meta",  sqlDate:"2026-01-28", createdDate:"2026-01-18", dealValue:8900,  stage:"Discovery", owner:"Ana G.",    quarter:"Q1", month:"Jan" },
+  { id:13, company:"Hanoi Street Kitchen",     country:"SGP",      geo:"SEA",     campaign:"SEA-TOFU-Meta",  sqlDate:"2026-01-28", createdDate:"2026-01-18", dealValue:8900,  stage:"Discovery",  owner:"Ana G.",    quarter:"Q1", month:"Jan" },
   { id:14, company:"Cape Town Eats",           country:"ZAF",      geo:"Africa",  campaign:"AF-TOFU-Meta",   sqlDate:"2026-01-20", createdDate:"2026-01-10", dealValue:10200, stage:"Proposal",   owner:"Sara K.",   quarter:"Q1", month:"Jan" },
   { id:15, company:"Saveur Bistro Group",      country:"Tunisia",  geo:"N.Africa",campaign:"NA-TOFU-Meta",   sqlDate:"2026-01-15", createdDate:"2026-01-05", dealValue:16700, stage:"Negotiation",owner:"Maya L.",   quarter:"Q1", month:"Jan" },
 ];
@@ -114,8 +114,35 @@ const MEETINGS_DATA = [
   { id:10, name:"Tariq Al Sulaiman",  company:"Nando's MENA",          date:"2026-04-08", time:"14:00", owner:"Ahmed R.",geo:"GCC",     flag:"🇸🇦", priority:"High",     hsUrl:"#" },
 ];
 
-const QUARTERS = ["Q1","Q2","Q3","Q4"];
-const MONTHS   = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+// ============================================================
+// DERIVED FILTER OPTIONS — computed from data, never hardcoded
+// ============================================================
+
+// Ordered month list used for sorting/display
+const MONTH_ORDER = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+// Quarter → months mapping
+const QUARTER_MONTHS = { Q1:["Jan","Feb","Mar"], Q2:["Apr","May","Jun"], Q3:["Jul","Aug","Sep"], Q4:["Oct","Nov","Dec"] };
+
+// Derive which quarters exist in SQL_DATA
+const AVAILABLE_QUARTERS = [...new Set(SQL_DATA.map(r => r.quarter))]
+  .sort((a, b) => a.localeCompare(b));
+
+// Derive which months exist in SQL_DATA, in calendar order
+const AVAILABLE_MONTHS_SQL = MONTH_ORDER.filter(m =>
+  SQL_DATA.some(r => r.month === m)
+);
+
+// Derive which quarters exist in TRENDS_DATA (based on date month)
+const trendsMonthsPresent = [...new Set(TRENDS_DATA.map(r => {
+  const m = new Date(r.date).getMonth(); // 0-indexed
+  return MONTH_ORDER[m];
+}))];
+const AVAILABLE_QUARTERS_TRENDS = Object.entries(QUARTER_MONTHS)
+  .filter(([, months]) => months.some(m => trendsMonthsPresent.includes(m)))
+  .map(([q]) => q)
+  .sort();
+
 const TREND_METRICS = [
   { key:"mql",         label:"MQL"         },
   { key:"sql",         label:"SQL"         },
@@ -428,30 +455,70 @@ function MtdPage() {
 
 // ============================================================
 // PAGE: QTD / MONTHLY
+// FIX 1 + FIX 2: Dynamic quarters/months derived from data.
+// Quarter = primary filter; months within quarter = secondary.
+// No month selected = aggregate all months in quarter.
 // ============================================================
 function QtdPage() {
-  const [quarter, setQuarter] = useState("Q1");
-  const [month,   setMonth]   = useState("Mar");
+  // Derive available quarters from SQL_DATA (source of truth for quarter/month tags)
+  const availableQuarters = AVAILABLE_QUARTERS;
+
+  const [quarter, setQuarter] = useState(availableQuarters[0] || "Q1");
+  const [month,   setMonth]   = useState(null); // null = all months in quarter
+
+  // Months available for the selected quarter, filtered to only those in dataset
+  const monthsInQuarter = useMemo(() => {
+    const qMonths = QUARTER_MONTHS[quarter] || [];
+    return qMonths.filter(m => SQL_DATA.some(r => r.quarter === quarter && r.month === m));
+  }, [quarter]);
+
+  // When quarter changes, reset month selection
+  const handleQuarterClick = (q) => {
+    setQuarter(q);
+    setMonth(null);
+  };
+
   const kpi = KPI_MOCK["30d"];
+
+  const ctxLabel = month
+    ? `${quarter} · ${month} 2026`
+    : `${quarter} · All months (${monthsInQuarter.join(", ")}) 2026`;
 
   return (
     <div className="page">
       <div className="page-header-row">
         <h2 className="page-title">QTD / Monthly View</h2>
       </div>
+
+      {/* Primary: Quarter filter — only quarters present in data */}
       <div className="filter-bar">
-        {QUARTERS.map(q => <FilterPill key={q} label={q} active={quarter === q} onClick={() => setQuarter(q)} />)}
-        <div className="filter-sep" />
-        {MONTHS.map(m => <FilterPill key={m} label={m} active={month === m} onClick={() => setMonth(m)} />)}
+        {availableQuarters.map(q => (
+          <FilterPill key={q} label={q} active={quarter === q} onClick={() => handleQuarterClick(q)} />
+        ))}
+        {monthsInQuarter.length > 0 && <div className="filter-sep" />}
+        {/* Secondary: Months within selected quarter — only months present in data */}
+        {monthsInQuarter.map(m => (
+          <FilterPill
+            key={m}
+            label={m}
+            active={month === m}
+            onClick={() => setMonth(prev => prev === m ? null : m)}
+          />
+        ))}
       </div>
-      <div className="ctx-label">Showing: {quarter} · {month} 2026</div>
+
+      <div className="ctx-label">Showing: {ctxLabel}</div>
+
       <div className="kpi-grid">
         {KPI_CARDS.map(c => (
           <KpiCard key={c.key} icon={c.icon} label={c.label} value={fmt(kpi[c.key], c.fmt)} />
         ))}
       </div>
+
       <div className="card">
-        <SectionTitle>Geo Breakdown — {month} {quarter}</SectionTitle>
+        <SectionTitle>
+          Geo Breakdown — {month ? `${month} ${quarter}` : `All of ${quarter}`}
+        </SectionTitle>
         <div className="table-wrap">
           <table className="data-table">
             <thead>
@@ -479,11 +546,15 @@ function QtdPage() {
 
 // ============================================================
 // PAGE: TRENDS
+// FIX 4: Added date range filter (Last 7d / 30d / 60d / 90d).
+// FIX 5: Filter state is local to this page only.
 // ============================================================
 function TrendsPage() {
-  const geos     = [...new Set(TRENDS_DATA.map(d => d.geo))];
-  const [selectedGeos,    setSelectedGeos]    = useState(geos);
-  const [selectedMetric,  setSelectedMetric]  = useState("mql");
+  const [dateRange,      setDateRange]      = useState("30d");
+  const [selectedGeos,   setSelectedGeos]   = useState(() => [...new Set(TRENDS_DATA.map(d => d.geo))]);
+  const [selectedMetric, setSelectedMetric] = useState("mql");
+
+  const geos = [...new Set(TRENDS_DATA.map(d => d.geo))];
 
   const toggleGeo = (geo) => {
     setSelectedGeos(prev =>
@@ -491,16 +562,42 @@ function TrendsPage() {
     );
   };
 
-  const filtered = TRENDS_DATA.filter(d => selectedGeos.includes(d.geo));
-  const dates    = [...new Set(filtered.map(d => d.date))].sort();
-  const metric   = TREND_METRICS.find(m => m.key === selectedMetric);
+  // Compute cutoff date from selected range
+  const cutoffDate = useMemo(() => {
+    const days = { "7d":7, "30d":30, "60d":60, "90d":90 }[dateRange] || 30;
+    // Use latest date in dataset as "today" reference so mock data always shows results
+    const dates = TRENDS_DATA.map(d => d.date).sort();
+    const latest = new Date(dates[dates.length - 1]);
+    const cutoff = new Date(latest);
+    cutoff.setDate(cutoff.getDate() - days);
+    return cutoff.toISOString().slice(0, 10);
+  }, [dateRange]);
 
-  const maxVal = Math.max(...filtered.map(d => d[selectedMetric] || 0), 1);
+  const filtered = useMemo(() => {
+    return TRENDS_DATA.filter(d =>
+      selectedGeos.includes(d.geo) && d.date >= cutoffDate
+    );
+  }, [selectedGeos, cutoffDate]);
+
+  const metric  = TREND_METRICS.find(m => m.key === selectedMetric);
+  const maxVal  = Math.max(...filtered.map(d => d[selectedMetric] || 0), 1);
 
   return (
     <div className="page">
       <div className="page-header-row">
         <h2 className="page-title">Trends</h2>
+      </div>
+
+      {/* Date range filter */}
+      <div className="filter-bar">
+        {[
+          { v:"7d",  l:"Last 7 days"  },
+          { v:"30d", l:"Last 30 days" },
+          { v:"60d", l:"Last 60 days" },
+          { v:"90d", l:"Last 90 days" },
+        ].map(r => (
+          <FilterPill key={r.v} label={r.l} active={dateRange === r.v} onClick={() => setDateRange(r.v)} />
+        ))}
       </div>
 
       {/* Geo filter */}
@@ -631,21 +728,46 @@ function WeekPage() {
 
 // ============================================================
 // PAGE: SQL
+// FIX 2 + FIX 3: Dynamic quarters/months from data.
+// Quarter = primary; months within quarter = secondary dependent filter.
+// Geo = tertiary, updates based on filtered dataset.
+// FIX 5: All filter state is local to this page.
 // ============================================================
 function SqlPage() {
-  const [qFilter,    setQFilter]    = useState("Q1");
-  const [monthFilter,setMonthFilter]= useState(null);
-  const [geoFilter,  setGeoFilter]  = useState(null);
-  const [sortKey,    setSortKey]    = useState("sqlDate");
-  const [sortDir,    setSortDir]    = useState("desc");
+  const [qFilter,     setQFilter]     = useState(AVAILABLE_QUARTERS[0] || "Q1");
+  const [monthFilter, setMonthFilter] = useState(null); // null = all months in quarter
+  const [geoFilter,   setGeoFilter]   = useState(null);
+  const [sortKey,     setSortKey]     = useState("sqlDate");
+  const [sortDir,     setSortDir]     = useState("desc");
 
+  // Months in the selected quarter that actually have data
+  const monthsInQuarter = useMemo(() => {
+    const qMonths = QUARTER_MONTHS[qFilter] || [];
+    return qMonths.filter(m => SQL_DATA.some(r => r.quarter === qFilter && r.month === m));
+  }, [qFilter]);
+
+  // When quarter changes, reset month and geo
+  const handleQuarterClick = (q) => {
+    setQFilter(q);
+    setMonthFilter(null);
+    setGeoFilter(null);
+  };
+
+  // When month pill clicked: toggle (clicking same month deselects → shows all)
+  const handleMonthClick = (m) => {
+    setMonthFilter(prev => prev === m ? null : m);
+    setGeoFilter(null);
+  };
+
+  // Base filter: quarter first, then narrow by month if selected
   const filtered = useMemo(() => {
     return SQL_DATA.filter(row => {
-      if (monthFilter) return row.month === monthFilter;
+      if (monthFilter) return row.quarter === qFilter && row.month === monthFilter;
       return row.quarter === qFilter;
     });
   }, [qFilter, monthFilter]);
 
+  // Geo options update dynamically from filtered dataset
   const availableGeos = useMemo(() => {
     return [...new Set(filtered.map(r => r.geo))];
   }, [filtered]);
@@ -684,24 +806,25 @@ function SqlPage() {
         <h2 className="page-title">SQL Pipeline</h2>
       </div>
 
-      {/* Primary filter: Q */}
+      {/* Primary filter: Quarters derived from data */}
       <div className="filter-bar">
-        {QUARTERS.map(q => (
+        {AVAILABLE_QUARTERS.map(q => (
           <FilterPill key={q} label={q}
             active={qFilter === q && !monthFilter}
-            onClick={() => { setQFilter(q); setMonthFilter(null); setGeoFilter(null); }}
+            onClick={() => handleQuarterClick(q)}
           />
         ))}
-        <div className="filter-sep" />
-        {MONTHS.slice(0, 3).map(m => (
+        {monthsInQuarter.length > 0 && <div className="filter-sep" />}
+        {/* Secondary: Months within selected quarter — dependent on quarter selection */}
+        {monthsInQuarter.map(m => (
           <FilterPill key={m} label={m}
             active={monthFilter === m}
-            onClick={() => { setMonthFilter(prev => prev === m ? null : m); setGeoFilter(null); }}
+            onClick={() => handleMonthClick(m)}
           />
         ))}
       </div>
 
-      {/* Secondary: Geo (dynamic) */}
+      {/* Tertiary: Geo — updates dynamically based on filtered rows */}
       {availableGeos.length > 0 && (
         <div className="filter-bar" style={{ marginTop:8 }}>
           <span className="filter-label">Geo:</span>
@@ -716,9 +839,9 @@ function SqlPage() {
 
       {/* KPI cards */}
       <div className="kpi-grid kpi-grid-4">
-        <KpiCard icon="🏆" label="SQLs"      value={kpiSql} />
-        <KpiCard icon="📊" label="Pipeline"  value={fmtUSD(kpiPipeline)} />
-        <KpiCard icon="💡" label="Avg Deal"  value={fmtUSD(kpiAvg)} />
+        <KpiCard icon="🏆" label="SQLs"       value={kpiSql} />
+        <KpiCard icon="📊" label="Pipeline"   value={fmtUSD(kpiPipeline)} />
+        <KpiCard icon="💡" label="Avg Deal"   value={fmtUSD(kpiAvg)} />
         <KpiCard icon="🔒" label="Closed Won" value={kpiWon} />
       </div>
 
@@ -729,15 +852,15 @@ function SqlPage() {
             <thead>
               <tr>
                 <th>#</th>
-                <SortTh k="company"    label="Company" />
-                <SortTh k="country"    label="Country" />
-                <SortTh k="geo"        label="Geo" />
-                <SortTh k="campaign"   label="Campaign" />
-                <SortTh k="sqlDate"    label="SQL Date" />
+                <SortTh k="company"     label="Company" />
+                <SortTh k="country"     label="Country" />
+                <SortTh k="geo"         label="Geo" />
+                <SortTh k="campaign"    label="Campaign" />
+                <SortTh k="sqlDate"     label="SQL Date" />
                 <SortTh k="createdDate" label="Created" />
-                <SortTh k="dealValue"  label="Deal Value" />
-                <SortTh k="stage"      label="Stage" />
-                <SortTh k="owner"      label="Owner" />
+                <SortTh k="dealValue"   label="Deal Value" />
+                <SortTh k="stage"       label="Stage" />
+                <SortTh k="owner"       label="Owner" />
                 <th>HubSpot</th>
               </tr>
             </thead>
