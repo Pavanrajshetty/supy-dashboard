@@ -1,0 +1,6 @@
+[
+  {"id": 9, "created_date": "2026-01-03", "name": "I", "campaign_name": "Camp1", "lifecycle_stage": "MQL"},
+  {"id": 10, "created_date": "2026-01-03", "name": "J", "campaign_name": "Camp2", "lifecycle_stage": "MQL"},
+  {"id": 11, "created_date": "2026-01-03", "name": "K", "campaign_name": "Camp3", "lifecycle_stage": "MQL"},
+  {"id": 12, "created_date": "2026-01-03", "name": "L", "campaign_name": "Camp4", "lifecycle_stage": "MQL"}
+]
