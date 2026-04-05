@@ -4,7 +4,7 @@ import {
   getCutoffDate, fmtNum, fmtPct,
 } from "../data/trendsData";
 
-// ── Inline SVG line chart ─────────────────────────────────────
+// ── Inline SVG line chart — light theme colors ────────────────
 function LineChart({ data, metricKey }) {
   const W = 800, H = 160, PAD = { top: 20, right: 16, bottom: 40, left: 8 };
   const innerW = W - PAD.left - PAD.right;
@@ -33,14 +33,14 @@ function LineChart({ data, metricKey }) {
       style={{ width: "100%", height: H, overflow: "visible" }}
       aria-label="line chart"
     >
-      {/* area fill */}
-      <polygon points={fillPoints} fill="rgba(124,92,191,0.12)" />
+      {/* soft area fill */}
+      <polygon points={fillPoints} fill="rgba(124,79,214,0.08)" />
 
       {/* line */}
       <polyline
         points={points}
         fill="none"
-        stroke="#9b7de0"
+        stroke="#7c4fd6"
         strokeWidth="2.5"
         strokeLinejoin="round"
         strokeLinecap="round"
@@ -53,19 +53,17 @@ function LineChart({ data, metricKey }) {
         const val = d[metricKey] || 0;
         const lbl = `${d.date.slice(5)} ${d.geo}`;
         return (
-          <g key={i} className="bar-col">
-            <circle cx={cx} cy={cy} r={4} fill="#9b7de0" stroke="#1a1a2e" strokeWidth={2} />
-            {/* hover target */}
+          <g key={i}>
+            <circle cx={cx} cy={cy} r={4} fill="#7c4fd6" stroke="#ffffff" strokeWidth={2} />
             <circle cx={cx} cy={cy} r={14} fill="transparent">
               <title>{d.geo}: {val}</title>
             </circle>
-            {/* x-axis label */}
             <text
               x={cx}
               y={PAD.top + innerH + 14}
               textAnchor="middle"
               fontSize="9"
-              fill="#5a5a7a"
+              fill="#a099b5"
             >
               {lbl}
             </text>

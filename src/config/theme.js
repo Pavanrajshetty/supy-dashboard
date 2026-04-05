@@ -1,18 +1,28 @@
-// Design tokens — JS reference only. Do NOT move CSS here.
+// Design tokens — JS reference only. Actual styles live in styles.css.
 export const colors = {
-  primary:     "#6c63ff",
-  primaryDark: "#5a52d5",
-  bg:          "#0d0d14",
-  surface:     "#14141f",
-  surfaceAlt:  "#1a1a2a",
-  border:      "rgba(255,255,255,0.07)",
-  textPrimary: "#e8e8f0",
-  textMuted:   "rgba(232,232,240,0.45)",
-  green:       "#22c55e",
-  red:         "#ef4444",
-  blue:        "#3b82f6",
-  purple:      "#a855f7",
-  accent:      "#fbbf24",
+  primary:     "#7c4fd6",
+  primaryDark: "#4b2a7b",
+  bg:          "#f3f0f8",
+  surface:     "#ffffff",
+  surfaceAlt:  "#f8f5fc",
+  border:      "#e7deef",
+  textPrimary: "#2f2350",
+  textMuted:   "#6f6784",
+  green:       "#1f8f5f",
+  red:         "#d64545",
+  blue:        "#4f7cff",
+  purple:      "#7c4fd6",
+  accent:      "#d4a62a",
 };
-export const font   = { family: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", sizeBase: "13px", sizeSm: "11px", sizeLg: "16px" };
-export const radius = { sm: "6px", md: "10px", lg: "14px", xl: "18px" };
+export const font = {
+  family: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+  sizeBase: "13px",
+  sizeSm: "11px",
+  sizeLg: "16px",
+};
+export const radius = {
+  sm: "6px",
+  md: "10px",
+  lg: "14px",
+  xl: "18px",
+};
