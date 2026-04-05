@@ -1,8 +1,21 @@
 import React from "react";
-import { WEEKLY_DATA } from "../data/weekOnWeekData";
-import { fmtAED, delta } from "../utils/formatters";
-import SectionTitle from "../components/SectionTitle";
 
+// ── Data ─────────────────────────────────────────────────────
+const WEEKLY_DATA = [
+  { week:"Week 1", spend:28400, mql:168, expected:180, achieved:168 },
+  { week:"Week 2", spend:31200, mql:192, expected:185, achieved:192 },
+  { week:"Week 3", spend:29800, mql:174, expected:185, achieved:174 },
+  { week:"Week 4", spend:33440, mql:217, expected:190, achieved:217 },
+];
+
+const fmtAED = v => `AED ${Number(v).toLocaleString("en", { maximumFractionDigits:0 })}`;
+function delta(expected, achieved) {
+  const diff = achieved - expected;
+  const pct  = expected ? ((diff / expected) * 100).toFixed(1) : 0;
+  return { diff, pct, positive: diff >= 0 };
+}
+
+// ── Page ─────────────────────────────────────────────────────
 export default function WeekOnWeek() {
   return (
     <div className="page">
@@ -32,7 +45,7 @@ export default function WeekOnWeek() {
         })}
       </div>
       <div className="card">
-        <SectionTitle>Weekly Summary Table</SectionTitle>
+        <h3 className="section-title">Weekly Summary Table</h3>
         <div className="table-wrap">
           <table className="data-table">
             <thead>

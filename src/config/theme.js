@@ -1,8 +1,4 @@
-// ============================================================
-// THEME — design tokens mirroring styles.css CSS variables
-// DO NOT move full CSS here. This is a JS reference only.
-// ============================================================
-
+// Design tokens — JS reference only. Do NOT move CSS here.
 export const colors = {
   primary:     "#6c63ff",
   primaryDark: "#5a52d5",
@@ -18,17 +14,5 @@ export const colors = {
   purple:      "#a855f7",
   accent:      "#fbbf24",
 };
-
-export const font = {
-  family: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-  sizeBase: "13px",
-  sizeSm:   "11px",
-  sizeLg:   "16px",
-};
-
-export const radius = {
-  sm:  "6px",
-  md:  "10px",
-  lg:  "14px",
-  xl:  "18px",
-};
+export const font   = { family: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", sizeBase: "13px", sizeSm: "11px", sizeLg: "16px" };
+export const radius = { sm: "6px", md: "10px", lg: "14px", xl: "18px" };

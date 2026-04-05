@@ -1,13 +1,14 @@
 import React from "react";
-import { TABS } from "../config/constants";
 
-function Tab({ label, active, onClick }) {
-  return (
-    <button className={`nav-tab ${active ? "active" : ""}`} onClick={onClick}>
-      {label}
-    </button>
-  );
-}
+const TABS = [
+  { id: "executive", label: "Executive Summary" },
+  { id: "mtd",       label: "MTD Data"          },
+  { id: "qtd",       label: "QTD / Monthly"     },
+  { id: "trends",    label: "Trends"            },
+  { id: "wow",       label: "Week on Week"      },
+  { id: "sql",       label: "SQL"               },
+  { id: "meetings",  label: "Meetings Booked"   },
+];
 
 export default function Navbar({ activePage, setActivePage }) {
   return (
@@ -18,12 +19,13 @@ export default function Navbar({ activePage, setActivePage }) {
       </div>
       <nav className="tab-nav">
         {TABS.map(t => (
-          <Tab
+          <button
             key={t.id}
-            label={t.label}
-            active={activePage === t.id}
+            className={`nav-tab ${activePage === t.id ? "active" : ""}`}
             onClick={() => setActivePage(t.id)}
-          />
+          >
+            {t.label}
+          </button>
         ))}
       </nav>
       <div className="header-badge">
