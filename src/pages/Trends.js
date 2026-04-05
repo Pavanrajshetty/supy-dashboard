@@ -4,6 +4,79 @@ import {
   getCutoffDate, fmtNum, fmtPct,
 } from "../data/trendsData";
 
+// ── Inline SVG line chart ─────────────────────────────────────
+function LineChart({ data, metricKey }) {
+  const W = 800, H = 160, PAD = { top: 20, right: 16, bottom: 40, left: 8 };
+  const innerW = W - PAD.left - PAD.right;
+  const innerH = H - PAD.top  - PAD.bottom;
+
+  if (!data.length) return null;
+
+  const vals   = data.map(d => d[metricKey] || 0);
+  const maxVal = Math.max(...vals, 1);
+
+  const xStep = innerW / Math.max(data.length - 1, 1);
+  const yOf   = v => PAD.top + innerH - (v / maxVal) * innerH;
+  const xOf   = i => PAD.left + (data.length === 1 ? innerW / 2 : i * xStep);
+
+  const points = data.map((d, i) => `${xOf(i)},${yOf(d[metricKey] || 0)}`).join(" ");
+
+  const fillPoints = [
+    `${xOf(0)},${PAD.top + innerH}`,
+    ...data.map((d, i) => `${xOf(i)},${yOf(d[metricKey] || 0)}`),
+    `${xOf(data.length - 1)},${PAD.top + innerH}`,
+  ].join(" ");
+
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      style={{ width: "100%", height: H, overflow: "visible" }}
+      aria-label="line chart"
+    >
+      {/* area fill */}
+      <polygon points={fillPoints} fill="rgba(124,92,191,0.12)" />
+
+      {/* line */}
+      <polyline
+        points={points}
+        fill="none"
+        stroke="#9b7de0"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+
+      {/* dots + tooltips */}
+      {data.map((d, i) => {
+        const cx  = xOf(i);
+        const cy  = yOf(d[metricKey] || 0);
+        const val = d[metricKey] || 0;
+        const lbl = `${d.date.slice(5)} ${d.geo}`;
+        return (
+          <g key={i} className="bar-col">
+            <circle cx={cx} cy={cy} r={4} fill="#9b7de0" stroke="#1a1a2e" strokeWidth={2} />
+            {/* hover target */}
+            <circle cx={cx} cy={cy} r={14} fill="transparent">
+              <title>{d.geo}: {val}</title>
+            </circle>
+            {/* x-axis label */}
+            <text
+              x={cx}
+              y={PAD.top + innerH + 14}
+              textAnchor="middle"
+              fontSize="9"
+              fill="#5a5a7a"
+            >
+              {lbl}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+// ── Page ─────────────────────────────────────────────────────
 export default function Trends() {
   const [dateRange,      setDateRange]      = useState("30d");
   const [selectedGeos,   setSelectedGeos]   = useState(() => [...new Set(TRENDS_DATA.map(d => d.geo))]);
@@ -23,7 +96,6 @@ export default function Trends() {
   );
 
   const metric = TREND_METRICS.find(m => m.key === selectedMetric);
-  const maxVal = Math.max(...filtered.map(d => d[selectedMetric] || 0), 1);
 
   return (
     <div className="page">
@@ -51,19 +123,7 @@ export default function Trends() {
 
       <div className="card chart-placeholder">
         <h3 className="section-title">{metric.label} over time</h3>
-        <div className="bar-chart">
-          {filtered.map((row, i) => {
-            const val = row[selectedMetric] || 0;
-            const pct = Math.round((val / maxVal) * 100);
-            return (
-              <div className="bar-col" key={i}>
-                <div className="bar-tooltip">{row.geo}: {val}</div>
-                <div className="bar" style={{ height:`${pct}%` }} />
-                <div className="bar-label">{row.date.slice(5)} {row.geo}</div>
-              </div>
-            );
-          })}
-        </div>
+        <LineChart data={filtered} metricKey={selectedMetric} />
       </div>
 
       <div className="card">
