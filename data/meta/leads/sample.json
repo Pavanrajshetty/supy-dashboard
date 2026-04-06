@@ -2,41 +2,21 @@
   "lead_id": "string",
   "created_time": "ISO8601 string",
 
-  "form_id": "string",
   "form_name": "string | null",
 
-  "campaign_id": "string | null",
   "campaign_name": "string | null",
-  "adset_id": "string | null",
   "adset_name": "string | null",
-  "ad_id": "string | null",
   "ad_name": "string | null",
-
-  "platform": "string | null",
-  "page_id": "string | null",
-  "page_name": "string | null",
-  "is_organic": "boolean",
 
   "first_name": "string | null",
   "last_name": "string | null",
-  "full_name": "string | null",
   "email": "string | null",
   "phone_number": "string | null",
   "company_name": "string | null",
-  "job_title": "string | null",
-  "city": "string | null",
-  "state": "string | null",
+
   "country": "string | null",
 
   "custom_fields": {
-    "work_email": "string | null",
-    "META_Locations": "string | null",
-    "countries": "string | null"
-  },
-
-  "match_email": "string | null",
-  "match_confidence": "string | null",
-  "hubspot_lead_id": "string | null",
-
-  "last_updated": "ISO8601 string"
+    "work_email": "string | null"
+  }
 }
