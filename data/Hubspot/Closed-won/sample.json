@@ -8,6 +8,7 @@
   "deal_createdate": "ISO8601 string | null",
   "deal_stage": "string",
   "deal_amount": "number | null",
+  "deal_amount_usd": "number | null"
   "closedate": "ISO8601 string | null",
   "deal_currency_code": "USD",
   "number_of_branches": "integer | null",
