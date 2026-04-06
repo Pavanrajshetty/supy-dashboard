@@ -8,7 +8,7 @@ import {
   fmtUSD,
 } from "../data/executiveSummaryData";
 
-import adsetData from "../../data/processed/meta/adset_master.json";
+import adsetData from "../data/Meta/adset_master.json";
 
 // ── Constants ─────────────────────────────────────────────────
 const RANGE_DAYS = {
