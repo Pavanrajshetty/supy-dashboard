@@ -1,0 +1,44 @@
+name: Build Meta Master
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'data/meta/**'
+      - 'scripts/build_meta_master.py'
+      - '.github/workflows/build-meta-master.yml'
+  workflow_dispatch:
+
+jobs:
+  build-meta-master:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Meta master builder
+        run: python scripts/build_meta_master.py
+
+      - name: Commit processed files if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/processed/meta/
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "update meta processed masters"
+            git push
+          fi
