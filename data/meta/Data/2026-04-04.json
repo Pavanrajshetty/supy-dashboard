@@ -7,11 +7,11 @@
     "ad_id": "ad_lal_ksa_video",
     "ad_name": "LAL_Consolidated_KSA_Facebook_Video_Ad",
     "country": "SA",
-    "impressions": 3864,
-    "clicks": 27,
-    "reach": 2676,
-    "leads": 2,
-    "spend": 75.21
+    "impressions": 3173,
+    "clicks": 20,
+    "reach": 2295,
+    "leads": 0,
+    "spend": 60.05
   },
   {
     "campaign_id": "act_2997319760514396_gcc_lal",
@@ -21,11 +21,11 @@
     "ad_id": "ad_lal_morocco_video",
     "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
     "country": "MA",
-    "impressions": 6345,
-    "clicks": 73,
-    "reach": 4471,
-    "leads": 4,
-    "spend": 40.28
+    "impressions": 5273,
+    "clicks": 64,
+    "reach": 3859,
+    "leads": 6,
+    "spend": 35.15
   },
   {
     "campaign_id": "act_2997319760514396_gcc_lal",
@@ -35,11 +35,11 @@
     "ad_id": "ad_lal_morocco_video",
     "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
     "country": "MA",
-    "impressions": 4275,
-    "clicks": 33,
-    "reach": 2784,
-    "leads": 2,
-    "spend": 30.26
+    "impressions": 3447,
+    "clicks": 19,
+    "reach": 2341,
+    "leads": 1,
+    "spend": 24.34
   },
   {
     "campaign_id": "act_2997319760514396_aus_lal",
@@ -49,11 +49,11 @@
     "ad_id": "ad_lal_admin_aus_lead",
     "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
     "country": "AU",
-    "impressions": 766,
-    "clicks": 9,
-    "reach": 592,
+    "impressions": 434,
+    "clicks": 4,
+    "reach": 359,
     "leads": 0,
-    "spend": 273.19
+    "spend": 256.42
   },
   {
     "campaign_id": "act_2997319760514396_aus_lal",
@@ -63,25 +63,11 @@
     "ad_id": "ad_lal_admin_nz_lead",
     "ad_name": "LAL_Admin_NZ_Facebook_Lead_Ad",
     "country": "NZ",
-    "impressions": 3302,
-    "clicks": 28,
-    "reach": 1860,
+    "impressions": 1843,
+    "clicks": 22,
+    "reach": 1168,
     "leads": 0,
-    "spend": 198.69
-  },
-  {
-    "campaign_id": "act_2997319760514396_aus_lal",
-    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
-    "adset_id": "adset_lal_target_aus",
-    "adset_name": "LAL_Target_AUS_Facebook",
-    "ad_id": "ad_lal_admin_aus_lead",
-    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
-    "country": "AU",
-    "impressions": 650,
-    "clicks": 6,
-    "reach": 474,
-    "leads": 0,
-    "spend": 74.75
+    "spend": 158.81
   },
   {
     "campaign_id": "act_2997319760514396_hk_my_lal",
@@ -91,11 +77,11 @@
     "ad_id": "ad_lal_admin_hk_lead",
     "ad_name": "LAL_Admin_HK _Facebook_Lead_Ad",
     "country": "HK",
-    "impressions": 1332,
-    "clicks": 7,
-    "reach": 817,
+    "impressions": 1100,
+    "clicks": 12,
+    "reach": 710,
     "leads": 0,
-    "spend": 77.42
+    "spend": 72.10
   },
   {
     "campaign_id": "act_2997319760514396_sg",
@@ -105,11 +91,11 @@
     "ad_id": "ad_interest_sg_fb_lead",
     "ad_name": "Interest_Singapore _Facebook_Lead_Ad",
     "country": "SG",
-    "impressions": 2364,
-    "clicks": 19,
-    "reach": 1791,
+    "impressions": 2702,
+    "clicks": 16,
+    "reach": 1994,
     "leads": 0,
-    "spend": 156.63
+    "spend": 171.28
   },
   {
     "campaign_id": "act_2997319760514396_tw",
@@ -119,11 +105,11 @@
     "ad_id": "ad_interest_macau_fb_lead",
     "ad_name": "Interest_ Macau_Facebook_Lead_Ad",
     "country": "TW",
-    "impressions": 1638,
-    "clicks": 20,
-    "reach": 895,
-    "leads": 1,
-    "spend": 33.84
+    "impressions": 1443,
+    "clicks": 18,
+    "reach": 870,
+    "leads": 0,
+    "spend": 31.16
   },
   {
     "campaign_id": "act_2997319760514396_my",
@@ -133,11 +119,11 @@
     "ad_id": "ad_lal_admin_hk_my_lead",
     "ad_name": "LAL_Admin_HK_MY _Facebook_Lead_Ad",
     "country": "MY",
-    "impressions": 5740,
-    "clicks": 53,
-    "reach": 3565,
-    "leads": 0,
-    "spend": 223.10
+    "impressions": 4940,
+    "clicks": 46,
+    "reach": 3063,
+    "leads": 1,
+    "spend": 215.38
   },
   {
     "campaign_id": "act_2997319760514396_ph",
@@ -147,11 +133,11 @@
     "ad_id": "ad_interest_ph_fb_lead",
     "ad_name": "Interest_Philippines_Facebook_Lead_Ad",
     "country": "PH",
-    "impressions": 18554,
-    "clicks": 222,
-    "reach": 12693,
-    "leads": 5,
-    "spend": 188.82
+    "impressions": 26647,
+    "clicks": 350,
+    "reach": 17760,
+    "leads": 8,
+    "spend": 194.95
   },
   {
     "campaign_id": "act_2997319760514396_ie",
@@ -161,11 +147,11 @@
     "ad_id": "ad_facebook_ireland_broad",
     "ad_name": "Facebook_Ireland_Broad_ad",
     "country": "IE",
-    "impressions": 407,
-    "clicks": 2,
-    "reach": 324,
+    "impressions": 795,
+    "clicks": 8,
+    "reach": 516,
     "leads": 0,
-    "spend": 23.49
+    "spend": 41.31
   },
   {
     "campaign_id": "act_2997319760514396_th",
@@ -175,11 +161,11 @@
     "ad_id": "ad_interest_th_fb_lead",
     "ad_name": "Interest_Thailand_Facebook_Lead_Ad",
     "country": "TH",
-    "impressions": 4604,
-    "clicks": 46,
-    "reach": 3121,
+    "impressions": 4535,
+    "clicks": 63,
+    "reach": 3114,
     "leads": 1,
-    "spend": 142.09
+    "spend": 137.68
   },
   {
     "campaign_id": "act_2997319760514396_za",
@@ -189,11 +175,11 @@
     "ad_id": "ad_interest_za_fb_lead",
     "ad_name": "Interest_South_Africa_Facebook_Lead_Ad",
     "country": "ZA",
-    "impressions": 4381,
-    "clicks": 69,
-    "reach": 3180,
-    "leads": 1,
-    "spend": 97.89
+    "impressions": 3248,
+    "clicks": 59,
+    "reach": 2447,
+    "leads": 0,
+    "spend": 69.29
   },
   {
     "campaign_id": "act_2997319760514396_lk",
@@ -203,11 +189,11 @@
     "ad_id": "ad_interest_lk_fb_lead",
     "ad_name": "Interest_Sri_Lanka_Facebook_Lead_Ad",
     "country": "LK",
-    "impressions": 9303,
-    "clicks": 88,
-    "reach": 5138,
+    "impressions": 9470,
+    "clicks": 62,
+    "reach": 4890,
     "leads": 1,
-    "spend": 73.45
+    "spend": 76.59
   },
   {
     "campaign_id": "act_2997319760514396_mu",
@@ -217,11 +203,11 @@
     "ad_id": "ad_interest_mu_fb_lead",
     "ad_name": "Interest_Mauritius_Facebook_Lead_Ad",
     "country": "MU",
-    "impressions": 6809,
-    "clicks": 61,
-    "reach": 3689,
+    "impressions": 3429,
+    "clicks": 34,
+    "reach": 1837,
     "leads": 0,
-    "spend": 76.36
+    "spend": 37.79
   },
   {
     "campaign_id": "act_2997319760514396_uk",
@@ -231,11 +217,11 @@
     "ad_id": "ad_lal_deal_uk_fb_video",
     "ad_name": "LAL_Deal_UK_Facebook_Video_Ad",
     "country": "GB",
-    "impressions": 1901,
-    "clicks": 15,
-    "reach": 1526,
-    "leads": 0,
-    "spend": 251.76
+    "impressions": 754,
+    "clicks": 8,
+    "reach": 600,
+    "leads": 1,
+    "spend": 82.00
   },
   {
     "campaign_id": "act_2997319760514396_uk",
@@ -245,11 +231,11 @@
     "ad_id": "ad_interest_uk_fb_lead",
     "ad_name": "Interest_UK_Facebook_Lead_Ad",
     "country": "GB",
-    "impressions": 2027,
-    "clicks": 23,
-    "reach": 1251,
+    "impressions": 2159,
+    "clicks": 16,
+    "reach": 1440,
     "leads": 0,
-    "spend": 199.17
+    "spend": 171.80
   },
   {
     "campaign_id": "act_2997319760514396_ng",
@@ -259,11 +245,11 @@
     "ad_id": "ad_interest_ng_fb_lead",
     "ad_name": "Interest_Nigeria_Facebook_Lead_Ad",
     "country": "NG",
-    "impressions": 2085,
-    "clicks": 75,
-    "reach": 1808,
-    "leads": 6,
-    "spend": 41.12
+    "impressions": 0,
+    "clicks": 0,
+    "reach": 0,
+    "leads": 0,
+    "spend": 0.00
   },
   {
     "campaign_id": "act_2997319760514396_it",
@@ -273,10 +259,10 @@
     "ad_id": "ad_interest_it_fb_lead",
     "ad_name": "Interest_Italy_Facebook_Lead_Ad",
     "country": "IT",
-    "impressions": 2485,
-    "clicks": 23,
-    "reach": 1661,
-    "leads": 0,
-    "spend": 124.71
+    "impressions": 1952,
+    "clicks": 6,
+    "reach": 1282,
+    "leads": 1,
+    "spend": 111.68
   }
 ]
