@@ -1,0 +1,25 @@
+[
+  {
+    "lead_id": "88647193129",
+    "lead_link": "https://app.hubspot.com/contacts/9423176/contact/88647193129",
+    "createdate": "2025-01-02T22:20:57Z",
+    "firstname": "Omar",
+    "lastname": "Aslamy",
+    "phone": "+96892879333",
+    "email": "m.aslamy@icloud.com",
+    "company": "Smart Experience",
+    "country": "Oman",
+    "number_of_locations": "2",
+    "lifecyclestage": "marketingqualifiedlead",
+    "hs_lead_status": "Disqualified",
+    "hs_analytics_source": "PAID_SOCIAL",
+    "hs_analytics_source_data_1": "Facebook",
+    "hs_analytics_source_data_2": "supy_facebook_gcc_lal_leadgen",
+    "utm_source": null,
+    "utm_medium": null,
+    "utm_campaign": null,
+    "utm_content": null,
+    "hs_v2_date_entered_salesqualifiedlead": null,
+    "new_lead_source": "Marketing"
+  }
+]
