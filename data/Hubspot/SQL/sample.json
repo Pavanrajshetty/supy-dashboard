@@ -1,0 +1,41 @@
+{
+  "lead_id": "string",
+  "lead_link": "string",
+
+  "createdate": "ISO8601 string",
+  "hs_v2_date_entered_marketingqualifiedlead": "ISO8601 string | null",
+  "hs_v2_date_entered_salesqualifiedlead": "ISO8601 string",
+  "hs_v2_date_entered_opportunity": "ISO8601 string | null",
+
+  "firstname": "string | null",
+  "lastname": "string | null",
+  "email": "string",
+  "phone": "string | null",
+  "jobtitle": "string | null",
+  "company": "string | null",
+  "country": "string | null",
+  "number_of_locations": "integer | null",
+
+  "lifecyclestage": "string",
+  "hs_lead_status": "string | null",
+
+  "hs_analytics_source": "string | null",
+  "hs_analytics_source_data_1": "string | null",
+  "hs_analytics_source_data_2": "string | null",
+  "new_lead_source": "string | null",
+
+  "utm_source": "string | null",
+  "utm_medium": "string | null",
+  "utm_campaign": "string | null",
+  "utm_content": "string | null",
+
+  "deal_id": "string | null",
+  "deal_link": "string | null",
+  "deal_name": "string | null",
+  "deal_createdate": "ISO8601 string | null",
+  "deal_stage": "string | null",
+  "deal_amount": "number | null",
+  "number_of_branches": "integer | null",
+
+  "last_updated": "ISO8601 string"
+}
