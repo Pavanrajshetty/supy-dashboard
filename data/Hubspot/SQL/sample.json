@@ -36,6 +36,7 @@
   "deal_stage": "string | null",
   "deal_amount": "number | null",
   "deal_currency_code": "USD",
+  "deal_amount_usd": "number | null"
   "number_of_branches": "integer | null",
 
   "last_updated": "ISO8601 string"
