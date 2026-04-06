@@ -1,41 +1,5 @@
 [
   {
-    "id": 5,
-    "created_date": "2026-01-02",
-    "name": "E",
-    "campaign_name": "Camp1",
-    "lifecycle_stage": "MQL",
-    "sql": false,
-    "closed_won": false
-  },
-  {
-    "id": 6,
-    "created_date": "2026-01-02",
-    "name": "F",
-    "campaign_name": "Camp2",
-    "lifecycle_stage": "MQL",
-    "sql": true,
-    "closed_won": false
-  },
-  {
-    "id": 7,
-    "created_date": "2026-01-02",
-    "name": "G",
-    "campaign_name": "Camp3",
-    "lifecycle_stage": "MQL",
-    "sql": true,
-    "closed_won": true
-  },
-  {
-    "id": 8,
-    "created_date": "2026-01-02",
-    "name": "H",
-    "campaign_name": "Camp3",
-    "lifecycle_stage": "MQL",
-    "sql": true,
-    "closed_won": true
-  },
-  {
     "id": 9,
     "created_date": "2026-01-03",
     "name": "I",
