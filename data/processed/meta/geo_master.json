@@ -1,7 +1,7 @@
 [
   {
     "date": "2026-04-01",
-    "campaign_id": "120239106390650775",
+    "campaign_id": "act_2997319760514396_aus_lal",
     "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
     "country": "AU",
     "impressions": 1598,
@@ -12,7 +12,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120239106390650775",
+    "campaign_id": "act_2997319760514396_aus_lal",
     "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
     "country": "NZ",
     "impressions": 2944,
@@ -23,7 +23,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120208097408850775",
+    "campaign_id": "act_2997319760514396_gcc_lal",
     "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
     "country": "MA",
     "impressions": 9739,
@@ -34,7 +34,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120208097408850775",
+    "campaign_id": "act_2997319760514396_gcc_lal",
     "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
     "country": "SA",
     "impressions": 4524,
@@ -45,7 +45,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120246789012345775",
+    "campaign_id": "act_2997319760514396_hk_my_lal",
     "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
     "country": "HK",
     "impressions": 1491,
@@ -56,7 +56,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120250123456789775",
+    "campaign_id": "act_2997319760514396_it",
     "campaign_name": "Supy_Facebook_Italy_Meta",
     "country": "IT",
     "impressions": 2811,
@@ -67,7 +67,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120247890123456775",
+    "campaign_id": "act_2997319760514396_my",
     "campaign_name": "Supy_Facebook_Malaysia_Meta",
     "country": "MY",
     "impressions": 6952,
@@ -78,7 +78,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120243456789012775",
+    "campaign_id": "act_2997319760514396_mu",
     "campaign_name": "Supy_Facebook_Mauritius_Meta",
     "country": "MU",
     "impressions": 7283,
@@ -89,7 +89,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120251234567890775",
+    "campaign_id": "act_2997319760514396_ng",
     "campaign_name": "Supy_Facebook_Nigeria_Meta",
     "country": "NG",
     "impressions": 6159,
@@ -100,7 +100,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120237959815840775",
+    "campaign_id": "act_2997319760514396_ph",
     "campaign_name": "Supy_Facebook_Philippines_Meta",
     "country": "PH",
     "impressions": 19157,
@@ -111,7 +111,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120248901234567775",
+    "campaign_id": "act_2997319760514396_sg",
     "campaign_name": "Supy_Facebook_Singapore_Meta",
     "country": "SG",
     "impressions": 2705,
@@ -122,7 +122,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120241234567890775",
+    "campaign_id": "act_2997319760514396_za",
     "campaign_name": "Supy_Facebook_South_Africa_Meta",
     "country": "ZA",
     "impressions": 5540,
@@ -133,7 +133,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120242345678901775",
+    "campaign_id": "act_2997319760514396_lk",
     "campaign_name": "Supy_Facebook_Sri_Lanka_Meta",
     "country": "LK",
     "impressions": 9044,
@@ -144,7 +144,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120249012345678775",
+    "campaign_id": "act_2997319760514396_tw",
     "campaign_name": "Supy_Facebook_Taiwan_Meta",
     "country": "TW",
     "impressions": 1617,
@@ -155,7 +155,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120240099366080775",
+    "campaign_id": "act_2997319760514396_th",
     "campaign_name": "Supy_Facebook_Thailand_Meta",
     "country": "TH",
     "impressions": 5704,
@@ -166,7 +166,7 @@
   },
   {
     "date": "2026-04-01",
-    "campaign_id": "120244567890123775",
+    "campaign_id": "act_2997319760514396_uk",
     "campaign_name": "Supy_Facebook_UK_Meta",
     "country": "GB",
     "impressions": 4634,
@@ -177,10 +177,10 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120239106390650775",
+    "campaign_id": "act_2997319760514396_aus_lal",
     "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
     "country": "AU",
-    "impressions": 1417,
+    "impressions": 1416,
     "clicks": 15,
     "reach": 1066,
     "leads": 0,
@@ -188,10 +188,10 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120239106390650775",
+    "campaign_id": "act_2997319760514396_aus_lal",
     "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
     "country": "NZ",
-    "impressions": 3301,
+    "impressions": 3302,
     "clicks": 28,
     "reach": 1860,
     "leads": 0,
@@ -199,7 +199,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120208097408850775",
+    "campaign_id": "act_2997319760514396_gcc_lal",
     "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
     "country": "MA",
     "impressions": 10620,
@@ -210,7 +210,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120208097408850775",
+    "campaign_id": "act_2997319760514396_gcc_lal",
     "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
     "country": "SA",
     "impressions": 3864,
@@ -221,7 +221,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120246789012345775",
+    "campaign_id": "act_2997319760514396_hk_my_lal",
     "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
     "country": "HK",
     "impressions": 1332,
@@ -232,7 +232,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120245678901234775",
+    "campaign_id": "act_2997319760514396_ie",
     "campaign_name": "Supy_Facebook_Ireland_Leadgen",
     "country": "IE",
     "impressions": 407,
@@ -243,7 +243,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120250123456789775",
+    "campaign_id": "act_2997319760514396_it",
     "campaign_name": "Supy_Facebook_Italy_Meta",
     "country": "IT",
     "impressions": 2485,
@@ -254,7 +254,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120247890123456775",
+    "campaign_id": "act_2997319760514396_my",
     "campaign_name": "Supy_Facebook_Malaysia_Meta",
     "country": "MY",
     "impressions": 5740,
@@ -265,7 +265,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120243456789012775",
+    "campaign_id": "act_2997319760514396_mu",
     "campaign_name": "Supy_Facebook_Mauritius_Meta",
     "country": "MU",
     "impressions": 6809,
@@ -276,7 +276,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120251234567890775",
+    "campaign_id": "act_2997319760514396_ng",
     "campaign_name": "Supy_Facebook_Nigeria_Meta",
     "country": "NG",
     "impressions": 2085,
@@ -287,7 +287,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120237959815840775",
+    "campaign_id": "act_2997319760514396_ph",
     "campaign_name": "Supy_Facebook_Philippines_Meta",
     "country": "PH",
     "impressions": 18554,
@@ -298,7 +298,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120248901234567775",
+    "campaign_id": "act_2997319760514396_sg",
     "campaign_name": "Supy_Facebook_Singapore_Meta",
     "country": "SG",
     "impressions": 2364,
@@ -309,7 +309,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120241234567890775",
+    "campaign_id": "act_2997319760514396_za",
     "campaign_name": "Supy_Facebook_South_Africa_Meta",
     "country": "ZA",
     "impressions": 4381,
@@ -320,7 +320,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120242345678901775",
+    "campaign_id": "act_2997319760514396_lk",
     "campaign_name": "Supy_Facebook_Sri_Lanka_Meta",
     "country": "LK",
     "impressions": 9303,
@@ -331,7 +331,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120249012345678775",
+    "campaign_id": "act_2997319760514396_tw",
     "campaign_name": "Supy_Facebook_Taiwan_Meta",
     "country": "TW",
     "impressions": 1638,
@@ -342,7 +342,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120240099366080775",
+    "campaign_id": "act_2997319760514396_th",
     "campaign_name": "Supy_Facebook_Thailand_Meta",
     "country": "TH",
     "impressions": 4604,
@@ -353,7 +353,7 @@
   },
   {
     "date": "2026-04-02",
-    "campaign_id": "120244567890123775",
+    "campaign_id": "act_2997319760514396_uk",
     "campaign_name": "Supy_Facebook_UK_Meta",
     "country": "GB",
     "impressions": 3928,
@@ -364,7 +364,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120239106390650775",
+    "campaign_id": "act_2997319760514396_aus_lal",
     "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
     "country": "AU",
     "impressions": 944,
@@ -375,7 +375,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120239106390650775",
+    "campaign_id": "act_2997319760514396_aus_lal",
     "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
     "country": "NZ",
     "impressions": 3450,
@@ -386,7 +386,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120208097408850775",
+    "campaign_id": "act_2997319760514396_gcc_lal",
     "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
     "country": "MA",
     "impressions": 12422,
@@ -397,7 +397,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120208097408850775",
+    "campaign_id": "act_2997319760514396_gcc_lal",
     "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
     "country": "SA",
     "impressions": 3738,
@@ -408,7 +408,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120246789012345775",
+    "campaign_id": "act_2997319760514396_hk_my_lal",
     "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
     "country": "HK",
     "impressions": 1517,
@@ -419,7 +419,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120245678901234775",
+    "campaign_id": "act_2997319760514396_ie",
     "campaign_name": "Supy_Facebook_Ireland_Leadgen",
     "country": "IE",
     "impressions": 1694,
@@ -430,7 +430,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120250123456789775",
+    "campaign_id": "act_2997319760514396_it",
     "campaign_name": "Supy_Facebook_Italy_Meta",
     "country": "IT",
     "impressions": 2493,
@@ -441,7 +441,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120247890123456775",
+    "campaign_id": "act_2997319760514396_my",
     "campaign_name": "Supy_Facebook_Malaysia_Meta",
     "country": "MY",
     "impressions": 7589,
@@ -452,7 +452,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120243456789012775",
+    "campaign_id": "act_2997319760514396_mu",
     "campaign_name": "Supy_Facebook_Mauritius_Meta",
     "country": "MU",
     "impressions": 6320,
@@ -463,7 +463,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120237959815840775",
+    "campaign_id": "act_2997319760514396_ph",
     "campaign_name": "Supy_Facebook_Philippines_Meta",
     "country": "PH",
     "impressions": 30980,
@@ -474,7 +474,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120248901234567775",
+    "campaign_id": "act_2997319760514396_sg",
     "campaign_name": "Supy_Facebook_Singapore_Meta",
     "country": "SG",
     "impressions": 2467,
@@ -485,7 +485,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120241234567890775",
+    "campaign_id": "act_2997319760514396_za",
     "campaign_name": "Supy_Facebook_South_Africa_Meta",
     "country": "ZA",
     "impressions": 3514,
@@ -496,7 +496,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120242345678901775",
+    "campaign_id": "act_2997319760514396_lk",
     "campaign_name": "Supy_Facebook_Sri_Lanka_Meta",
     "country": "LK",
     "impressions": 14083,
@@ -507,7 +507,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120249012345678775",
+    "campaign_id": "act_2997319760514396_tw",
     "campaign_name": "Supy_Facebook_Taiwan_Meta",
     "country": "TW",
     "impressions": 1978,
@@ -518,7 +518,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120240099366080775",
+    "campaign_id": "act_2997319760514396_th",
     "campaign_name": "Supy_Facebook_Thailand_Meta",
     "country": "TH",
     "impressions": 5789,
@@ -529,7 +529,7 @@
   },
   {
     "date": "2026-04-03",
-    "campaign_id": "120244567890123775",
+    "campaign_id": "act_2997319760514396_uk",
     "campaign_name": "Supy_Facebook_UK_Meta",
     "country": "GB",
     "impressions": 3039,
@@ -537,6 +537,369 @@
     "reach": 2241,
     "leads": 0,
     "spend": 342.43
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_aus_lal",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "country": "AU",
+    "impressions": 434,
+    "clicks": 4,
+    "reach": 359,
+    "leads": 0,
+    "spend": 256.42
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_aus_lal",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "country": "NZ",
+    "impressions": 1843,
+    "clicks": 22,
+    "reach": 1168,
+    "leads": 0,
+    "spend": 158.81
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_gcc_lal",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "country": "MA",
+    "impressions": 8720,
+    "clicks": 83,
+    "reach": 6200,
+    "leads": 7,
+    "spend": 59.49
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_gcc_lal",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "country": "SA",
+    "impressions": 3173,
+    "clicks": 20,
+    "reach": 2295,
+    "leads": 0,
+    "spend": 60.05
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_hk_my_lal",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "country": "HK",
+    "impressions": 1100,
+    "clicks": 12,
+    "reach": 710,
+    "leads": 0,
+    "spend": 72.1
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_ie",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "country": "IE",
+    "impressions": 795,
+    "clicks": 8,
+    "reach": 516,
+    "leads": 0,
+    "spend": 41.31
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_it",
+    "campaign_name": "Supy_Facebook_Italy_Meta",
+    "country": "IT",
+    "impressions": 1952,
+    "clicks": 6,
+    "reach": 1282,
+    "leads": 1,
+    "spend": 111.68
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_my",
+    "campaign_name": "Supy_Facebook_Malaysia_Meta",
+    "country": "MY",
+    "impressions": 4940,
+    "clicks": 46,
+    "reach": 3063,
+    "leads": 1,
+    "spend": 215.38
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_mu",
+    "campaign_name": "Supy_Facebook_Mauritius_Meta",
+    "country": "MU",
+    "impressions": 3429,
+    "clicks": 34,
+    "reach": 1837,
+    "leads": 0,
+    "spend": 37.79
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_ng",
+    "campaign_name": "Supy_Facebook_Nigeria_Meta",
+    "country": "NG",
+    "impressions": 0,
+    "clicks": 0,
+    "reach": 0,
+    "leads": 0,
+    "spend": 0.0
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_ph",
+    "campaign_name": "Supy_Facebook_Philippines_Meta",
+    "country": "PH",
+    "impressions": 26647,
+    "clicks": 350,
+    "reach": 17760,
+    "leads": 8,
+    "spend": 194.95
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_sg",
+    "campaign_name": "Supy_Facebook_Singapore_Meta",
+    "country": "SG",
+    "impressions": 2702,
+    "clicks": 16,
+    "reach": 1994,
+    "leads": 0,
+    "spend": 171.28
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_za",
+    "campaign_name": "Supy_Facebook_South_Africa_Meta",
+    "country": "ZA",
+    "impressions": 3248,
+    "clicks": 59,
+    "reach": 2447,
+    "leads": 0,
+    "spend": 69.29
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_lk",
+    "campaign_name": "Supy_Facebook_Sri_Lanka_Meta",
+    "country": "LK",
+    "impressions": 9470,
+    "clicks": 62,
+    "reach": 4890,
+    "leads": 1,
+    "spend": 76.59
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_tw",
+    "campaign_name": "Supy_Facebook_Taiwan_Meta",
+    "country": "TW",
+    "impressions": 1443,
+    "clicks": 18,
+    "reach": 870,
+    "leads": 0,
+    "spend": 31.16
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_th",
+    "campaign_name": "Supy_Facebook_Thailand_Meta",
+    "country": "TH",
+    "impressions": 4535,
+    "clicks": 63,
+    "reach": 3114,
+    "leads": 1,
+    "spend": 137.68
+  },
+  {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_uk",
+    "campaign_name": "Supy_Facebook_UK_Meta",
+    "country": "GB",
+    "impressions": 2913,
+    "clicks": 24,
+    "reach": 2040,
+    "leads": 1,
+    "spend": 253.8
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_aus_lal",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "country": "AU",
+    "impressions": 931,
+    "clicks": 15,
+    "reach": 678,
+    "leads": 1,
+    "spend": 428.41
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_aus_lal",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "country": "NZ",
+    "impressions": 2302,
+    "clicks": 23,
+    "reach": 1362,
+    "leads": 0,
+    "spend": 221.45
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_gcc_lal",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "country": "MA",
+    "impressions": 9213,
+    "clicks": 103,
+    "reach": 6269,
+    "leads": 2,
+    "spend": 77.23
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_gcc_lal",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "country": "SA",
+    "impressions": 3508,
+    "clicks": 28,
+    "reach": 2452,
+    "leads": 0,
+    "spend": 74.0
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_hk_my_lal",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "country": "HK",
+    "impressions": 1554,
+    "clicks": 11,
+    "reach": 934,
+    "leads": 0,
+    "spend": 95.83
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_ie",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "country": "IE",
+    "impressions": 1198,
+    "clicks": 8,
+    "reach": 828,
+    "leads": 0,
+    "spend": 69.82
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_it",
+    "campaign_name": "Supy_Facebook_Italy_Meta",
+    "country": "IT",
+    "impressions": 2217,
+    "clicks": 17,
+    "reach": 1388,
+    "leads": 0,
+    "spend": 131.96
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_my",
+    "campaign_name": "Supy_Facebook_Malaysia_Meta",
+    "country": "MY",
+    "impressions": 5900,
+    "clicks": 55,
+    "reach": 3382,
+    "leads": 1,
+    "spend": 269.64
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_mu",
+    "campaign_name": "Supy_Facebook_Mauritius_Meta",
+    "country": "MU",
+    "impressions": 5721,
+    "clicks": 32,
+    "reach": 2611,
+    "leads": 2,
+    "spend": 62.35
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_ph",
+    "campaign_name": "Supy_Facebook_Philippines_Meta",
+    "country": "PH",
+    "impressions": 24979,
+    "clicks": 327,
+    "reach": 16690,
+    "leads": 7,
+    "spend": 209.49
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_sg",
+    "campaign_name": "Supy_Facebook_Singapore_Meta",
+    "country": "SG",
+    "impressions": 3202,
+    "clicks": 26,
+    "reach": 2348,
+    "leads": 0,
+    "spend": 186.2
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_za",
+    "campaign_name": "Supy_Facebook_South_Africa_Meta",
+    "country": "ZA",
+    "impressions": 3519,
+    "clicks": 54,
+    "reach": 2413,
+    "leads": 2,
+    "spend": 85.03
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_lk",
+    "campaign_name": "Supy_Facebook_Sri_Lanka_Meta",
+    "country": "LK",
+    "impressions": 9779,
+    "clicks": 88,
+    "reach": 4933,
+    "leads": 0,
+    "spend": 82.56
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_tw",
+    "campaign_name": "Supy_Facebook_Taiwan_Meta",
+    "country": "TW",
+    "impressions": 1858,
+    "clicks": 32,
+    "reach": 1141,
+    "leads": 0,
+    "spend": 41.88
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_th",
+    "campaign_name": "Supy_Facebook_Thailand_Meta",
+    "country": "TH",
+    "impressions": 5753,
+    "clicks": 74,
+    "reach": 3785,
+    "leads": 4,
+    "spend": 173.43
+  },
+  {
+    "date": "2026-04-05",
+    "campaign_id": "act_2997319760514396_uk",
+    "campaign_name": "Supy_Facebook_UK_Meta",
+    "country": "GB",
+    "impressions": 3393,
+    "clicks": 27,
+    "reach": 2344,
+    "leads": 1,
+    "spend": 342.96
   },
   {
     "date": "2026-04-06",
