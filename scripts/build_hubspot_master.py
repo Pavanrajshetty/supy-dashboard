@@ -3,9 +3,9 @@ import json
 from datetime import datetime
 
 BASE_DIR = "data"
-PROCESSED_DIR = os.path.join(BASE_DIR, "processed")
+PROCESSED_DIR = os.path.join(BASE_DIR, "processed", "hubspot")
 
-MASTER_FILE = os.path.join(PROCESSED_DIR, "master.json")
+MASTER_FILE = os.path.join(PROCESSED_DIR, "hubspot_master.json")
 STATE_FILE = os.path.join(PROCESSED_DIR, "build_state.json")
 REPORT_FILE = os.path.join(PROCESSED_DIR, "build_report.json")
 
@@ -18,10 +18,6 @@ FOLDERS = {
 
 FULL_REBUILD = os.getenv("FULL_REBUILD", "false").lower() == "true"
 
-
-# ------------------------
-# Helpers
-# ------------------------
 
 def load_json_file(path):
     try:
@@ -47,10 +43,6 @@ def now():
     return datetime.utcnow().isoformat()
 
 
-# ------------------------
-# Load state
-# ------------------------
-
 def load_state():
     if FULL_REBUILD:
         return {k: [] for k in FOLDERS}
@@ -58,10 +50,6 @@ def load_state():
         return load_json_file(STATE_FILE)
     return {k: [] for k in FOLDERS}
 
-
-# ------------------------
-# Load files
-# ------------------------
 
 def get_new_files(folder, processed_files):
     all_files = sorted(os.listdir(folder)) if os.path.exists(folder) else []
@@ -78,10 +66,6 @@ def load_folder_data(folder, files):
     return data
 
 
-# ------------------------
-# Meta lookup
-# ------------------------
-
 def build_meta_lookup(meta_rows):
     lookup = {}
 
@@ -92,14 +76,10 @@ def build_meta_lookup(meta_rows):
         if not norm:
             continue
 
-        lookup[norm] = row  # latest wins
+        lookup[norm] = row
 
     return lookup
 
-
-# ------------------------
-# Master row template
-# ------------------------
 
 def empty_row():
     return {
@@ -145,22 +125,16 @@ def empty_row():
     }
 
 
-# ------------------------
-# Main
-# ------------------------
-
 def main():
     state = load_state()
     report = {"time": now(), "stats": {}}
 
-    # load master
     master = []
     if not FULL_REBUILD and os.path.exists(MASTER_FILE):
         master = load_json_file(MASTER_FILE)
 
     master_dict = {row["lead_id"]: row for row in master if row.get("lead_id")}
 
-    # -------- LOAD FILES --------
     new_files = {}
     data = {}
 
@@ -171,10 +145,8 @@ def main():
 
     report["stats"]["files_processed"] = new_files
 
-    # -------- META LOOKUP --------
     meta_lookup = build_meta_lookup(data["meta_leads"])
 
-    # -------- PROCESS HUBSPOT LEADS --------
     for row in data["hubspot_leads"]:
         lead_id = row.get("lead_id")
         if not lead_id:
@@ -185,7 +157,6 @@ def main():
 
         m = master_dict[lead_id]
 
-        # fill base fields only if empty
         for field in [
             "lead_id","lead_link","createdate","firstname","lastname","email",
             "phone","company","country","number_of_locations",
@@ -196,7 +167,6 @@ def main():
             if not m.get(field):
                 m[field] = row.get(field)
 
-        # meta join
         email_norm = normalize_email(m.get("email"))
         meta = meta_lookup.get(email_norm)
 
@@ -208,7 +178,6 @@ def main():
 
         m["last_updated"] = now()
 
-    # -------- PROCESS SQL --------
     for row in data["sql"]:
         lead_id = row.get("lead_id")
         if not lead_id:
@@ -231,7 +200,6 @@ def main():
 
         m["last_updated"] = now()
 
-    # -------- PROCESS CLOSED WON --------
     for row in data["closed_won"]:
         lead_id = row.get("lead_id")
         if not lead_id:
@@ -254,16 +222,13 @@ def main():
 
         m["last_updated"] = now()
 
-    # -------- SAVE --------
     final_master = list(master_dict.values())
     save_json(MASTER_FILE, final_master)
 
-    # update state
     for k in state:
         state[k].extend(new_files[k])
     save_json(STATE_FILE, state)
 
-    # report
     report["stats"]["total_rows"] = len(final_master)
     save_json(REPORT_FILE, report)
 
