@@ -1,29 +1,33 @@
-[
-  {
-    "lead_id": "213643749692",
-    "lead_link": "https://app.hubspot.com/contacts/9423176/record/0-1/213643749692",
-    "createdate": "2026-04-04T14:58:21Z",
-    "hs_v2_date_entered_marketingqualifiedlead": "2026-04-05T10:00:00Z",
-    "hs_v2_date_entered_salesqualifiedlead": null,
-    "hs_v2_date_entered_opportunity": null,
-    "firstname": "Geremia",
-    "lastname": "Cozza",
-    "email": "geremia.cozza@hotmail.it",
-    "phone": null,
-    "jobtitle": null,
-    "company": "BonelliBurgers",
-    "country": "Italy",
-    "number_of_locations": 5,
-    "lifecyclestage": "marketingqualifiedlead",
-    "hs_lead_status": "NEW",
-    "hs_analytics_source": "PAID_SOCIAL",
-    "hs_analytics_source_data_1": "Facebook",
-    "hs_analytics_source_data_2": "META Italy 03/2026",
-    "new_lead_source": "Marketing",
-    "utm_source": null,
-    "utm_medium": null,
-    "utm_campaign": null,
-    "utm_content": null,
-    "last_updated": "2026-04-06T12:00:00Z"
-  }
-]
+{
+  "lead_id": "string",
+  "lead_link": "string",
+
+  "createdate": "ISO8601 string",
+  "hs_v2_date_entered_marketingqualifiedlead": "ISO8601 string | null",
+  "hs_v2_date_entered_salesqualifiedlead": "ISO8601 string | null",
+  "hs_v2_date_entered_opportunity": "ISO8601 string | null",
+
+  "firstname": "string | null",
+  "lastname": "string | null",
+  "email": "string",
+  "phone": "string | null",
+  "jobtitle": "string | null",
+  "company": "string | null",
+  "country": "string | null",
+  "number_of_locations": "integer | null",
+
+  "lifecyclestage": "string | null",
+  "hs_lead_status": "string | null",
+
+  "hs_analytics_source": "string | null",
+  "hs_analytics_source_data_1": "string | null",
+  "hs_analytics_source_data_2": "string | null",
+  "new_lead_source": "string | null",
+
+  "utm_source": "string | null",
+  "utm_medium": "string | null",
+  "utm_campaign": "string | null",
+  "utm_content": "string | null",
+
+  "last_updated": "ISO8601 string"
+}
