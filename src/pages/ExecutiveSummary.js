@@ -1,30 +1,153 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  KPI_MOCK, FUNNEL_KEYS, KPI_CARDS, TIME_LABELS, SQL_PREVIEW,
-  fmt, fmtUSD,
+  FUNNEL_KEYS,
+  KPI_CARDS,
+  TIME_LABELS,
+  SQL_PREVIEW,
+  fmt,
+  fmtUSD,
 } from "../data/executiveSummaryData";
+
+const RANGE_DAYS = {
+  "1d": 1,
+  "7d": 7,
+  "30d": 30,
+  "60d": 60,
+  "90d": 90,
+};
+
+function safeNum(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function getDateValue(row) {
+  const raw =
+    row?.date ||
+    row?.created_date ||
+    row?.createdate ||
+    row?.reporting_date ||
+    row?.report_date;
+
+  if (!raw) return null;
+
+  const d = new Date(raw);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function getFilteredRows(rows, timeRange) {
+  const days = RANGE_DAYS[timeRange] || 30;
+  const now = new Date();
+  const cutoff = new Date();
+  cutoff.setHours(0, 0, 0, 0);
+  cutoff.setDate(now.getDate() - (days - 1));
+
+  return rows.filter((row) => {
+    const d = getDateValue(row);
+    if (!d) return false;
+    return d >= cutoff && d <= now;
+  });
+}
+
+function buildKpi(rows) {
+  const spend = rows.reduce((sum, r) => sum + safeNum(r.spend), 0);
+  const impressions = rows.reduce((sum, r) => sum + safeNum(r.impressions), 0);
+  const reach = rows.reduce((sum, r) => sum + safeNum(r.reach), 0);
+  const clicks = rows.reduce((sum, r) => sum + safeNum(r.clicks), 0);
+  const leads = rows.reduce((sum, r) => sum + safeNum(r.leads), 0);
+
+  const cpm = impressions > 0 ? (spend / impressions) * 1000 : 0;
+  const cpc = clicks > 0 ? spend / clicks : 0;
+  const cpl = leads > 0 ? spend / leads : 0;
+
+  // keeping these 0 for now since this file does not contain them
+  const sql = 0;
+  const costPerSql = 0;
+  const pipeline = 0;
+  const closure = 0;
+
+  return {
+    spend,
+    impressions,
+    cpm,
+    reach,
+    clicks,
+    cpc,
+    leads,
+    cpl,
+    sql,
+    costPerSql,
+    pipeline,
+    closure,
+  };
+}
 
 export default function ExecutiveSummary() {
   const [timeRange, setTimeRange] = useState("30d");
-  const kpi = KPI_MOCK[timeRange];
-  const maxFunnel = kpi.spend;
+  const [metaRows, setMetaRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetch("/data/processed/meta/adset_master.json")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Failed to load file: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (!isMounted) return;
+        setMetaRows(Array.isArray(data) ? data : []);
+      })
+      .catch((err) => {
+        console.error("Error loading adset_master.json:", err);
+        if (!isMounted) return;
+        setMetaRows([]);
+      })
+      .finally(() => {
+        if (!isMounted) return;
+        setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const filteredRows = useMemo(() => {
+    return getFilteredRows(metaRows, timeRange);
+  }, [metaRows, timeRange]);
+
+  const kpi = useMemo(() => {
+    return buildKpi(filteredRows);
+  }, [filteredRows]);
+
+  const maxFunnel = kpi.spend || 1;
 
   return (
     <div className="page">
       <div className="filter-bar">
-        {Object.keys(KPI_MOCK).map(r => (
-          <button key={r} className={`filter-pill ${timeRange === r ? "active" : ""}`} onClick={() => setTimeRange(r)}>
+        {Object.keys(RANGE_DAYS).map((r) => (
+          <button
+            key={r}
+            className={`filter-pill ${timeRange === r ? "active" : ""}`}
+            onClick={() => setTimeRange(r)}
+          >
             {TIME_LABELS[r]}
           </button>
         ))}
       </div>
 
       <div className="kpi-grid">
-        {KPI_CARDS.map(c => (
+        {KPI_CARDS.map((c) => (
           <div className="kpi-card" key={c.key}>
             <span className="kpi-icon">{c.icon}</span>
             <div className="kpi-label">{c.label}</div>
-            <div className="kpi-value">{fmt(kpi[c.key], c.fmt)}</div>
+            <div className="kpi-value">
+              {loading ? "..." : fmt(kpi[c.key] || 0, c.fmt)}
+            </div>
           </div>
         ))}
       </div>
@@ -36,6 +159,7 @@ export default function ExecutiveSummary() {
             {FUNNEL_KEYS.map((step, i) => {
               const val = kpi[step.key] || 0;
               const pct = Math.min(100, Math.round((val / maxFunnel) * 100));
+
               return (
                 <div className="funnel-step" key={step.key}>
                   <div className="funnel-left">
@@ -44,7 +168,13 @@ export default function ExecutiveSummary() {
                   </div>
                   <div className="funnel-bar-wrap">
                     <div className="funnel-bar-bg">
-                      <div className="funnel-bar-fill" style={{ width:`${i===0?100:pct}%`, opacity:1-i*0.08 }} />
+                      <div
+                        className="funnel-bar-fill"
+                        style={{
+                          width: `${i === 0 ? 100 : pct}%`,
+                          opacity: 1 - i * 0.08,
+                        }}
+                      />
                     </div>
                   </div>
                   <div className="funnel-val">{fmt(val, step.fmt)}</div>
@@ -59,16 +189,26 @@ export default function ExecutiveSummary() {
           <div className="table-wrap">
             <table className="data-table">
               <thead>
-                <tr><th>Company</th><th>Deal Value</th><th>Size</th><th>Geo</th><th>Link</th></tr>
+                <tr>
+                  <th>Company</th>
+                  <th>Deal Value</th>
+                  <th>Size</th>
+                  <th>Geo</th>
+                  <th>Link</th>
+                </tr>
               </thead>
               <tbody>
-                {SQL_PREVIEW.map(row => (
+                {SQL_PREVIEW.map((row) => (
                   <tr key={row.id}>
                     <td>{row.company}</td>
                     <td className="num-cell">{fmtUSD(row.dealValue)}</td>
                     <td><span className="size-badge">Enterprise</span></td>
                     <td><span className="geo-tag">{row.country}</span></td>
-                    <td><a className="hs-link" href={row.hsUrl} target="_blank" rel="noreferrer">↗</a></td>
+                    <td>
+                      <a className="hs-link" href={row.hsUrl} target="_blank" rel="noreferrer">
+                        ↗
+                      </a>
+                    </td>
                   </tr>
                 ))}
               </tbody>
