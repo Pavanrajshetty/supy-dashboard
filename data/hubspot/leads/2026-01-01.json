@@ -1,1 +1,25 @@
-[]
+[
+  {
+    "lead_id": "88375922474",
+    "lead_link": "https://app.hubspot.com/contacts/9423176/contact/88375922474",
+    "createdate": "2025-01-01T12:41:17Z",
+    "firstname": "Raza",
+    "lastname": null,
+    "phone": "+971525844110",
+    "email": "moc@myworldae.com",
+    "company": "MY World Amusement",
+    "country": "united_arab_emirates",
+    "number_of_locations": "1",
+    "lifecyclestage": "opportunity",
+    "hs_lead_status": "Qualified",
+    "hs_analytics_source": "PAID_SOCIAL",
+    "hs_analytics_source_data_1": "Facebook",
+    "hs_analytics_source_data_2": "supy_facebook_gcc_lal_leadgen",
+    "utm_source": null,
+    "utm_medium": null,
+    "utm_campaign": "BDR",
+    "utm_content": null,
+    "hs_v2_date_entered_salesqualifiedlead": null,
+    "new_lead_source": "Marketing"
+  }
+]
