@@ -1,6 +1,0 @@
-[
-  {"id": 1, "created_date": "2026-01-01", "name": "A", "campaign_name": "Camp1", "lifecycle_stage": "MQL"},
-  {"id": 2, "created_date": "2026-01-01", "name": "B", "campaign_name": "Camp1", "lifecycle_stage": "MQL"},
-  {"id": 3, "created_date": "2026-01-01", "name": "C", "campaign_name": "Camp2", "lifecycle_stage": "MQL"},
-  {"id": 4, "created_date": "2026-01-01", "name": "D", "campaign_name": "Camp2", "lifecycle_stage": "MQL"}
-]
