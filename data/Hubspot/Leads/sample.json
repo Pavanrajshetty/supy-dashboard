@@ -3,15 +3,12 @@
   "lead_link": "string",
 
   "createdate": "ISO8601 string",
-  "hs_v2_date_entered_marketingqualifiedlead": "ISO8601 string | null",
-  "hs_v2_date_entered_salesqualifiedlead": "ISO8601 string | null",
-  "hs_v2_date_entered_opportunity": "ISO8601 string | null",
+ 
 
   "firstname": "string | null",
   "lastname": "string | null",
   "email": "string",
   "phone": "string | null",
-  "jobtitle": "string | null",
   "company": "string | null",
   "country": "string | null",
   "number_of_locations": "integer | null",
