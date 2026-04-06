@@ -1,0 +1,26 @@
+{
+  "lead_id": "string",
+  "lead_link": "string",
+
+  "deal_id": "string",
+  "deal_link": "string",
+  "deal_name": "string | null",
+  "deal_createdate": "ISO8601 string | null",
+  "deal_stage": "string",
+  "deal_amount": "number | null",
+  "closedate": "ISO8601 string | null",
+  "number_of_branches": "integer | null",
+
+  "firstname": "string | null",
+  "lastname": "string | null",
+  "email": "string",
+  "company": "string | null",
+  "country": "string | null",
+
+  "hs_analytics_source": "string | null",
+  "hs_analytics_source_data_1": "string | null",
+  "hs_analytics_source_data_2": "string | null",
+  "new_lead_source": "string | null",
+
+  "last_updated": "ISO8601 string"
+}
