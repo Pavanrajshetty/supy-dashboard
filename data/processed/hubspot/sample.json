@@ -1,0 +1,44 @@
+{
+  "lead_id": "string",
+  "lead_link": "string",
+
+  "createdate": "ISO8601 string",
+
+  "firstname": "string | null",
+  "lastname": "string | null",
+  "email": "string",
+  "phone": "string | null",
+  "company": "string | null",
+  "country": "string | null",
+  "number_of_locations": "integer | null",
+
+  "lifecyclestage": "string | null",
+  "hs_lead_status": "string | null",
+
+  "hs_analytics_source": "string | null",
+  "hs_analytics_source_data_1": "string | null",
+  "hs_analytics_source_data_2": "string | null",
+  "new_lead_source": "string | null",
+
+  "campaign_name": "string | null",
+  "adset_name": "string | null",
+  "ad_name": "string | null",
+
+  "sql": "boolean",
+  "sql_date": "ISO8601 string | null",
+
+  "deal_id": "string | null",
+  "deal_link": "string | null",
+  "deal_name": "string | null",
+  "deal_createdate": "ISO8601 string | null",
+  "deal_stage": "string | null",
+  "deal_amount": "number | null",
+  "deal_currency_code": "string | null",
+  "deal_amount_usd": "number | null",
+  "number_of_branches": "integer | null",
+
+  "closed_won": "boolean",
+  "closedate": "ISO8601 string | null",
+
+  "last_updated": "ISO8601 string"
+}
