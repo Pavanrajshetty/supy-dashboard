@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   FUNNEL_KEYS,
   KPI_CARDS,
@@ -7,6 +7,9 @@ import {
   fmt,
   fmtUSD,
 } from "../data/executiveSummaryData";
+
+// 🔥 IMPORT YOUR REAL DATA
+import adsetData from "../data/processed/meta/adset_master.json";
 
 const RANGE_DAYS = {
   "1d": 1,
@@ -21,30 +24,17 @@ function safeNum(v) {
   return Number.isFinite(n) ? n : 0;
 }
 
-function getDateValue(row) {
-  const raw =
-    row?.date ||
-    row?.created_date ||
-    row?.createdate ||
-    row?.reporting_date ||
-    row?.report_date;
-
-  if (!raw) return null;
-
-  const d = new Date(raw);
-  return Number.isNaN(d.getTime()) ? null : d;
-}
-
 function getFilteredRows(rows, timeRange) {
   const days = RANGE_DAYS[timeRange] || 30;
   const now = new Date();
+
   const cutoff = new Date();
   cutoff.setHours(0, 0, 0, 0);
   cutoff.setDate(now.getDate() - (days - 1));
 
   return rows.filter((row) => {
-    const d = getDateValue(row);
-    if (!d) return false;
+    if (!row.date) return false;
+    const d = new Date(row.date);
     return d >= cutoff && d <= now;
   });
 }
@@ -60,12 +50,6 @@ function buildKpi(rows) {
   const cpc = clicks > 0 ? spend / clicks : 0;
   const cpl = leads > 0 ? spend / leads : 0;
 
-  // keeping these 0 for now since this file does not contain them
-  const sql = 0;
-  const costPerSql = 0;
-  const pipeline = 0;
-  const closure = 0;
-
   return {
     spend,
     impressions,
@@ -75,46 +59,18 @@ function buildKpi(rows) {
     cpc,
     leads,
     cpl,
-    sql,
-    costPerSql,
-    pipeline,
-    closure,
+    sql: 0,
+    costPerSql: 0,
+    pipeline: 0,
+    closure: 0,
   };
 }
 
 export default function ExecutiveSummary() {
   const [timeRange, setTimeRange] = useState("30d");
-  const [metaRows, setMetaRows] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    fetch("/data/processed/meta/adset_master.json")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`Failed to load file: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (!isMounted) return;
-        setMetaRows(Array.isArray(data) ? data : []);
-      })
-      .catch((err) => {
-        console.error("Error loading adset_master.json:", err);
-        if (!isMounted) return;
-        setMetaRows([]);
-      })
-      .finally(() => {
-        if (!isMounted) return;
-        setLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  // ✅ use imported data
+  const metaRows = Array.isArray(adsetData) ? adsetData : [];
 
   const filteredRows = useMemo(() => {
     return getFilteredRows(metaRows, timeRange);
@@ -145,9 +101,7 @@ export default function ExecutiveSummary() {
           <div className="kpi-card" key={c.key}>
             <span className="kpi-icon">{c.icon}</span>
             <div className="kpi-label">{c.label}</div>
-            <div className="kpi-value">
-              {loading ? "..." : fmt(kpi[c.key] || 0, c.fmt)}
-            </div>
+            <div className="kpi-value">{fmt(kpi[c.key] || 0, c.fmt)}</div>
           </div>
         ))}
       </div>
@@ -166,6 +120,7 @@ export default function ExecutiveSummary() {
                     <span className="funnel-icon">{step.icon}</span>
                     <span className="funnel-name">{step.label}</span>
                   </div>
+
                   <div className="funnel-bar-wrap">
                     <div className="funnel-bar-bg">
                       <div
@@ -177,6 +132,7 @@ export default function ExecutiveSummary() {
                       />
                     </div>
                   </div>
+
                   <div className="funnel-val">{fmt(val, step.fmt)}</div>
                 </div>
               );
@@ -226,6 +182,7 @@ export default function ExecutiveSummary() {
             <li>SQL rate improved to 8.4% vs 5.1% prior period</li>
           </ul>
         </div>
+
         <div className="ai-block ai-red">
           <div className="ai-block-label">❌ What Went Wrong</div>
           <ul className="ai-block-list">
@@ -234,6 +191,7 @@ export default function ExecutiveSummary() {
             <li>Retargeting audience overlap inflating impression share</li>
           </ul>
         </div>
+
         <div className="ai-block ai-blue">
           <div className="ai-block-label">⚡ Recommendations</div>
           <ul className="ai-block-list">
