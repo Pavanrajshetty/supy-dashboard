@@ -1,3 +1,6 @@
+Replace the entire contents of `src/pages/ExecutiveSummary.js` with this:
+
+```jsx
 import React, { useMemo, useState } from "react";
 import {
   FUNNEL_KEYS,
@@ -8,8 +11,7 @@ import {
   fmtUSD,
 } from "../data/executiveSummaryData";
 
-// 🔥 IMPORT YOUR REAL DATA
-import adsetData from "../data/processed/meta/adset_master.json";
+import adsetData from "../../data/processed/meta/adset_master.json";
 
 const RANGE_DAYS = {
   "1d": 1,
@@ -69,7 +71,6 @@ function buildKpi(rows) {
 export default function ExecutiveSummary() {
   const [timeRange, setTimeRange] = useState("30d");
 
-  // ✅ use imported data
   const metaRows = Array.isArray(adsetData) ? adsetData : [];
 
   const filteredRows = useMemo(() => {
@@ -204,3 +205,4 @@ export default function ExecutiveSummary() {
     </div>
   );
 }
+```
