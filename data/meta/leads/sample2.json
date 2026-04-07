@@ -1,0 +1,202 @@
+[
+  {
+    "lead_id": "880001",
+    "created_time": "2026-03-01T09:10:00Z",
+    "form_name": "META India Lead Form Mar",
+    "campaign_id": "CAMP_101",
+    "campaign_name": "Supy_Meta_IND_Leadgen",
+    "adset_id": "ADSET_101",
+    "adset_name": "IND_LAL_Admin",
+    "ad_id": "AD_101",
+    "ad_name": "IND_Static_Ad_1",
+    "first_name": "Amit",
+    "last_name": "Verma",
+    "email": "amit.verma@test.com",
+    "phone_number": "+919100000001",
+    "company_name": "Verma Foods",
+    "country": "India",
+    "custom_fields": {
+      "work_email": "amit.verma@test.com"
+    }
+  },
+  {
+    "lead_id": "880002",
+    "created_time": "2026-03-01T10:25:00Z",
+    "form_name": "META India Lead Form Mar",
+    "campaign_id": "CAMP_101",
+    "campaign_name": "Supy_Meta_IND_Leadgen",
+    "adset_id": "ADSET_101",
+    "adset_name": "IND_LAL_Admin",
+    "ad_id": "AD_102",
+    "ad_name": "IND_Video_Ad_1",
+    "first_name": "Sneha",
+    "last_name": "Iyer",
+    "email": "sneha.iyer@test.com",
+    "phone_number": "+919100000002",
+    "company_name": "Iyer Kitchen",
+    "country": "India",
+    "custom_fields": {
+      "work_email": "sneha.iyer@test.com"
+    }
+  },
+  {
+    "lead_id": "880003",
+    "created_time": "2026-03-02T08:40:00Z",
+    "form_name": "META SEA Lead Form Mar",
+    "campaign_id": "CAMP_102",
+    "campaign_name": "Supy_Meta_SG_Leadgen",
+    "adset_id": "ADSET_102",
+    "adset_name": "SG_LAL_Admin",
+    "ad_id": "AD_103",
+    "ad_name": "SG_Static_Ad_1",
+    "first_name": "Jason",
+    "last_name": "Lim",
+    "email": "jason.lim@test.com",
+    "phone_number": "+6580000001",
+    "company_name": "Lim Dining",
+    "country": "Singapore",
+    "custom_fields": {
+      "work_email": "jason.lim@test.com"
+    }
+  },
+  {
+    "lead_id": "880004",
+    "created_time": "2026-03-02T11:15:00Z",
+    "form_name": "META SEA Lead Form Mar",
+    "campaign_id": "CAMP_102",
+    "campaign_name": "Supy_Meta_SG_Leadgen",
+    "adset_id": "ADSET_102",
+    "adset_name": "SG_LAL_Admin",
+    "ad_id": "AD_104",
+    "ad_name": "SG_Video_Ad_1",
+    "first_name": "Chloe",
+    "last_name": "Tan",
+    "email": "chloe.tan@test.com",
+    "phone_number": "+6580000002",
+    "company_name": "Tan Bistro",
+    "country": "Singapore",
+    "custom_fields": {
+      "work_email": "chloe.tan@test.com"
+    }
+  },
+  {
+    "lead_id": "880005",
+    "created_time": "2026-03-03T09:05:00Z",
+    "form_name": "META UK Lead Form Mar",
+    "campaign_id": "CAMP_103",
+    "campaign_name": "Supy_Meta_UK_Leadgen",
+    "adset_id": "ADSET_103",
+    "adset_name": "UK_LAL_Admin",
+    "ad_id": "AD_105",
+    "ad_name": "UK_Static_Ad_1",
+    "first_name": "Harry",
+    "last_name": "Jones",
+    "email": "harry.jones@test.com",
+    "phone_number": "+447700000001",
+    "company_name": "Jones Cafe",
+    "country": "UK",
+    "custom_fields": {
+      "work_email": "harry.jones@test.com"
+    }
+  },
+  {
+    "lead_id": "880006",
+    "created_time": "2026-03-03T12:20:00Z",
+    "form_name": "META UK Lead Form Mar",
+    "campaign_id": "CAMP_103",
+    "campaign_name": "Supy_Meta_UK_Leadgen",
+    "adset_id": "ADSET_103",
+    "adset_name": "UK_LAL_Admin",
+    "ad_id": "AD_106",
+    "ad_name": "UK_Video_Ad_1",
+    "first_name": "Emily",
+    "last_name": "Clark",
+    "email": "emily.clark@test.com",
+    "phone_number": "+447700000002",
+    "company_name": "Clark Dining",
+    "country": "UK",
+    "custom_fields": {
+      "work_email": "emily.clark@test.com"
+    }
+  },
+  {
+    "lead_id": "880007",
+    "created_time": "2026-03-04T08:55:00Z",
+    "form_name": "META MENA Lead Form Mar",
+    "campaign_id": "CAMP_104",
+    "campaign_name": "Supy_Meta_UAE_Leadgen",
+    "adset_id": "ADSET_104",
+    "adset_name": "UAE_LAL_Admin",
+    "ad_id": "AD_107",
+    "ad_name": "UAE_Static_Ad_1",
+    "first_name": "Omar",
+    "last_name": "Saeed",
+    "email": "omar.saeed@test.com",
+    "phone_number": "+971500100001",
+    "company_name": "Saeed Foods",
+    "country": "UAE",
+    "custom_fields": {
+      "work_email": "omar.saeed@test.com"
+    }
+  },
+  {
+    "lead_id": "880008",
+    "created_time": "2026-03-04T11:45:00Z",
+    "form_name": "META MENA Lead Form Mar",
+    "campaign_id": "CAMP_104",
+    "campaign_name": "Supy_Meta_UAE_Leadgen",
+    "adset_id": "ADSET_104",
+    "adset_name": "UAE_LAL_Admin",
+    "ad_id": "AD_108",
+    "ad_name": "UAE_Video_Ad_1",
+    "first_name": "Layla",
+    "last_name": "Khan",
+    "email": "layla.khan@test.com",
+    "phone_number": "+971500100002",
+    "company_name": "Khan Hospitality",
+    "country": "UAE",
+    "custom_fields": {
+      "work_email": "layla.khan@test.com"
+    }
+  },
+  {
+    "lead_id": "880009",
+    "created_time": "2026-03-05T09:30:00Z",
+    "form_name": "META AUS Lead Form Mar",
+    "campaign_id": "CAMP_105",
+    "campaign_name": "Supy_Meta_AUS_Leadgen",
+    "adset_id": "ADSET_105",
+    "adset_name": "AUS_LAL_Admin",
+    "ad_id": "AD_109",
+    "ad_name": "AUS_Static_Ad_1",
+    "first_name": "Jack",
+    "last_name": "Wilson",
+    "email": "jack.wilson@test.com",
+    "phone_number": "+614700000001",
+    "company_name": "Wilson Eats",
+    "country": "Australia",
+    "custom_fields": {
+      "work_email": "jack.wilson@test.com"
+    }
+  },
+  {
+    "lead_id": "880010",
+    "created_time": "2026-03-05T13:10:00Z",
+    "form_name": "META AUS Lead Form Mar",
+    "campaign_id": "CAMP_105",
+    "campaign_name": "Supy_Meta_AUS_Leadgen",
+    "adset_id": "ADSET_105",
+    "adset_name": "AUS_LAL_Admin",
+    "ad_id": "AD_110",
+    "ad_name": "AUS_Video_Ad_1",
+    "first_name": "Sophia",
+    "last_name": "Taylor",
+    "email": "sophia.taylor@test.com",
+    "phone_number": "+614700000002",
+    "company_name": "Taylor Kitchen",
+    "country": "Australia",
+    "custom_fields": {
+      "work_email": "sophia.taylor@test.com"
+    }
+  }
+]
