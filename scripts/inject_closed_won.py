@@ -139,6 +139,7 @@ def upsert_closed_won_row(master_dict, cw_row):
     if lead_id not in master_dict:
         master_dict[lead_id] = empty_row()
         master_dict[lead_id]["lead_id"] = lead_id
+        master_dict[lead_id]["sql"] = True
         created = True
 
     row = master_dict[lead_id]
