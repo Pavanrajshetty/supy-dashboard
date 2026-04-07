@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'data/Hubspot/**'
+      - 'data/Hubspot/Leads/**'
       - 'data/meta/leads/**'
       - 'scripts/build_hubspot_master.py'
       - '.github/workflows/build-leads-master.yml'
@@ -27,9 +27,9 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Run Leads Master Builder
+      - name: Run Leads + Meta Builder
         env:
-          FULL_REBUILD: "false"
+          FULL_REBUILD: "false"   # change to "true" once for clean rebuild
         run: python scripts/build_hubspot_master.py
 
       - name: Commit processed files if changed
@@ -42,6 +42,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "update leads master"
+            git commit -m "update leads master (leads + meta)"
             git push
           fi
