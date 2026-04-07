@@ -1,5 +1,5 @@
 import React from "react";
-import { MTD_DATA, fmtAED, fmtUSD, fmtPct, delta } from "../data/mtdData";
+import { MTD_DATA, fmtAED, fmtUSD, fmtPct, delta } from "../data/MTDData";";
 
 export default function MTDData() {
   const totals = MTD_DATA.reduce((acc, row) => {
