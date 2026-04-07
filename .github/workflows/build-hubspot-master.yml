@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -29,7 +31,7 @@ jobs:
 
       - name: Run Leads + Meta Builder
         env:
-          FULL_REBUILD: "false"   # change to "true" once for clean rebuild
+          FULL_REBUILD: "true"
         run: python scripts/build_hubspot_master.py
 
       - name: Commit processed files if changed
@@ -43,5 +45,6 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "update leads master (leads + meta)"
-            git push
+            git pull --rebase origin main
+            git push origin main
           fi
