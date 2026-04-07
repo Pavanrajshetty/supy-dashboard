@@ -29,6 +29,6 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add data/processed/
+          git add src/data/processed/
           git commit -m "Update master table" || echo "No changes"
           git push
