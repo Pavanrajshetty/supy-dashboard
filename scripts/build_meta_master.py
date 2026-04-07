@@ -150,15 +150,15 @@ def load_rows_from_files(folder, files):
     return rows
 
 
-def set_field(row, field, value):
-    # database-like: if key present in source, store exact value even if None
-    row[field] = value
+def set_exact_value(target_row, field, source_row):
+    if field in source_row:
+        target_row[field] = source_row.get(field)
 
 
 def upsert_lead_row(master_dict, lead_row):
     lead_id = lead_row.get("lead_id")
     if not lead_id:
-        return False, False
+        return False, False, None
 
     lead_id = str(lead_id)
     created = False
@@ -173,10 +173,12 @@ def upsert_lead_row(master_dict, lead_row):
     lead_fields = [
         "lead_id",
         "lead_link",
+
         "createdate",
         "hs_v2_date_entered_marketingqualifiedlead",
         "hs_v2_date_entered_salesqualifiedlead",
         "hs_v2_date_entered_opportunity",
+
         "deal_id",
         "deal_link",
         "deal_name",
@@ -188,6 +190,7 @@ def upsert_lead_row(master_dict, lead_row):
         "hs_v2_date_entered_51997770",
         "deal_currency_code",
         "number_of_branches",
+
         "firstname",
         "lastname",
         "email",
@@ -196,24 +199,27 @@ def upsert_lead_row(master_dict, lead_row):
         "company",
         "country",
         "number_of_locations",
+
         "lifecyclestage",
         "hs_lead_status",
+
         "hs_analytics_source",
         "hs_analytics_source_data_1",
         "hs_analytics_source_data_2",
         "new_lead_source",
+
         "utm_source",
         "utm_medium",
         "utm_campaign",
         "utm_content",
+
         "last_updated"
     ]
 
     for field in lead_fields:
-        if field in lead_row:
-            set_field(row, field, lead_row.get(field))
+        set_exact_value(row, field, lead_row)
 
-    return created, True
+    return created, True, lead_id
 
 
 def build_meta_indexes(meta_rows):
@@ -262,9 +268,10 @@ def apply_meta_to_row(row, by_work_email, by_email, by_firstname_company):
             match_type = "firstname_company"
 
     if not meta:
+        row["meta_match_found"] = False
+        row["meta_match_type"] = None
         return False
 
-    # only enrichment fields from meta
     row["campaign_id"] = meta.get("campaign_id")
     row["campaign_name"] = meta.get("campaign_name")
     row["adset_id"] = meta.get("adset_id")
@@ -282,10 +289,16 @@ def main():
     os.makedirs(PROCESSED_DIR, exist_ok=True)
 
     state = load_state()
+
     report = {
         "time": now(),
         "stats": {
-            "files_processed": {},
+            "files_processed": {
+                "hubspot_leads": [],
+                "meta_leads": [],
+                "sql": [],
+                "closed_won": []
+            },
             "new_rows_created_from_leads": 0,
             "updated_from_leads": 0,
             "meta_matched_rows": 0,
@@ -305,33 +318,27 @@ def main():
             if lead_id:
                 master_dict[str(lead_id)] = row
 
-    # ONLY leads + meta for now
     new_lead_files = get_new_files(FOLDERS["hubspot_leads"], state["hubspot_leads"])
     new_meta_files = get_new_files(FOLDERS["meta_leads"], state["meta_leads"])
 
     report["stats"]["files_processed"]["hubspot_leads"] = new_lead_files
     report["stats"]["files_processed"]["meta_leads"] = new_meta_files
-    report["stats"]["files_processed"]["sql"] = []
-    report["stats"]["files_processed"]["closed_won"] = []
 
     lead_rows = load_rows_from_files(FOLDERS["hubspot_leads"], new_lead_files)
     meta_rows = load_rows_from_files(FOLDERS["meta_leads"], new_meta_files)
 
     touched_lead_ids = set()
 
-    # step 1: upsert new leads into master
     for lead_row in lead_rows:
-        created, updated = upsert_lead_row(master_dict, lead_row)
-        lead_id = lead_row.get("lead_id")
+        created, updated, lead_id = upsert_lead_row(master_dict, lead_row)
         if lead_id:
-            touched_lead_ids.add(str(lead_id))
+            touched_lead_ids.add(lead_id)
 
         if created:
             report["stats"]["new_rows_created_from_leads"] += 1
         elif updated:
             report["stats"]["updated_from_leads"] += 1
 
-    # step 2: meta enrichment on touched rows only
     if meta_rows:
         by_work_email, by_email, by_firstname_company = build_meta_indexes(meta_rows)
 
@@ -339,11 +346,17 @@ def main():
             row = master_dict.get(lead_id)
             if not row:
                 continue
-            matched = apply_meta_to_row(row, by_work_email, by_email, by_firstname_company)
+
+            matched = apply_meta_to_row(
+                row,
+                by_work_email,
+                by_email,
+                by_firstname_company
+            )
+
             if matched:
                 report["stats"]["meta_matched_rows"] += 1
 
-    # sort by createdate then lead_id
     final_master = list(master_dict.values())
     final_master.sort(key=lambda x: (
         x.get("createdate") or "",
@@ -355,14 +368,18 @@ def main():
     save_json(MASTER_FILE, final_master)
     save_json(REPORT_FILE, report)
 
-    # update state only after successful save
     state["hubspot_leads"] = sorted(list(set(state["hubspot_leads"] + new_lead_files)))
     state["meta_leads"] = sorted(list(set(state["meta_leads"] + new_meta_files)))
     state.setdefault("sql", [])
     state.setdefault("closed_won", [])
+
     save_json(STATE_FILE, state)
 
-    print(f"Done. master rows={len(final_master)}, new leads={len(new_lead_files)}, new meta={len(new_meta_files)}")
+    print(
+        f"Done. master rows={len(final_master)}, "
+        f"new lead files={len(new_lead_files)}, "
+        f"new meta files={len(new_meta_files)}"
+    )
 
 
 if __name__ == "__main__":
