@@ -1,6 +1,7 @@
-
 [
   {
+    "date": "ISO8601 string",
+
     "campaign_id": "string",
     "campaign_name": "string",
 
@@ -16,6 +17,7 @@
     "clicks": "number",
     "reach": "number",
     "leads": "number",
+    "spend": "number",
 
     "level": "ad | adset | campaign"
   }
