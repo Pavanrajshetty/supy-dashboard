@@ -1,8 +1,8 @@
+
 import os
 import json
 from datetime import datetime, timezone
 
-BASE_DIR = "data"
 PROCESSED_DIR = os.path.join("src", "data", "processed", "leads_master")
 
 MASTER_FILE = os.path.join(PROCESSED_DIR, "master.json")
@@ -13,7 +13,7 @@ FOLDERS = {
     "hubspot_leads": "data/Hubspot/Leads",
     "meta_leads": "data/meta/leads",
     "sql": "data/Hubspot/SQL",
-    "closed_won": "data/Hubspot/closed won"
+    "closed_won": "data/Hubspot/Closed-won"
 }
 
 FULL_REBUILD = os.getenv("FULL_REBUILD", "false").lower() == "true"
@@ -33,11 +33,17 @@ def save_json(path, data):
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
-def normalize_email(email):
-    if not email or not isinstance(email, str):
+def normalize_text(value):
+    if value is None:
         return None
-    email = email.strip().lower()
-    return email if email else None
+    if not isinstance(value, str):
+        value = str(value)
+    value = " ".join(value.strip().lower().split())
+    return value or None
+
+
+def normalize_email(email):
+    return normalize_text(email)
 
 
 def now():
@@ -71,46 +77,46 @@ def load_folder_data(folder, files):
     return data
 
 
-def build_meta_lookup(meta_rows):
-    lookup = {}
-    for row in meta_rows:
-        email = (
-            row.get("custom_fields", {}).get("work_email")
-            or row.get("email")
-        )
-        norm = normalize_email(email)
-        if not norm:
-            continue
-        lookup[norm] = row
-    return lookup
-
-
 def empty_row():
     return {
         "lead_id": None,
         "lead_link": None,
         "createdate": None,
+
         "firstname": None,
         "lastname": None,
         "email": None,
         "phone": None,
+        "jobtitle": None,
         "company": None,
         "country": None,
         "number_of_locations": None,
+
         "lifecyclestage": None,
         "hs_lead_status": None,
+
         "hs_analytics_source": None,
         "hs_analytics_source_data_1": None,
         "hs_analytics_source_data_2": None,
         "new_lead_source": None,
 
+        "campaign_id": None,
         "campaign_name": None,
+        "adset_id": None,
         "adset_name": None,
+        "ad_id": None,
         "ad_name": None,
+        "form_name": None,
         "meta_match_found": False,
+        "meta_match_type": None,
+
+        "hs_v2_date_entered_salesqualifiedlead": None,
+        "hs_v2_date_entered_opportunity": None,
+        "hs_v2_date_entered_51997770": None,
 
         "sql": False,
         "sql_date": None,
+        "sql_amount_usd": None,
 
         "deal_id": None,
         "deal_link": None,
@@ -123,7 +129,8 @@ def empty_row():
         "number_of_branches": None,
 
         "closed_won": False,
-        "closedate": None,
+        "closed_won_date": None,
+        "closed_won_amount_usd": None,
 
         "last_updated": now()
     }
@@ -144,24 +151,118 @@ def fill_if_blank(target, source, fields):
                 target[field] = value
 
 
-def apply_meta(m, meta_lookup):
-    email_norm = normalize_email(m.get("email"))
-    if not email_norm:
+def set_if_present(target, source, source_field, target_field=None):
+    if target_field is None:
+        target_field = source_field
+    value = source.get(source_field)
+    if value not in (None, ""):
+        target[target_field] = value
+
+
+def extract_meta_name(meta_row):
+    first_name = meta_row.get("first_name")
+    last_name = meta_row.get("last_name")
+    full_name = meta_row.get("name")
+
+    if full_name:
+        return normalize_text(full_name)
+
+    joined = " ".join([x for x in [first_name, last_name] if x])
+    return normalize_text(joined) if joined else None
+
+
+def extract_master_name(master_row):
+    joined = " ".join([x for x in [master_row.get("firstname"), master_row.get("lastname")] if x])
+    return normalize_text(joined) if joined else None
+
+
+def build_meta_lookups(meta_rows):
+    by_lead_id = {}
+    by_email = {}
+    by_name_company = {}
+
+    for row in meta_rows:
+        lead_id = row.get("lead_id")
+        if lead_id:
+            by_lead_id[str(lead_id)] = row
+
+        for email in [
+            row.get("custom_fields", {}).get("work_email"),
+            row.get("email")
+        ]:
+            norm_email = normalize_email(email)
+            if norm_email and norm_email not in by_email:
+                by_email[norm_email] = row
+
+        meta_name = extract_meta_name(row)
+        meta_company = normalize_text(row.get("company_name"))
+        if meta_name and meta_company:
+            by_name_company[(meta_name, meta_company)] = row
+
+    return by_lead_id, by_email, by_name_company
+
+
+def map_meta_contact_fields(master_row, meta_row):
+    if not master_row.get("firstname") and meta_row.get("first_name"):
+        master_row["firstname"] = meta_row.get("first_name")
+    if not master_row.get("lastname") and meta_row.get("last_name"):
+        master_row["lastname"] = meta_row.get("last_name")
+    if not master_row.get("phone") and meta_row.get("phone_number"):
+        master_row["phone"] = meta_row.get("phone_number")
+    if not master_row.get("company") and meta_row.get("company_name"):
+        master_row["company"] = meta_row.get("company_name")
+    if not master_row.get("country") and meta_row.get("country"):
+        master_row["country"] = meta_row.get("country")
+    if not master_row.get("email") and meta_row.get("email"):
+        master_row["email"] = meta_row.get("email")
+    if not master_row.get("createdate") and meta_row.get("created_time"):
+        master_row["createdate"] = meta_row.get("created_time")
+
+
+def apply_meta(master_row, by_lead_id, by_email, by_name_company):
+    meta = None
+    match_type = None
+
+    lead_id = master_row.get("lead_id")
+    if lead_id and str(lead_id) in by_lead_id:
+        meta = by_lead_id[str(lead_id)]
+        match_type = "lead_id"
+
+    if meta is None:
+        email_norm = normalize_email(master_row.get("email"))
+        if email_norm and email_norm in by_email:
+            meta = by_email[email_norm]
+            match_type = "email"
+
+    if meta is None:
+        master_name = extract_master_name(master_row)
+        master_company = normalize_text(master_row.get("company"))
+        if master_name and master_company:
+            key = (master_name, master_company)
+            if key in by_name_company:
+                meta = by_name_company[key]
+                match_type = "name_company"
+
+    if meta is None:
         return
 
-    meta = meta_lookup.get(email_norm)
-    if not meta:
-        return
+    set_if_present(master_row, meta, "campaign_id")
+    set_if_present(master_row, meta, "campaign_name")
+    set_if_present(master_row, meta, "adset_id")
+    set_if_present(master_row, meta, "adset_name")
+    set_if_present(master_row, meta, "ad_id")
+    set_if_present(master_row, meta, "ad_name")
+    set_if_present(master_row, meta, "form_name")
 
-    if not m.get("campaign_name"):
-        m["campaign_name"] = meta.get("campaign_name")
-    if not m.get("adset_name"):
-        m["adset_name"] = meta.get("adset_name")
-    if not m.get("ad_name"):
-        m["ad_name"] = meta.get("ad_name")
+    map_meta_contact_fields(master_row, meta)
 
-    if any([m.get("campaign_name"), m.get("adset_name"), m.get("ad_name")]):
-        m["meta_match_found"] = True
+    if any([
+        master_row.get("campaign_name"),
+        master_row.get("adset_name"),
+        master_row.get("ad_name")
+    ]):
+        master_row["meta_match_found"] = True
+        master_row["meta_match_type"] = match_type
 
 
 def main():
@@ -175,7 +276,8 @@ def main():
             "new_rows_created_from_closed_won": 0,
             "updated_from_leads": 0,
             "updated_from_sql": 0,
-            "updated_from_closed_won": 0
+            "updated_from_closed_won": 0,
+            "meta_matched_rows": 0
         }
     }
 
@@ -188,7 +290,7 @@ def main():
         for row in master:
             lead_id = row.get("lead_id")
             if lead_id:
-                master_dict[lead_id] = row
+                master_dict[str(lead_id)] = row
 
     new_files = {}
     data = {}
@@ -200,7 +302,7 @@ def main():
 
     report["stats"]["files_processed"] = new_files
 
-    meta_lookup = build_meta_lookup(data["meta_leads"])
+    meta_by_lead_id, meta_by_email, meta_by_name_company = build_meta_lookups(data["meta_leads"])
 
     # 1. HubSpot Leads
     for row in data["hubspot_leads"]:
@@ -208,18 +310,20 @@ def main():
         if not lead_id:
             continue
 
+        lead_id = str(lead_id)
         is_new = lead_id not in master_dict
         m = get_or_create_master_row(master_dict, lead_id)
 
         fill_if_blank(m, row, [
-            "lead_id", "lead_link", "createdate", "firstname", "lastname", "email",
-            "phone", "company", "country", "number_of_locations",
+            "lead_id", "lead_link", "createdate",
+            "firstname", "lastname", "email", "phone", "jobtitle",
+            "company", "country", "number_of_locations",
             "lifecyclestage", "hs_lead_status",
             "hs_analytics_source", "hs_analytics_source_data_1",
             "hs_analytics_source_data_2", "new_lead_source"
         ])
 
-        apply_meta(m, meta_lookup)
+        apply_meta(m, meta_by_lead_id, meta_by_email, meta_by_name_company)
         m["last_updated"] = now()
 
         if is_new:
@@ -233,32 +337,33 @@ def main():
         if not lead_id:
             continue
 
+        lead_id = str(lead_id)
         is_new = lead_id not in master_dict
         m = get_or_create_master_row(master_dict, lead_id)
 
-        # hydrate base/contact fields too
         fill_if_blank(m, row, [
-            "lead_id", "lead_link", "createdate", "firstname", "lastname", "email",
-            "phone", "company", "country", "number_of_locations",
+            "lead_id", "lead_link", "createdate",
+            "firstname", "lastname", "email", "phone", "jobtitle",
+            "company", "country", "number_of_locations",
             "lifecyclestage", "hs_lead_status",
             "hs_analytics_source", "hs_analytics_source_data_1",
             "hs_analytics_source_data_2", "new_lead_source"
         ])
 
         m["sql"] = True
-        if row.get("hs_v2_date_entered_salesqualifiedlead"):
-            m["sql_date"] = row.get("hs_v2_date_entered_salesqualifiedlead")
+        set_if_present(m, row, "hs_v2_date_entered_salesqualifiedlead")
+        set_if_present(m, row, "hs_v2_date_entered_opportunity")
+        set_if_present(m, row, "hs_v2_date_entered_salesqualifiedlead", "sql_date")
+        set_if_present(m, row, "deal_amount_usd", "sql_amount_usd")
 
         for field in [
             "deal_id", "deal_link", "deal_name", "deal_createdate",
             "deal_stage", "deal_amount", "deal_currency_code",
             "deal_amount_usd", "number_of_branches"
         ]:
-            value = row.get(field)
-            if value not in (None, ""):
-                m[field] = value
+            set_if_present(m, row, field)
 
-        apply_meta(m, meta_lookup)
+        apply_meta(m, meta_by_lead_id, meta_by_email, meta_by_name_company)
         m["last_updated"] = now()
 
         if is_new:
@@ -272,31 +377,34 @@ def main():
         if not lead_id:
             continue
 
+        lead_id = str(lead_id)
         is_new = lead_id not in master_dict
         m = get_or_create_master_row(master_dict, lead_id)
 
-        # if missing in master, use closed won file as full source
         fill_if_blank(m, row, [
-            "lead_id", "lead_link", "firstname", "lastname", "email",
-            "company", "country",
+            "lead_id", "lead_link", "createdate",
+            "firstname", "lastname", "email", "phone", "jobtitle",
+            "company", "country", "number_of_locations",
+            "lifecyclestage", "hs_lead_status",
             "hs_analytics_source", "hs_analytics_source_data_1",
             "hs_analytics_source_data_2", "new_lead_source"
         ])
 
         m["closed_won"] = True
-        if row.get("closedate"):
-            m["closedate"] = row.get("closedate")
+        set_if_present(m, row, "hs_v2_date_entered_salesqualifiedlead")
+        set_if_present(m, row, "hs_v2_date_entered_opportunity")
+        set_if_present(m, row, "hs_v2_date_entered_51997770")
+        set_if_present(m, row, "hs_v2_date_entered_51997770", "closed_won_date")
+        set_if_present(m, row, "deal_amount_usd", "closed_won_amount_usd")
 
         for field in [
             "deal_id", "deal_link", "deal_name", "deal_createdate",
             "deal_stage", "deal_amount", "deal_currency_code",
             "deal_amount_usd", "number_of_branches"
         ]:
-            value = row.get(field)
-            if value not in (None, ""):
-                m[field] = value
+            set_if_present(m, row, field)
 
-        apply_meta(m, meta_lookup)
+        apply_meta(m, meta_by_lead_id, meta_by_email, meta_by_name_company)
         m["last_updated"] = now()
 
         if is_new:
@@ -312,13 +420,17 @@ def main():
         )
     )
 
+    report["stats"]["meta_matched_rows"] = sum(
+        1 for row in final_master if row.get("meta_match_found")
+    )
+    report["stats"]["total_rows"] = len(final_master)
+
     save_json(MASTER_FILE, final_master)
 
     for k in state:
         state[k].extend(new_files[k])
     save_json(STATE_FILE, state)
 
-    report["stats"]["total_rows"] = len(final_master)
     save_json(REPORT_FILE, report)
 
     print(f"Master build complete: {len(final_master)} rows")
