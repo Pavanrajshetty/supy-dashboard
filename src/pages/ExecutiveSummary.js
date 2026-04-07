@@ -3,12 +3,11 @@ import {
   FUNNEL_KEYS,
   KPI_CARDS,
   TIME_LABELS,
-  SQL_PREVIEW,
   fmt,
-  fmtUSD,
 } from "../data/executiveSummaryData";
 
-import adsetData from "../data/Meta/adset_master.json";
+import metaMasterData from "../data/processed/meta_master/meta_master.json";
+import leadsMasterData from "../data/processed/leads_master/master.json";
 
 // ── Constants ─────────────────────────────────────────────────
 const RANGE_DAYS = {
@@ -25,29 +24,80 @@ function safeNum(v) {
   return Number.isFinite(n) ? n : 0;
 }
 
-function getFilteredRows(rows, timeRange) {
-  const days = RANGE_DAYS[timeRange] ?? 30;
-  const now = new Date();
-  const cutoff = new Date();
-  cutoff.setHours(0, 0, 0, 0);
-  cutoff.setDate(now.getDate() - (days - 1));
-  return rows.filter((row) => {
-    if (!row.date) return false;
-    const d = new Date(row.date);
-    return d >= cutoff && d <= now;
-  });
+function parseDate(value) {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
 }
 
-function buildKpi(rows) {
-  const spend       = rows.reduce((s, r) => s + safeNum(r.spend),       0);
-  const impressions = rows.reduce((s, r) => s + safeNum(r.impressions), 0);
-  const reach       = rows.reduce((s, r) => s + safeNum(r.reach),       0);
-  const clicks      = rows.reduce((s, r) => s + safeNum(r.clicks),      0);
-  const leads       = rows.reduce((s, r) => s + safeNum(r.leads),       0);
+function getDateRange(timeRange) {
+  const now = new Date();
+  const todayStart = new Date(now);
+  todayStart.setHours(0, 0, 0, 0);
+
+  const todayEnd = new Date(now);
+  todayEnd.setHours(23, 59, 59, 999);
+
+  if (timeRange === "1d") {
+    const yesterdayStart = new Date(todayStart);
+    yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+
+    const yesterdayEnd = new Date(yesterdayStart);
+    yesterdayEnd.setHours(23, 59, 59, 999);
+
+    return { start: yesterdayStart, end: yesterdayEnd };
+  }
+
+  const days = RANGE_DAYS[timeRange] ?? 30;
+  const start = new Date(todayStart);
+  start.setDate(start.getDate() - (days - 1));
+
+  return { start, end: todayEnd };
+}
+
+function isWithinRange(dateValue, timeRange) {
+  const d = parseDate(dateValue);
+  if (!d) return false;
+
+  const { start, end } = getDateRange(timeRange);
+  return d >= start && d <= end;
+}
+
+function getFilteredMetaRows(rows, timeRange) {
+  return rows.filter((row) => isWithinRange(row.date, timeRange));
+}
+
+function getFilteredSqlRows(rows, timeRange) {
+  return rows.filter(
+    (row) =>
+      row?.sql === true &&
+      isWithinRange(row?.hs_v2_date_entered_salesqualifiedlead, timeRange)
+  );
+}
+
+function getFilteredClosedWonRows(rows, timeRange) {
+  return rows.filter(
+    (row) =>
+      row?.closed_won === true &&
+      isWithinRange(row?.hs_v2_date_entered_51997770, timeRange)
+  );
+}
+
+function buildKpi(metaRows, sqlRows, closedWonRows) {
+  const spend = metaRows.reduce((s, r) => s + safeNum(r.spend), 0);
+  const impressions = metaRows.reduce((s, r) => s + safeNum(r.impressions), 0);
+  const reach = metaRows.reduce((s, r) => s + safeNum(r.reach), 0);
+  const clicks = metaRows.reduce((s, r) => s + safeNum(r.clicks), 0);
+  const leads = metaRows.reduce((s, r) => s + safeNum(r.leads), 0);
+
+  const sql = sqlRows.length;
+  const pipeline = sqlRows.reduce((s, r) => s + safeNum(r.sql_amount_usd), 0);
+  const closure = closedWonRows.reduce((s, r) => s + safeNum(r.deal_amount_usd), 0);
 
   const cpm = impressions > 0 ? (spend / impressions) * 1000 : 0;
-  const cpc = clicks      > 0 ? spend / clicks              : 0;
-  const cpl = leads       > 0 ? spend / leads               : 0;
+  const cpc = clicks > 0 ? spend / clicks : 0;
+  const cpl = leads > 0 ? spend / leads : 0;
+  const costPerSql = sql > 0 ? spend / sql : 0;
 
   return {
     spend,
@@ -58,32 +108,69 @@ function buildKpi(rows) {
     cpc,
     leads,
     cpl,
-    sql:        0,
-    costPerSql: 0,
-    pipeline:   0,
-    closure:    0,
+    sql,
+    costPerSql,
+    pipeline,
+    closure,
   };
+}
+
+function getTopSqlRows(rows, limit = 15) {
+  return [...rows]
+    .sort((a, b) => safeNum(b.sql_amount_usd) - safeNum(a.sql_amount_usd))
+    .slice(0, limit);
+}
+
+function getDisplayLink(row) {
+  return row?.deal_link || row?.lead_link || "#";
+}
+
+function getDisplaySize(row) {
+  const branches =
+    row?.number_of_branches ??
+    row?.number_of_locations ??
+    null;
+
+  if (!branches && branches !== 0) return "—";
+  return `${branches} ${branches === 1 ? "branch" : "branches"}`;
 }
 
 // ── Component ─────────────────────────────────────────────────
 export default function ExecutiveSummary() {
   const [timeRange, setTimeRange] = useState("30d");
 
-  const metaRows = Array.isArray(adsetData) ? adsetData : [];
+  const metaRows = Array.isArray(metaMasterData) ? metaMasterData : [];
+  const leadRows = Array.isArray(leadsMasterData) ? leadsMasterData : [];
 
-  const filteredRows = useMemo(
-    () => getFilteredRows(metaRows, timeRange),
+  const filteredMetaRows = useMemo(
+    () => getFilteredMetaRows(metaRows, timeRange),
     [metaRows, timeRange]
   );
 
-  const kpi = useMemo(() => buildKpi(filteredRows), [filteredRows]);
+  const filteredSqlRows = useMemo(
+    () => getFilteredSqlRows(leadRows, timeRange),
+    [leadRows, timeRange]
+  );
 
-  // Funnel bar widths are relative to spend (first / largest step)
+  const filteredClosedWonRows = useMemo(
+    () => getFilteredClosedWonRows(leadRows, timeRange),
+    [leadRows, timeRange]
+  );
+
+  const kpi = useMemo(
+    () => buildKpi(filteredMetaRows, filteredSqlRows, filteredClosedWonRows),
+    [filteredMetaRows, filteredSqlRows, filteredClosedWonRows]
+  );
+
+  const topSqlRows = useMemo(
+    () => getTopSqlRows(filteredSqlRows, 15),
+    [filteredSqlRows]
+  );
+
   const maxFunnel = kpi.spend || 1;
 
   return (
     <div className="page">
-
       {/* ── Time-range filter pills ── */}
       <div className="filter-bar">
         {Object.keys(RANGE_DAYS).map((r) => (
@@ -110,30 +197,35 @@ export default function ExecutiveSummary() {
 
       {/* ── Funnel + Top SQL split ── */}
       <div className="exec-split">
-
         <div className="card funnel-card">
           <h3 className="section-title">Conversion Funnel</h3>
           <div className="funnel-list">
             {FUNNEL_KEYS.map((step, i) => {
               const val = kpi[step.key] ?? 0;
-              const pct = Math.min(100, Math.round((val / maxFunnel) * 100));
+              const pct =
+                step.key === "spend"
+                  ? 100
+                  : Math.min(100, Math.round((val / maxFunnel) * 100));
+
               return (
                 <div className="funnel-step" key={step.key}>
                   <div className="funnel-left">
                     <span className="funnel-icon">{step.icon}</span>
                     <span className="funnel-name">{step.label}</span>
                   </div>
+
                   <div className="funnel-bar-wrap">
                     <div className="funnel-bar-bg">
                       <div
                         className="funnel-bar-fill"
                         style={{
-                          width: `${i === 0 ? 100 : pct}%`,
+                          width: `${pct}%`,
                           opacity: 1 - i * 0.08,
                         }}
                       />
                     </div>
                   </div>
+
                   <div className="funnel-val">{fmt(val, step.fmt)}</div>
                 </div>
               );
@@ -155,29 +247,40 @@ export default function ExecutiveSummary() {
                 </tr>
               </thead>
               <tbody>
-                {SQL_PREVIEW.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.company}</td>
-                    <td className="num-cell">{fmtUSD(row.dealValue)}</td>
-                    <td><span className="size-badge">Enterprise</span></td>
-                    <td><span className="geo-tag">{row.country}</span></td>
-                    <td>
-                      <a
-                        className="hs-link"
-                        href={row.hsUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        ↗
-                      </a>
+                {topSqlRows.length > 0 ? (
+                  topSqlRows.map((row, idx) => (
+                    <tr key={row.lead_id || row.deal_id || idx}>
+                      <td>{row.company || "—"}</td>
+                      <td className="num-cell">{fmt(safeNum(row.sql_amount_usd), "usd")}</td>
+                      <td>
+                        <span className="size-badge">{getDisplaySize(row)}</span>
+                      </td>
+                      <td>
+                        <span className="geo-tag">{row.country || "—"}</span>
+                      </td>
+                      <td>
+                        <a
+                          className="hs-link"
+                          href={getDisplayLink(row)}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          ↗
+                        </a>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" style={{ textAlign: "center", padding: "16px" }}>
+                      No SQL data for this period
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
         </div>
-
       </div>
 
       {/* ── AI insight blocks ── */}
@@ -209,7 +312,6 @@ export default function ExecutiveSummary() {
           </ul>
         </div>
       </div>
-
     </div>
   );
 }
