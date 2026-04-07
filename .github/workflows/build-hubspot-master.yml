@@ -7,7 +7,7 @@ on:
     paths:
       - 'data/Hubspot/**'
       - 'data/meta/leads/**'
-      - 'scripts/build_leads_master.py'
+      - 'scripts/build_hubspot_master.py'
       - '.github/workflows/build-leads-master.yml'
   workflow_dispatch:
 
@@ -28,7 +28,7 @@ jobs:
           python-version: '3.11'
 
       - name: Run Leads Master Builder
-        run: python scripts/build_leads_master.py
+        run: python scripts/build_hubspot_master.py
 
       - name: Commit processed files if changed
         run: |
