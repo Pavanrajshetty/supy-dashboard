@@ -1,11 +1,11 @@
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 BASE_DIR = "data"
-PROCESSED_DIR = os.path.join(BASE_DIR, "processed", "hubspot")
+PROCESSED_DIR = os.path.join("src", "data", "processed", "leads_master")
 
-MASTER_FILE = os.path.join(PROCESSED_DIR, "hubspot_master.json")
+MASTER_FILE = os.path.join(PROCESSED_DIR, "master.json")
 STATE_FILE = os.path.join(PROCESSED_DIR, "build_state.json")
 REPORT_FILE = os.path.join(PROCESSED_DIR, "build_report.json")
 
@@ -21,33 +21,38 @@ FULL_REBUILD = os.getenv("FULL_REBUILD", "false").lower() == "true"
 
 def load_json_file(path):
     try:
-        with open(path, "r") as f:
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
-    except:
+    except Exception:
         return []
 
 
 def save_json(path, data):
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
-        json.dump(data, f, indent=2)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
 
 def normalize_email(email):
-    if not email:
+    if not email or not isinstance(email, str):
         return None
-    return email.strip().lower()
+    email = email.strip().lower()
+    return email if email else None
 
 
 def now():
-    return datetime.utcnow().isoformat()
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
 def load_state():
     if FULL_REBUILD:
         return {k: [] for k in FOLDERS}
     if os.path.exists(STATE_FILE):
-        return load_json_file(STATE_FILE)
+        state = load_json_file(STATE_FILE)
+        if isinstance(state, dict):
+            for k in FOLDERS:
+                state.setdefault(k, [])
+            return state
     return {k: [] for k in FOLDERS}
 
 
@@ -68,16 +73,15 @@ def load_folder_data(folder, files):
 
 def build_meta_lookup(meta_rows):
     lookup = {}
-
     for row in meta_rows:
-        email = row.get("custom_fields", {}).get("work_email") or row.get("email")
+        email = (
+            row.get("custom_fields", {}).get("work_email")
+            or row.get("email")
+        )
         norm = normalize_email(email)
-
         if not norm:
             continue
-
         lookup[norm] = row
-
     return lookup
 
 
@@ -125,15 +129,66 @@ def empty_row():
     }
 
 
+def get_or_create_master_row(master_dict, lead_id):
+    if lead_id not in master_dict:
+        master_dict[lead_id] = empty_row()
+        master_dict[lead_id]["lead_id"] = lead_id
+    return master_dict[lead_id]
+
+
+def fill_if_blank(target, source, fields):
+    for field in fields:
+        if target.get(field) in (None, "", False):
+            value = source.get(field)
+            if value not in (None, ""):
+                target[field] = value
+
+
+def apply_meta(m, meta_lookup):
+    email_norm = normalize_email(m.get("email"))
+    if not email_norm:
+        return
+
+    meta = meta_lookup.get(email_norm)
+    if not meta:
+        return
+
+    if not m.get("campaign_name"):
+        m["campaign_name"] = meta.get("campaign_name")
+    if not m.get("adset_name"):
+        m["adset_name"] = meta.get("adset_name")
+    if not m.get("ad_name"):
+        m["ad_name"] = meta.get("ad_name")
+
+    if any([m.get("campaign_name"), m.get("adset_name"), m.get("ad_name")]):
+        m["meta_match_found"] = True
+
+
 def main():
     state = load_state()
-    report = {"time": now(), "stats": {}}
+    report = {
+        "time": now(),
+        "stats": {
+            "files_processed": {},
+            "new_rows_created_from_leads": 0,
+            "new_rows_created_from_sql": 0,
+            "new_rows_created_from_closed_won": 0,
+            "updated_from_leads": 0,
+            "updated_from_sql": 0,
+            "updated_from_closed_won": 0
+        }
+    }
 
     master = []
     if not FULL_REBUILD and os.path.exists(MASTER_FILE):
         master = load_json_file(MASTER_FILE)
 
-    master_dict = {row["lead_id"]: row for row in master if row.get("lead_id")}
+    master_dict = {}
+    if isinstance(master, list):
+        for row in master:
+            lead_id = row.get("lead_id")
+            if lead_id:
+                master_dict[lead_id] = row
 
     new_files = {}
     data = {}
@@ -147,82 +202,116 @@ def main():
 
     meta_lookup = build_meta_lookup(data["meta_leads"])
 
+    # 1. HubSpot Leads
     for row in data["hubspot_leads"]:
         lead_id = row.get("lead_id")
         if not lead_id:
             continue
 
-        if lead_id not in master_dict:
-            master_dict[lead_id] = empty_row()
+        is_new = lead_id not in master_dict
+        m = get_or_create_master_row(master_dict, lead_id)
 
-        m = master_dict[lead_id]
+        fill_if_blank(m, row, [
+            "lead_id", "lead_link", "createdate", "firstname", "lastname", "email",
+            "phone", "company", "country", "number_of_locations",
+            "lifecyclestage", "hs_lead_status",
+            "hs_analytics_source", "hs_analytics_source_data_1",
+            "hs_analytics_source_data_2", "new_lead_source"
+        ])
 
-        for field in [
-            "lead_id","lead_link","createdate","firstname","lastname","email",
-            "phone","company","country","number_of_locations",
-            "lifecyclestage","hs_lead_status",
-            "hs_analytics_source","hs_analytics_source_data_1",
-            "hs_analytics_source_data_2","new_lead_source"
-        ]:
-            if not m.get(field):
-                m[field] = row.get(field)
-
-        email_norm = normalize_email(m.get("email"))
-        meta = meta_lookup.get(email_norm)
-
-        if meta and not m["meta_match_found"]:
-            m["campaign_name"] = meta.get("campaign_name")
-            m["adset_name"] = meta.get("adset_name")
-            m["ad_name"] = meta.get("ad_name")
-            m["meta_match_found"] = True
-
+        apply_meta(m, meta_lookup)
         m["last_updated"] = now()
 
+        if is_new:
+            report["stats"]["new_rows_created_from_leads"] += 1
+        else:
+            report["stats"]["updated_from_leads"] += 1
+
+    # 2. SQL
     for row in data["sql"]:
         lead_id = row.get("lead_id")
         if not lead_id:
             continue
 
-        if lead_id not in master_dict:
-            master_dict[lead_id] = empty_row()
+        is_new = lead_id not in master_dict
+        m = get_or_create_master_row(master_dict, lead_id)
 
-        m = master_dict[lead_id]
+        # hydrate base/contact fields too
+        fill_if_blank(m, row, [
+            "lead_id", "lead_link", "createdate", "firstname", "lastname", "email",
+            "phone", "company", "country", "number_of_locations",
+            "lifecyclestage", "hs_lead_status",
+            "hs_analytics_source", "hs_analytics_source_data_1",
+            "hs_analytics_source_data_2", "new_lead_source"
+        ])
 
         m["sql"] = True
-        m["sql_date"] = row.get("hs_v2_date_entered_salesqualifiedlead")
+        if row.get("hs_v2_date_entered_salesqualifiedlead"):
+            m["sql_date"] = row.get("hs_v2_date_entered_salesqualifiedlead")
 
         for field in [
-            "deal_id","deal_link","deal_name","deal_createdate",
-            "deal_stage","deal_amount","deal_currency_code",
-            "deal_amount_usd","number_of_branches"
+            "deal_id", "deal_link", "deal_name", "deal_createdate",
+            "deal_stage", "deal_amount", "deal_currency_code",
+            "deal_amount_usd", "number_of_branches"
         ]:
-            m[field] = row.get(field)
+            value = row.get(field)
+            if value not in (None, ""):
+                m[field] = value
 
+        apply_meta(m, meta_lookup)
         m["last_updated"] = now()
 
+        if is_new:
+            report["stats"]["new_rows_created_from_sql"] += 1
+        else:
+            report["stats"]["updated_from_sql"] += 1
+
+    # 3. Closed Won
     for row in data["closed_won"]:
         lead_id = row.get("lead_id")
         if not lead_id:
             continue
 
-        if lead_id not in master_dict:
-            master_dict[lead_id] = empty_row()
+        is_new = lead_id not in master_dict
+        m = get_or_create_master_row(master_dict, lead_id)
 
-        m = master_dict[lead_id]
+        # if missing in master, use closed won file as full source
+        fill_if_blank(m, row, [
+            "lead_id", "lead_link", "firstname", "lastname", "email",
+            "company", "country",
+            "hs_analytics_source", "hs_analytics_source_data_1",
+            "hs_analytics_source_data_2", "new_lead_source"
+        ])
 
         m["closed_won"] = True
-        m["closedate"] = row.get("closedate")
+        if row.get("closedate"):
+            m["closedate"] = row.get("closedate")
 
         for field in [
-            "deal_id","deal_link","deal_name","deal_createdate",
-            "deal_stage","deal_amount","deal_currency_code",
-            "deal_amount_usd","number_of_branches"
+            "deal_id", "deal_link", "deal_name", "deal_createdate",
+            "deal_stage", "deal_amount", "deal_currency_code",
+            "deal_amount_usd", "number_of_branches"
         ]:
-            m[field] = row.get(field)
+            value = row.get(field)
+            if value not in (None, ""):
+                m[field] = value
 
+        apply_meta(m, meta_lookup)
         m["last_updated"] = now()
 
-    final_master = list(master_dict.values())
+        if is_new:
+            report["stats"]["new_rows_created_from_closed_won"] += 1
+        else:
+            report["stats"]["updated_from_closed_won"] += 1
+
+    final_master = sorted(
+        list(master_dict.values()),
+        key=lambda x: (
+            x.get("createdate") or "",
+            x.get("lead_id") or ""
+        )
+    )
+
     save_json(MASTER_FILE, final_master)
 
     for k in state:
@@ -232,7 +321,7 @@ def main():
     report["stats"]["total_rows"] = len(final_master)
     save_json(REPORT_FILE, report)
 
-    print("Master build complete:", len(final_master))
+    print(f"Master build complete: {len(final_master)} rows")
 
 
 if __name__ == "__main__":
