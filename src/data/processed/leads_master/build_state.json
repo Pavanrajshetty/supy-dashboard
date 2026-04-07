@@ -1,6 +1,7 @@
 {
   "hubspot_leads": [
     "sample.json",
+    "sample2.json",
     "test.json"
   ],
   "meta_leads": [

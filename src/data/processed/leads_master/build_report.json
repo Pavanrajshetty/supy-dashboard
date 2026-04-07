@@ -1,9 +1,10 @@
 {
-  "time": "2026-04-07T16:09:12+00:00",
+  "time": "2026-04-07T16:12:30+00:00",
   "stats": {
     "files_processed": {
       "hubspot_leads": [
         "sample.json",
+        "sample2.json",
         "test.json"
       ],
       "meta_leads": [
@@ -20,13 +21,13 @@
         "test.json"
       ]
     },
-    "new_rows_created_from_leads": 10,
+    "new_rows_created_from_leads": 20,
     "new_rows_created_from_sql": 3,
     "new_rows_created_from_closed_won": 2,
     "updated_from_leads": 0,
     "updated_from_sql": 5,
     "updated_from_closed_won": 3,
-    "meta_matched_rows": 10,
-    "total_rows": 15
+    "meta_matched_rows": 20,
+    "total_rows": 25
   }
 }
