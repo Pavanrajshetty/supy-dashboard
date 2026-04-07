@@ -34,11 +34,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add data/processed/meta/
+          git add src/data/processed/meta_master/
 
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "update meta processed masters"
+            git commit -m "update meta master outputs"
             git push
           fi
