@@ -28,6 +28,8 @@ jobs:
           python-version: '3.11'
 
       - name: Run Leads Master Builder
+        env:
+          FULL_REBUILD: "false"
         run: python scripts/build_hubspot_master.py
 
       - name: Commit processed files if changed
