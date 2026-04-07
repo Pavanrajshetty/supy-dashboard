@@ -1,15 +1,8 @@
 import React, { useMemo, useState } from "react";
-import {
-  FUNNEL_KEYS,
-  KPI_CARDS,
-  TIME_LABELS,
-  fmt,
-} from "../data/executiveSummaryData";
-
 import metaMasterData from "../data/processed/meta_master/meta_master.json";
 import leadsMasterData from "../data/processed/leads_master/master.json";
 
-// ── Constants ─────────────────────────────────────────────────
+// ── UI config inside same file ────────────────────────────────
 const RANGE_DAYS = {
   "1d": 1,
   "7d": 7,
@@ -18,10 +11,51 @@ const RANGE_DAYS = {
   "90d": 90,
 };
 
+const TIME_LABELS = {
+  "1d": "Yesterday",
+  "7d": "Last 7d",
+  "30d": "Last 30d",
+  "60d": "Last 60d",
+  "90d": "Last 90d",
+};
+
+const KPI_CARDS = [
+  { key: "spend", label: "Spend", icon: "💸", fmt: "aed" },
+  { key: "impressions", label: "Impressions", icon: "👁️", fmt: "num" },
+  { key: "cpm", label: "CPM", icon: "📡", fmt: "aed" },
+  { key: "reach", label: "Reach", icon: "📶", fmt: "num" },
+  { key: "clicks", label: "Clicks", icon: "🖱️", fmt: "num" },
+  { key: "cpc", label: "CPC", icon: "🎯", fmt: "aed" },
+  { key: "leads", label: "Leads", icon: "✅", fmt: "num" },
+  { key: "cpl", label: "CPL", icon: "💡", fmt: "aed" },
+  { key: "sql", label: "SQL", icon: "🏆", fmt: "num" },
+  { key: "costPerSql", label: "Cost / SQL", icon: "🧮", fmt: "aed" },
+  { key: "pipeline", label: "Pipeline", icon: "📊", fmt: "usd" },
+  { key: "closure", label: "Closure", icon: "🔒", fmt: "usd" },
+];
+
+const FUNNEL_KEYS = [
+  { key: "spend", label: "Spend", icon: "💸", fmt: "aed" },
+  { key: "impressions", label: "Impressions", icon: "👁️", fmt: "num" },
+  { key: "clicks", label: "Clicks", icon: "🖱️", fmt: "num" },
+  { key: "leads", label: "Leads (MQL)", icon: "✅", fmt: "num" },
+  { key: "sql", label: "SQL", icon: "🏆", fmt: "num" },
+  { key: "pipeline", label: "Pipeline", icon: "📊", fmt: "usd" },
+  { key: "closure", label: "Closure", icon: "🔒", fmt: "usd" },
+];
+
 // ── Helpers ───────────────────────────────────────────────────
 function safeNum(v) {
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
+}
+
+function fmt(value, type = "num") {
+  const n = Number(value || 0);
+
+  if (type === "aed") return `AED ${Math.round(n).toLocaleString()}`;
+  if (type === "usd") return `$${Math.round(n).toLocaleString()}`;
+  return Math.round(n).toLocaleString();
 }
 
 function parseDate(value) {
@@ -32,6 +66,7 @@ function parseDate(value) {
 
 function getDateRange(timeRange) {
   const now = new Date();
+
   const todayStart = new Date(now);
   todayStart.setHours(0, 0, 0, 0);
 
@@ -126,11 +161,7 @@ function getDisplayLink(row) {
 }
 
 function getDisplaySize(row) {
-  const branches =
-    row?.number_of_branches ??
-    row?.number_of_locations ??
-    null;
-
+  const branches = row?.number_of_branches ?? row?.number_of_locations ?? null;
   if (!branches && branches !== 0) return "—";
   return `${branches} ${branches === 1 ? "branch" : "branches"}`;
 }
@@ -171,7 +202,6 @@ export default function ExecutiveSummary() {
 
   return (
     <div className="page">
-      {/* ── Time-range filter pills ── */}
       <div className="filter-bar">
         {Object.keys(RANGE_DAYS).map((r) => (
           <button
@@ -184,7 +214,6 @@ export default function ExecutiveSummary() {
         ))}
       </div>
 
-      {/* ── KPI card grid ── */}
       <div className="kpi-grid">
         {KPI_CARDS.map((c) => (
           <div className="kpi-card" key={c.key}>
@@ -195,7 +224,6 @@ export default function ExecutiveSummary() {
         ))}
       </div>
 
-      {/* ── Funnel + Top SQL split ── */}
       <div className="exec-split">
         <div className="card funnel-card">
           <h3 className="section-title">Conversion Funnel</h3>
@@ -283,7 +311,6 @@ export default function ExecutiveSummary() {
         </div>
       </div>
 
-      {/* ── AI insight blocks ── */}
       <div className="ai-grid">
         <div className="ai-block ai-green">
           <div className="ai-block-label">✅ What Went Right</div>
