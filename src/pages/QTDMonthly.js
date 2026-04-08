@@ -29,187 +29,343 @@ const DISPLAY_NAME_OVERRIDES = {
   "United States": "USA",
 };
 
-function fmtAED(v) {
-  return `AED ${Number(v || 0).toLocaleString()}`;
-}
-function fmtUSD(v) {
-  return `$${Number(v || 0).toLocaleString()}`;
-}
-function fmt(v, type) {
-  if (type === "aed") return fmtAED(v);
-  if (type === "usd") return fmtUSD(v);
-  return Number(v || 0).toLocaleString();
+function fmtAED(value) {
+  return `AED ${Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 }
 
-const safe = (v) => (v ? Number(v) : 0);
+function fmtUSD(value) {
+  return `$${Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+}
 
-const getMonth = (d) => {
+function fmt(value, type) {
+  if (type === "aed") return fmtAED(value);
+  if (type === "usd") return fmtUSD(value);
+  return Number(value || 0).toLocaleString();
+}
+
+function safeNumber(value) {
+  if (value === null || value === undefined || value === "") return 0;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function parseDate(value) {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function getMonthLabel(dateValue) {
+  const d = parseDate(dateValue);
   if (!d) return null;
-  const dt = new Date(d);
-  if (isNaN(dt)) return null;
-  return MONTHS[dt.getUTCMonth()];
-};
+  return MONTHS[d.getUTCMonth()];
+}
 
-const isInRange = (date, q, m) => {
-  const mo = getMonth(date);
-  if (!mo) return false;
-  if (m) return mo === m;
-  return QUARTER_MONTHS[q].includes(mo);
-};
+function normalizeDisplayCountry(name) {
+  if (!name) return "Unknown";
+  const clean = String(name).trim();
+  return DISPLAY_NAME_OVERRIDES[clean] || clean;
+}
 
-const normalizeMetaCountry = (raw) => {
+function normalizeMasterCountry(raw) {
   if (!raw) return "Unknown";
-  const iso = ISO_CODES.meta_country_iso2_mapping?.[String(raw).toLowerCase()];
-  const name = iso || raw;
-  return DISPLAY_NAME_OVERRIDES[name] || name;
-};
+  return normalizeDisplayCountry(String(raw).trim());
+}
 
-const normalizeMasterCountry = (raw) => {
+function normalizeMetaCountry(raw) {
   if (!raw) return "Unknown";
-  const name = String(raw).trim();
-  return DISPLAY_NAME_OVERRIDES[name] || name;
-};
 
-const aggregateMeta = (rows, q, m) => {
-  const out = {};
-  rows.forEach(r => {
-    const date = r.created_time || r.createdate || r.date;
-    if (!isInRange(date, q, m)) return;
+  const isoMap = ISO_CODES?.meta_country_iso2_mapping || {};
+  const code = String(raw).trim().toLowerCase();
+  const mappedCountry = isoMap[code];
 
-    const geo = normalizeMetaCountry(r.country || r.country_code);
-    const spend = safe(r.spend || r.amount_spent || r.cost);
-    const mql = safe(r.leads || r.mql) || 1;
+  if (typeof mappedCountry === "string" && mappedCountry.trim()) {
+    return normalizeDisplayCountry(mappedCountry.trim());
+  }
 
-    if (!out[geo]) out[geo] = { spend: 0, mql: 0 };
+  if (mappedCountry && typeof mappedCountry === "object") {
+    return normalizeDisplayCountry(mappedCountry.display || mappedCountry.name || raw);
+  }
 
-    out[geo].spend += spend;
-    out[geo].mql += mql;
+  return normalizeMasterCountry(raw);
+}
+
+function isInSelection(dateValue, quarter, month) {
+  const monthLabel = getMonthLabel(dateValue);
+  if (!monthLabel) return false;
+
+  if (month) return monthLabel === month;
+  return (QUARTER_MONTHS[quarter] || []).includes(monthLabel);
+}
+
+function getMetaDate(row) {
+  return (
+    row.created_time ??
+    row.createdate ??
+    row.created_date ??
+    row.date ??
+    row.day ??
+    row.report_date ??
+    null
+  );
+}
+
+function getMetaCountry(row) {
+  return row.country ?? row.country_code ?? row.geo ?? row.region ?? null;
+}
+
+function getMetaSpend(row) {
+  return safeNumber(
+    row.spend_aed ??
+    row.spendAED ??
+    row.spend ??
+    row.amount_spent_aed ??
+    row.amount_spent ??
+    row.cost ??
+    0
+  );
+}
+
+function getMetaLeads(row) {
+  if (row.leads !== undefined && row.leads !== null && row.leads !== "") {
+    return safeNumber(row.leads);
+  }
+
+  if (row.mql !== undefined && row.mql !== null && row.mql !== "") {
+    return safeNumber(row.mql);
+  }
+
+  if (row.total_leads !== undefined && row.total_leads !== null && row.total_leads !== "") {
+    return safeNumber(row.total_leads);
+  }
+
+  return 1;
+}
+
+function aggregateMeta(metaRows, quarter, month) {
+  const byGeo = {};
+
+  (metaRows || []).forEach((row) => {
+    const rowDate = getMetaDate(row);
+    if (!isInSelection(rowDate, quarter, month)) return;
+
+    const geo = normalizeMetaCountry(getMetaCountry(row));
+    const spend = getMetaSpend(row);
+    const mql = getMetaLeads(row);
+
+    if (!byGeo[geo]) {
+      byGeo[geo] = {
+        geo,
+        spend: 0,
+        mql: 0,
+      };
+    }
+
+    byGeo[geo].spend += spend;
+    byGeo[geo].mql += mql;
   });
-  return out;
-};
 
-const aggregateMaster = (rows, q, m) => {
-  const out = {};
-  rows.forEach(r => {
-    const geo = normalizeMasterCountry(r.country);
+  return byGeo;
+}
 
-    if (!out[geo]) out[geo] = { sql: 0, pipeline: 0 };
+function aggregateMaster(masterRows, quarter, month) {
+  const byGeo = {};
 
-    if (isInRange(r.hs_v2_date_entered_salesqualifiedlead, q, m)) {
-      out[geo].sql += 1;
-      out[geo].pipeline += safe(r.sql_amount_usd);
+  (masterRows || []).forEach((row) => {
+    const geo = normalizeMasterCountry(row.country ?? row.geo);
+
+    if (!byGeo[geo]) {
+      byGeo[geo] = {
+        geo,
+        sql: 0,
+        pipeline: 0,
+        closures: 0,
+        revenue: 0,
+      };
+    }
+
+    if (isInSelection(row.hs_v2_date_entered_salesqualifiedlead, quarter, month)) {
+      byGeo[geo].sql += 1;
+      byGeo[geo].pipeline += safeNumber(row.sql_amount_usd);
+    }
+
+    if (isInSelection(row.hs_v2_date_entered_51997770, quarter, month)) {
+      byGeo[geo].closures += 1;
+      byGeo[geo].revenue += safeNumber(row.deal_amount_usd);
     }
   });
-  return out;
-};
 
-const buildRows = (meta, master) => {
-  const geos = [...new Set([...Object.keys(meta), ...Object.keys(master)])];
+  return byGeo;
+}
 
-  return geos.map(g => {
-    const m = meta[g] || {};
-    const s = master[g] || {};
+function buildGeoRows(metaAgg, masterAgg) {
+  const allGeos = Array.from(new Set([...Object.keys(metaAgg), ...Object.keys(masterAgg)]));
 
-    const spend = safe(m.spend);
-    const mql = safe(m.mql);
-    const sql = safe(s.sql);
-    const pipeline = safe(s.pipeline);
+  return allGeos
+    .map((geo) => {
+      const meta = metaAgg[geo] || { spend: 0, mql: 0 };
+      const master = masterAgg[geo] || { sql: 0, pipeline: 0, closures: 0, revenue: 0 };
 
-    return {
-      geo: g,
-      spend,
-      mql,
-      cpl: mql ? spend / mql : 0,
-      sql,
-      cpsql: sql ? spend / sql : 0,
-      pipeline,
-    };
-  });
-};
+      const spend = safeNumber(meta.spend);
+      const mql = safeNumber(meta.mql);
+      const sql = safeNumber(master.sql);
+      const pipeline = safeNumber(master.pipeline);
+
+      return {
+        geo,
+        spend: { achieved: spend },
+        mql: { achieved: mql },
+        costPerMql: { achieved: mql > 0 ? spend / mql : 0 },
+        sql: { achieved: sql },
+        costPerSql: { achieved: sql > 0 ? spend / sql : 0 },
+        pipeline: { achieved: pipeline },
+        closures: { achieved: safeNumber(master.closures) },
+        revenue: { achieved: safeNumber(master.revenue) },
+      };
+    })
+    .sort((a, b) => b.spend.achieved - a.spend.achieved);
+}
 
 export default function QTDMonthly() {
-  const [quarter, setQuarter] = useState("Q1");
+  const [quarter, setQuarter] = useState(AVAILABLE_QUARTERS[0] || "Q1");
   const [month, setMonth] = useState(null);
 
+  const monthsInQuarter = useMemo(() => {
+    return QUARTER_MONTHS[quarter] || [];
+  }, [quarter]);
+
+  const handleQuarterClick = (q) => {
+    setQuarter(q);
+    setMonth(null);
+  };
+
   const geoRows = useMemo(() => {
-    const m = aggregateMeta(metaData, quarter, month);
-    const s = aggregateMaster(masterData, quarter, month);
-    return buildRows(m, s);
+    const metaAgg = aggregateMeta(metaData || [], quarter, month);
+    const masterAgg = aggregateMaster(masterData || [], quarter, month);
+    return buildGeoRows(metaAgg, masterAgg);
   }, [quarter, month]);
 
-  const kpis = useMemo(() => {
+  const kpiSnapshot = useMemo(() => {
     return geoRows.reduce(
-      (a, r) => ({
-        spend: a.spend + r.spend,
-        mql: a.mql + r.mql,
-        sql: a.sql + r.sql,
-        pipeline: a.pipeline + r.pipeline,
-      }),
-      { spend: 0, mql: 0, sql: 0, pipeline: 0 }
+      (acc, row) => {
+        acc.spend += row.spend.achieved;
+        acc.mql += row.mql.achieved;
+        acc.sql += row.sql.achieved;
+        acc.pipeline += row.pipeline.achieved;
+        acc.closures += row.closures.achieved;
+        acc.revenue += row.revenue.achieved;
+        return acc;
+      },
+      {
+        spend: 0,
+        mql: 0,
+        sql: 0,
+        pipeline: 0,
+        closures: 0,
+        revenue: 0,
+      }
     );
   }, [geoRows]);
 
-  const final = {
-    spend: kpis.spend,
-    mql: kpis.mql,
-    cpl: kpis.mql ? kpis.spend / kpis.mql : 0,
-    sql: kpis.sql,
-    costPerSql: kpis.sql ? kpis.spend / kpis.sql : 0,
-    pipeline: kpis.pipeline,
-  };
+  const finalKpis = useMemo(() => {
+    return {
+      spend: kpiSnapshot.spend,
+      mql: kpiSnapshot.mql,
+      cpl: kpiSnapshot.mql > 0 ? kpiSnapshot.spend / kpiSnapshot.mql : 0,
+      sql: kpiSnapshot.sql,
+      costPerSql: kpiSnapshot.sql > 0 ? kpiSnapshot.spend / kpiSnapshot.sql : 0,
+      pipeline: kpiSnapshot.pipeline,
+    };
+  }, [kpiSnapshot]);
+
+  const ctxLabel = month
+    ? `${quarter} · ${month} 2026`
+    : `${quarter} · All months (${monthsInQuarter.join(", ")}) 2026`;
 
   return (
     <div className="page">
-      <h2>QTD / Monthly View</h2>
+      <div className="page-header-row">
+        <h2 className="page-title">QTD / Monthly View</h2>
+      </div>
 
       <div className="filter-bar">
-        {AVAILABLE_QUARTERS.map(q => (
-          <button key={q} onClick={() => { setQuarter(q); setMonth(null); }}>
+        {AVAILABLE_QUARTERS.map((q) => (
+          <button
+            key={q}
+            className={`filter-pill ${quarter === q ? "active" : ""}`}
+            onClick={() => handleQuarterClick(q)}
+          >
             {q}
           </button>
         ))}
-        {QUARTER_MONTHS[quarter].map(m => (
-          <button key={m} onClick={() => setMonth(month === m ? null : m)}>
+
+        {monthsInQuarter.length > 0 && <div className="filter-sep" />}
+
+        {monthsInQuarter.map((m) => (
+          <button
+            key={m}
+            className={`filter-pill ${month === m ? "active" : ""}`}
+            onClick={() => setMonth((prev) => (prev === m ? null : m))}
+          >
             {m}
           </button>
         ))}
       </div>
 
+      <div className="ctx-label">Showing: {ctxLabel}</div>
+
       <div className="kpi-grid">
-        {KPI_CARDS.map(c => (
-          <div key={c.key}>
-            <div>{c.label}</div>
-            <div>{fmt(final[c.key], c.fmt)}</div>
+        {KPI_CARDS.map((c) => (
+          <div className="kpi-card" key={c.key}>
+            <span className="kpi-icon">{c.icon}</span>
+            <div className="kpi-label">{c.label}</div>
+            <div className="kpi-value">{fmt(finalKpis[c.key], c.fmt)}</div>
           </div>
         ))}
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Geo</th>
-            <th>Spend</th>
-            <th>MQL</th>
-            <th>CPL</th>
-            <th>SQL</th>
-            <th>CPSQL</th>
-            <th>Pipeline</th>
-          </tr>
-        </thead>
-        <tbody>
-          {geoRows.map(r => (
-            <tr key={r.geo}>
-              <td>{r.geo}</td>
-              <td>{fmtAED(r.spend)}</td>
-              <td>{r.mql}</td>
-              <td>{fmtAED(r.cpl)}</td>
-              <td>{r.sql}</td>
-              <td>{fmtAED(r.cpsql)}</td>
-              <td>{fmtUSD(r.pipeline)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="card">
+        <h3 className="section-title">
+          Geo Breakdown — {month ? `${month} ${quarter}` : `All of ${quarter}`}
+        </h3>
+
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Geo</th>
+                <th>Spend</th>
+                <th>MQL</th>
+                <th>CPL</th>
+                <th>SQL</th>
+                <th>CPSQL</th>
+                <th>Pipeline</th>
+              </tr>
+            </thead>
+            <tbody>
+              {geoRows.map((row) => (
+                <tr key={row.geo}>
+                  <td>{row.geo}</td>
+                  <td className="num-cell">{fmtAED(row.spend.achieved)}</td>
+                  <td className="num-cell">{row.mql.achieved}</td>
+                  <td className="num-cell">{fmtAED(row.costPerMql.achieved)}</td>
+                  <td className="num-cell">{row.sql.achieved}</td>
+                  <td className="num-cell">{fmtAED(row.costPerSql.achieved)}</td>
+                  <td className="num-cell accent">{fmtUSD(row.pipeline.achieved)}</td>
+                </tr>
+              ))}
+
+              {geoRows.length === 0 && (
+                <tr>
+                  <td colSpan="7" className="num-cell">
+                    No data found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
