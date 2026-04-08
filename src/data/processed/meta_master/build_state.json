@@ -1,0 +1,19 @@
+{
+  "build_name": "meta_master",
+  "last_built_at": "2026-04-08T10:30:01.325575+00:00",
+  "source_dir": "data/meta/Data",
+  "output_dir": "src/data/processed/meta_master",
+  "files_found": 2,
+  "files_processed": 1,
+  "output_rows": 8,
+  "file_states": {
+    "sample.json": {
+      "hash": "9d7079c466f3f0e80ed86f0758e0f990",
+      "rows": 1
+    },
+    "test1.json": {
+      "hash": "48143415dfdf6f38c2343257fe530451",
+      "rows": 8
+    }
+  }
+}
