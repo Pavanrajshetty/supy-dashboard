@@ -1,11 +1,11 @@
 {
   "build_name": "meta_master",
-  "last_built_at": "2026-04-08T10:53:31.836811+00:00",
+  "last_built_at": "2026-04-08T10:56:54.479248+00:00",
   "source_dir": "data/meta/Data",
   "output_dir": "src/data/processed/meta_master",
-  "files_found": 4,
-  "files_processed": 0,
-  "output_rows": 32,
+  "files_found": 5,
+  "files_processed": 1,
+  "output_rows": 42,
   "file_states": {
     "sample.json": {
       "hash": "9d7079c466f3f0e80ed86f0758e0f990"
@@ -18,6 +18,12 @@
     },
     "test5.json": {
       "hash": "ecd166e11f2559ce9b5aa50e307ee0a4"
+    },
+    "test6.json": {
+      "hash": "00ef4d3cb147ee9ae682133bc72773b0",
+      "rows": 10,
+      "aggregated_rows": 10,
+      "date": "test6"
     }
   }
 }
