@@ -1,15 +1,13 @@
 {
   "build_name": "meta_master",
-  "built_at": "2026-04-08T10:53:06.437972+00:00",
+  "built_at": "2026-04-08T10:53:31.836798+00:00",
   "source_dir": "data/meta/Data",
   "output_file": "src/data/processed/meta_master/meta_master.json",
   "files_found": 4,
-  "files_processed": 1,
-  "files_unchanged": 3,
-  "changed_files": [
-    "test5.json"
-  ],
-  "total_rows_seen": 8,
+  "files_processed": 0,
+  "files_unchanged": 4,
+  "changed_files": [],
+  "total_rows_seen": 0,
   "skipped_rows": 0,
   "output_rows": 32,
   "error_count": 0,
