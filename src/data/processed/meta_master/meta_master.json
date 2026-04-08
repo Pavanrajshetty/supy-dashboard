@@ -32,6 +32,22 @@
     "spend": 280.0
   },
   {
+    "date": "2026-01-08",
+    "campaign_id": "act_2997319760514396_aus_lal",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "adset_lal_admin_aus",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "ad_lal_admin_aus_lead",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "country": "AU",
+    "level": null,
+    "impressions": 1050,
+    "clicks": 18,
+    "reach": 820,
+    "leads": 2,
+    "spend": 280.0
+  },
+  {
     "date": "2026-01-15",
     "campaign_id": "act_2997319760514396_aus_lal",
     "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
@@ -46,6 +62,22 @@
     "reach": 780,
     "leads": 1,
     "spend": 250.0
+  },
+  {
+    "date": "2026-01-22",
+    "campaign_id": "act_2997319760514396_aus_lal",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "adset_lal_admin_aus",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "ad_lal_admin_aus_lead",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "country": "AU",
+    "level": null,
+    "impressions": 890,
+    "clicks": 12,
+    "reach": 700,
+    "leads": 1,
+    "spend": 240.0
   },
   {
     "date": "2026-01-22",
@@ -96,6 +128,22 @@
     "spend": 450.0
   },
   {
+    "date": "2026-02-10",
+    "campaign_id": "act_2997319760514396_aus_lal",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "adset_lal_admin_aus",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "ad_lal_admin_aus_lead",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "country": "AU",
+    "level": null,
+    "impressions": 1600,
+    "clicks": 28,
+    "reach": 1200,
+    "leads": 3,
+    "spend": 450.0
+  },
+  {
     "date": "2026-02-18",
     "campaign_id": "act_2997319760514396_aus_lal",
     "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
@@ -110,6 +158,22 @@
     "reach": 870,
     "leads": 2,
     "spend": 310.0
+  },
+  {
+    "date": "2026-02-25",
+    "campaign_id": "act_2997319760514396_aus_lal",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "adset_lal_admin_aus",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "ad_lal_admin_aus_lead",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "country": "AU",
+    "level": null,
+    "impressions": 1200,
+    "clicks": 20,
+    "reach": 950,
+    "leads": 2,
+    "spend": 330.0
   },
   {
     "date": "2026-02-25",
@@ -160,6 +224,22 @@
     "spend": 500.0
   },
   {
+    "date": "2026-03-12",
+    "campaign_id": "act_2997319760514396_aus_lal",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "adset_lal_admin_aus",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "ad_lal_admin_aus_lead",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "country": "AU",
+    "level": null,
+    "impressions": 1800,
+    "clicks": 38,
+    "reach": 1350,
+    "leads": 4,
+    "spend": 500.0
+  },
+  {
     "date": "2026-03-22",
     "campaign_id": "act_2997319760514396_aus_lal",
     "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
@@ -174,6 +254,22 @@
     "reach": 1050,
     "leads": 2,
     "spend": 360.0
+  },
+  {
+    "date": "2026-03-28",
+    "campaign_id": "act_2997319760514396_aus_lal",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "adset_lal_admin_aus",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "ad_lal_admin_aus_lead",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "country": "AU",
+    "level": null,
+    "impressions": 1350,
+    "clicks": 24,
+    "reach": 1000,
+    "leads": 2,
+    "spend": 370.0
   },
   {
     "date": "2026-03-28",
@@ -224,6 +320,22 @@
     "spend": 270.0
   },
   {
+    "date": "2026-04-04",
+    "campaign_id": "act_2997319760514396_aus_lal",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "adset_lal_admin_aus",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "ad_lal_admin_aus_lead",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "country": "AU",
+    "level": null,
+    "impressions": 910,
+    "clicks": 14,
+    "reach": 750,
+    "leads": 1,
+    "spend": 270.0
+  },
+  {
     "date": "2026-04-07",
     "campaign_id": "act_2997319760514396_aus_lal",
     "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
@@ -238,6 +350,22 @@
     "reach": 780,
     "leads": 2,
     "spend": 290.0
+  },
+  {
+    "date": "2026-04-08",
+    "campaign_id": "act_2997319760514396_aus_lal",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "adset_lal_admin_aus",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "ad_lal_admin_aus_lead",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "country": "AU",
+    "level": null,
+    "impressions": 970,
+    "clicks": 17,
+    "reach": 800,
+    "leads": 2,
+    "spend": 295.0
   },
   {
     "date": "2026-04-08",
