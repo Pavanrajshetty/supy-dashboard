@@ -1,385 +1,235 @@
-import os
 import json
+import hashlib
+from collections import defaultdict
 from datetime import datetime, timezone
-
-PROCESSED_DIR = os.path.join("src", "data", "processed", "leads_master")
-
-MASTER_FILE = os.path.join(PROCESSED_DIR, "master.json")
-STATE_FILE = os.path.join(PROCESSED_DIR, "build_state.json")
-REPORT_FILE = os.path.join(PROCESSED_DIR, "build_report.json")
-
-FOLDERS = {
-    "hubspot_leads": "data/Hubspot/Leads",
-    "meta_leads": "data/meta/leads",
-    "sql": "data/Hubspot/SQL",
-    "closed_won": "data/Hubspot/Closed-won"
-}
-
-FULL_REBUILD = os.getenv("FULL_REBUILD", "false").lower() == "true"
+from pathlib import Path
 
 
-def now():
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+RAW_DIR = Path("data/meta/Data")
+PROCESSED_DIR = Path("data/processed/meta")
+OUTPUT_DIR = Path("src/data/processed/meta_master")
+
+ADSET_OUTPUT = PROCESSED_DIR / "adset_master.json"
+GEO_OUTPUT = PROCESSED_DIR / "geo_master.json"
+
+MASTER_OUTPUT = OUTPUT_DIR / "build_report.json"
+STATE_OUTPUT = OUTPUT_DIR / "build_state.json"
+META_MASTER_OUTPUT = OUTPUT_DIR / "meta_master.json"
 
 
-def load_json_file(path, default):
+def utc_now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def safe_number(value, default=0):
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
+        if value in (None, "", "null"):
+            return default
+        return float(value)
+    except (ValueError, TypeError):
         return default
 
 
-def save_json(path, data):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+def is_placeholder_row(row: dict) -> bool:
+    placeholder_values = {"string", "number", "string | null", "ad | adset | campaign"}
+    values = {str(v).strip().lower() for v in row.values() if v is not None}
+    return any(v in placeholder_values for v in values)
 
 
-def normalize_text(value):
-    if value is None:
-        return None
-    if not isinstance(value, str):
-        value = str(value)
-    value = " ".join(value.strip().lower().split())
-    return value or None
+def load_json_file(file_path: Path):
+    with file_path.open("r", encoding="utf-8") as f:
+        return json.load(f)
 
 
-def normalize_email(value):
-    return normalize_text(value)
+def get_date_from_filename(file_path: Path) -> str:
+    return file_path.stem
 
 
-def empty_row():
-    return {
-        "lead_id": None,
-        "lead_link": None,
+def get_file_hash(file_path: Path) -> str:
+    return hashlib.md5(file_path.read_bytes()).hexdigest()
 
-        "createdate": None,
-        "hs_v2_date_entered_marketingqualifiedlead": None,
-        "hs_v2_date_entered_salesqualifiedlead": None,
-        "hs_v2_date_entered_opportunity": None,
 
-        "deal_id": None,
-        "deal_link": None,
-        "deal_name": None,
-        "deal_createdate": None,
-        "deal_stage": None,
-        "deal_amount": None,
-        "deal_amount_usd": None,
-        "closedate": None,
-        "hs_v2_date_entered_51997770": None,
-        "deal_currency_code": None,
-        "number_of_branches": None,
+def build_meta_master():
+    agg = defaultdict(lambda: {
+        "impressions": 0,
+        "clicks": 0,
+        "reach": 0,
+        "leads": 0,
+        "spend": 0.0
+    })
 
-        "firstname": None,
-        "lastname": None,
-        "email": None,
-        "phone": None,
-        "jobtitle": None,
-        "company": None,
-        "country": None,
-        "number_of_locations": None,
+    files_found = 0
+    files_processed = 0
+    skipped_rows = 0
+    total_rows_seen = 0
+    error_files = []
+    file_states = {}
 
-        "lifecyclestage": None,
-        "hs_lead_status": None,
+    json_files = sorted(RAW_DIR.glob("*.json"))
+    files_found = len(json_files)
 
-        "hs_analytics_source": None,
-        "hs_analytics_source_data_1": None,
-        "hs_analytics_source_data_2": None,
-        "new_lead_source": None,
+    print(f"Found {files_found} files in {RAW_DIR}")
 
-        "utm_source": None,
-        "utm_medium": None,
-        "utm_campaign": None,
-        "utm_content": None,
+    for file_path in json_files:
+        try:
+            data = load_json_file(file_path)
 
-        "campaign_id": None,
-        "campaign_name": None,
-        "adset_id": None,
-        "adset_name": None,
-        "ad_id": None,
-        "ad_name": None,
-        "form_name": None,
-        "meta_match_found": False,
-        "meta_match_type": None,
+            if not isinstance(data, list):
+                error_files.append({
+                    "file": file_path.name,
+                    "error": "Not a JSON array"
+                })
+                print(f"Skipping {file_path.name}: not a JSON array")
+                continue
 
-        "sql": False,
-        "sql_date": None,
-        "sql_amount_usd": None,
+            file_states[file_path.name] = {
+                "hash": get_file_hash(file_path),
+                "rows": len(data)
+            }
 
-        "closed_won": False,
-        "closed_won_date": None,
-        "closed_won_amount_usd": None,
+            file_processed = False
 
-        "last_updated": now()
+            for row in data:
+                total_rows_seen += 1
+
+                if not isinstance(row, dict):
+                    skipped_rows += 1
+                    continue
+
+                if is_placeholder_row(row):
+                    skipped_rows += 1
+                    continue
+
+                date = row.get("date") or get_date_from_filename(file_path)
+                campaign_id = row.get("campaign_id")
+                campaign_name = row.get("campaign_name")
+
+                adset_id = row.get("adset_id")
+                adset_name = row.get("adset_name")
+
+                ad_id = row.get("ad_id")
+                ad_name = row.get("ad_name")
+
+                country = row.get("country")
+                level = row.get("level")
+
+                if not campaign_id or not campaign_name:
+                    skipped_rows += 1
+                    continue
+
+                key = (
+                    str(date),
+                    str(campaign_id),
+                    str(campaign_name),
+                    str(adset_id) if adset_id else None,
+                    str(adset_name) if adset_name else None,
+                    str(ad_id) if ad_id else None,
+                    str(ad_name) if ad_name else None,
+                    str(country) if country else None,
+                    str(level) if level else None,
+                )
+
+                agg[key]["impressions"] += int(safe_number(row.get("impressions"), 0))
+                agg[key]["clicks"] += int(safe_number(row.get("clicks"), 0))
+                agg[key]["reach"] += int(safe_number(row.get("reach"), 0))
+                agg[key]["leads"] += int(safe_number(row.get("leads"), 0))
+                agg[key]["spend"] = round(
+                    agg[key]["spend"] + safe_number(row.get("spend"), 0.0),
+                    2
+                )
+
+                file_processed = True
+
+            if file_processed:
+                files_processed += 1
+                print(f"Processed: {file_path.name}")
+
+        except Exception as e:
+            error_files.append({
+                "file": file_path.name,
+                "error": str(e)
+            })
+            print(f"Error in {file_path.name}: {e}")
+
+    meta_master = []
+    for key, value in agg.items():
+        meta_master.append({
+            "date": key[0],
+            "campaign_id": key[1],
+            "campaign_name": key[2],
+            "adset_id": key[3],
+            "adset_name": key[4],
+            "ad_id": key[5],
+            "ad_name": key[6],
+            "country": key[7],
+            "level": key[8],
+            "impressions": value["impressions"],
+            "clicks": value["clicks"],
+            "reach": value["reach"],
+            "leads": value["leads"],
+            "spend": round(value["spend"], 2),
+        })
+
+    meta_master.sort(
+        key=lambda x: (
+            x["date"] or "",
+            x["campaign_name"] or "",
+            x["adset_name"] or "",
+            x["ad_name"] or "",
+            x["country"] or "",
+            x["level"] or "",
+        )
+    )
+
+    report = {
+        "build_name": "meta_master",
+        "built_at": utc_now(),
+        "source_dir": str(RAW_DIR),
+        "output_file": str(META_MASTER_OUTPUT),
+        "files_found": files_found,
+        "files_processed": files_processed,
+        "total_rows_seen": total_rows_seen,
+        "skipped_rows": skipped_rows,
+        "output_rows": len(meta_master),
+        "error_count": len(error_files),
+        "errors": error_files
     }
 
+    state = {
+        "build_name": "meta_master",
+        "last_built_at": utc_now(),
+        "source_dir": str(RAW_DIR),
+        "output_dir": str(OUTPUT_DIR),
+        "files_found": files_found,
+        "files_processed": files_processed,
+        "output_rows": len(meta_master),
+        "file_states": file_states
+    }
 
-def load_state():
-    if FULL_REBUILD:
-        return {k: [] for k in FOLDERS}
+    print(f"Files processed: {files_processed}")
+    print(f"Rows skipped: {skipped_rows}")
+    print(f"Meta master rows: {len(meta_master)}")
 
-    state = load_json_file(STATE_FILE, {})
-    if not isinstance(state, dict):
-        state = {}
-
-    for k in FOLDERS:
-        state.setdefault(k, [])
-
-    return state
-
-
-def get_json_files(folder):
-    if not os.path.exists(folder):
-        return []
-    return sorted([f for f in os.listdir(folder) if f.endswith(".json")])
+    return meta_master, report, state
 
 
-def get_new_files(folder, processed_files):
-    files = get_json_files(folder)
-    return [f for f in files if f not in processed_files]
-
-
-def load_rows_from_files(folder, files):
-    rows = []
-    for fname in files:
-        path = os.path.join(folder, fname)
-        data = load_json_file(path, [])
-        if isinstance(data, list):
-            rows.extend(data)
-    return rows
-
-
-def set_exact_value(target_row, field, source_row):
-    if field in source_row:
-        target_row[field] = source_row.get(field)
-
-
-def upsert_lead_row(master_dict, lead_row):
-    lead_id = lead_row.get("lead_id")
-    if not lead_id:
-        return False, False, None
-
-    lead_id = str(lead_id)
-    created = False
-
-    if lead_id not in master_dict:
-        master_dict[lead_id] = empty_row()
-        master_dict[lead_id]["lead_id"] = lead_id
-        created = True
-
-    row = master_dict[lead_id]
-
-    lead_fields = [
-        "lead_id",
-        "lead_link",
-
-        "createdate",
-        "hs_v2_date_entered_marketingqualifiedlead",
-        "hs_v2_date_entered_salesqualifiedlead",
-        "hs_v2_date_entered_opportunity",
-
-        "deal_id",
-        "deal_link",
-        "deal_name",
-        "deal_createdate",
-        "deal_stage",
-        "deal_amount",
-        "deal_amount_usd",
-        "closedate",
-        "hs_v2_date_entered_51997770",
-        "deal_currency_code",
-        "number_of_branches",
-
-        "firstname",
-        "lastname",
-        "email",
-        "phone",
-        "jobtitle",
-        "company",
-        "country",
-        "number_of_locations",
-
-        "lifecyclestage",
-        "hs_lead_status",
-
-        "hs_analytics_source",
-        "hs_analytics_source_data_1",
-        "hs_analytics_source_data_2",
-        "new_lead_source",
-
-        "utm_source",
-        "utm_medium",
-        "utm_campaign",
-        "utm_content",
-
-        "last_updated"
-    ]
-
-    for field in lead_fields:
-        set_exact_value(row, field, lead_row)
-
-    return created, True, lead_id
-
-
-def build_meta_indexes(meta_rows):
-    by_work_email = {}
-    by_email = {}
-    by_firstname_company = {}
-
-    for meta in meta_rows:
-        work_email = normalize_email(meta.get("custom_fields", {}).get("work_email"))
-        email = normalize_email(meta.get("email"))
-        first_name = normalize_text(meta.get("first_name"))
-        company_name = normalize_text(meta.get("company_name"))
-
-        if work_email and work_email not in by_work_email:
-            by_work_email[work_email] = meta
-
-        if email and email not in by_email:
-            by_email[email] = meta
-
-        if first_name and company_name:
-            key = (first_name, company_name)
-            if key not in by_firstname_company:
-                by_firstname_company[key] = meta
-
-    return by_work_email, by_email, by_firstname_company
-
-
-def apply_meta_to_row(row, by_work_email, by_email, by_firstname_company):
-    meta = None
-    match_type = None
-
-    hubspot_email = normalize_email(row.get("email"))
-    hubspot_firstname = normalize_text(row.get("firstname"))
-    hubspot_company = normalize_text(row.get("company"))
-
-    if hubspot_email and hubspot_email in by_work_email:
-        meta = by_work_email[hubspot_email]
-        match_type = "email_to_work_email"
-    elif hubspot_email and hubspot_email in by_email:
-        meta = by_email[hubspot_email]
-        match_type = "email_to_email"
-    elif hubspot_firstname and hubspot_company:
-        key = (hubspot_firstname, hubspot_company)
-        if key in by_firstname_company:
-            meta = by_firstname_company[key]
-            match_type = "firstname_company"
-
-    if not meta:
-        row["meta_match_found"] = False
-        row["meta_match_type"] = None
-        return False
-
-    row["campaign_id"] = meta.get("campaign_id")
-    row["campaign_name"] = meta.get("campaign_name")
-    row["adset_id"] = meta.get("adset_id")
-    row["adset_name"] = meta.get("adset_name")
-    row["ad_id"] = meta.get("ad_id")
-    row["ad_name"] = meta.get("ad_name")
-    row["form_name"] = meta.get("form_name")
-    row["meta_match_found"] = True
-    row["meta_match_type"] = match_type
-
-    return True
+def save_json(data, output_path: Path):
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    print(f"Saved: {output_path}")
 
 
 def main():
-    os.makedirs(PROCESSED_DIR, exist_ok=True)
+    if not RAW_DIR.exists():
+        print(f"Raw directory not found: {RAW_DIR}")
+        return
 
-    state = load_state()
+    meta_master, report, state = build_meta_master()
 
-    report = {
-        "time": now(),
-        "stats": {
-            "files_processed": {
-                "hubspot_leads": [],
-                "meta_leads": [],
-                "sql": [],
-                "closed_won": []
-            },
-            "new_rows_created_from_leads": 0,
-            "updated_from_leads": 0,
-            "meta_matched_rows": 0,
-            "total_master_rows": 0
-        }
-    }
-
-    if FULL_REBUILD:
-        master_list = []
-    else:
-        master_list = load_json_file(MASTER_FILE, [])
-
-    master_dict = {}
-    if isinstance(master_list, list):
-        for row in master_list:
-            lead_id = row.get("lead_id")
-            if lead_id:
-                master_dict[str(lead_id)] = row
-
-    new_lead_files = get_new_files(FOLDERS["hubspot_leads"], state["hubspot_leads"])
-    new_meta_files = get_new_files(FOLDERS["meta_leads"], state["meta_leads"])
-
-    report["stats"]["files_processed"]["hubspot_leads"] = new_lead_files
-    report["stats"]["files_processed"]["meta_leads"] = new_meta_files
-
-    lead_rows = load_rows_from_files(FOLDERS["hubspot_leads"], new_lead_files)
-    meta_rows = load_rows_from_files(FOLDERS["meta_leads"], new_meta_files)
-
-    touched_lead_ids = set()
-
-    for lead_row in lead_rows:
-        created, updated, lead_id = upsert_lead_row(master_dict, lead_row)
-        if lead_id:
-            touched_lead_ids.add(lead_id)
-
-        if created:
-            report["stats"]["new_rows_created_from_leads"] += 1
-        elif updated:
-            report["stats"]["updated_from_leads"] += 1
-
-    if meta_rows:
-        by_work_email, by_email, by_firstname_company = build_meta_indexes(meta_rows)
-
-        for lead_id in touched_lead_ids:
-            row = master_dict.get(lead_id)
-            if not row:
-                continue
-
-            matched = apply_meta_to_row(
-                row,
-                by_work_email,
-                by_email,
-                by_firstname_company
-            )
-
-            if matched:
-                report["stats"]["meta_matched_rows"] += 1
-
-    final_master = list(master_dict.values())
-    final_master.sort(key=lambda x: (
-        x.get("createdate") or "",
-        x.get("lead_id") or ""
-    ))
-
-    report["stats"]["total_master_rows"] = len(final_master)
-
-    save_json(MASTER_FILE, final_master)
-    save_json(REPORT_FILE, report)
-
-    state["hubspot_leads"] = sorted(list(set(state["hubspot_leads"] + new_lead_files)))
-    state["meta_leads"] = sorted(list(set(state["meta_leads"] + new_meta_files)))
-    state.setdefault("sql", [])
-    state.setdefault("closed_won", [])
-
-    save_json(STATE_FILE, state)
-
-    print(
-        f"Done. master rows={len(final_master)}, "
-        f"new lead files={len(new_lead_files)}, "
-        f"new meta files={len(new_meta_files)}"
-    )
+    save_json(meta_master, META_MASTER_OUTPUT)
+    save_json(report, MASTER_OUTPUT)
+    save_json(state, STATE_OUTPUT)
 
 
 if __name__ == "__main__":
