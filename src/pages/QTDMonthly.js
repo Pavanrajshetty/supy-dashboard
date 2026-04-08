@@ -40,7 +40,7 @@ function fmtUSD(value) {
 function fmt(value, type) {
   if (type === "aed") return fmtAED(value);
   if (type === "usd") return fmtUSD(value);
-  return Number(value || 0).toLocaleString();
+  return Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
 }
 
 function safeNumber(value) {
@@ -100,10 +100,10 @@ function isInSelection(dateValue, quarter, month) {
 
 function getMetaDate(row) {
   return (
+    row.date ??
     row.created_time ??
     row.createdate ??
     row.created_date ??
-    row.date ??
     row.day ??
     row.report_date ??
     null
@@ -117,12 +117,12 @@ function getMetaCountry(row) {
 function getMetaSpend(row) {
   return safeNumber(
     row.spend_aed ??
-    row.spendAED ??
-    row.spend ??
-    row.amount_spent_aed ??
-    row.amount_spent ??
-    row.cost ??
-    0
+      row.spendAED ??
+      row.spend ??
+      row.amount_spent_aed ??
+      row.amount_spent ??
+      row.cost ??
+      0
   );
 }
 
@@ -139,7 +139,7 @@ function getMetaLeads(row) {
     return safeNumber(row.total_leads);
   }
 
-  return 1;
+  return 0;
 }
 
 function aggregateMeta(metaRows, quarter, month) {
@@ -184,12 +184,20 @@ function aggregateMaster(masterRows, quarter, month) {
       };
     }
 
-    if (isInSelection(row.hs_v2_date_entered_salesqualifiedlead, quarter, month)) {
+    const isSql =
+      row?.sql === true &&
+      isInSelection(row?.hs_v2_date_entered_salesqualifiedlead, quarter, month);
+
+    const isClosedWon =
+      row?.closed_won === true &&
+      isInSelection(row?.hs_v2_date_entered_51997770, quarter, month);
+
+    if (isSql) {
       byGeo[geo].sql += 1;
       byGeo[geo].pipeline += safeNumber(row.sql_amount_usd);
     }
 
-    if (isInSelection(row.hs_v2_date_entered_51997770, quarter, month)) {
+    if (isClosedWon) {
       byGeo[geo].closures += 1;
       byGeo[geo].revenue += safeNumber(row.deal_amount_usd);
     }
