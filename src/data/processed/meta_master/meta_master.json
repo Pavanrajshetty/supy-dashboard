@@ -9,11 +9,11 @@
     "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
     "country": "AU",
     "level": null,
-    "impressions": 1200,
-    "clicks": 20,
-    "reach": 950,
-    "leads": 2,
-    "spend": 300.0
+    "impressions": 2400,
+    "clicks": 40,
+    "reach": 1900,
+    "leads": 4,
+    "spend": 600.0
   },
   {
     "date": "2026-01-15",
@@ -25,11 +25,11 @@
     "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
     "country": "AU",
     "level": null,
-    "impressions": 980,
-    "clicks": 14,
-    "reach": 780,
-    "leads": 1,
-    "spend": 250.0
+    "impressions": 1960,
+    "clicks": 28,
+    "reach": 1560,
+    "leads": 2,
+    "spend": 500.0
   },
   {
     "date": "2026-02-05",
@@ -41,11 +41,11 @@
     "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
     "country": "AU",
     "level": null,
-    "impressions": 1500,
-    "clicks": 30,
-    "reach": 1100,
-    "leads": 3,
-    "spend": 420.0
+    "impressions": 3000,
+    "clicks": 60,
+    "reach": 2200,
+    "leads": 6,
+    "spend": 840.0
   },
   {
     "date": "2026-02-18",
@@ -57,11 +57,11 @@
     "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
     "country": "AU",
     "level": null,
-    "impressions": 1100,
-    "clicks": 18,
-    "reach": 870,
-    "leads": 2,
-    "spend": 310.0
+    "impressions": 2200,
+    "clicks": 36,
+    "reach": 1740,
+    "leads": 4,
+    "spend": 620.0
   },
   {
     "date": "2026-03-07",
@@ -73,11 +73,11 @@
     "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
     "country": "AU",
     "level": null,
-    "impressions": 1700,
-    "clicks": 35,
-    "reach": 1300,
-    "leads": 4,
-    "spend": 480.0
+    "impressions": 3400,
+    "clicks": 70,
+    "reach": 2600,
+    "leads": 8,
+    "spend": 960.0
   },
   {
     "date": "2026-03-22",
@@ -89,11 +89,11 @@
     "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
     "country": "AU",
     "level": null,
-    "impressions": 1400,
-    "clicks": 22,
-    "reach": 1050,
-    "leads": 2,
-    "spend": 360.0
+    "impressions": 2800,
+    "clicks": 44,
+    "reach": 2100,
+    "leads": 4,
+    "spend": 720.0
   },
   {
     "date": "2026-04-02",
@@ -105,11 +105,11 @@
     "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
     "country": "AU",
     "level": null,
-    "impressions": 886,
-    "clicks": 13,
-    "reach": 724,
-    "leads": 1,
-    "spend": 266.26
+    "impressions": 1772,
+    "clicks": 26,
+    "reach": 1448,
+    "leads": 2,
+    "spend": 532.52
   },
   {
     "date": "2026-04-07",
@@ -121,10 +121,10 @@
     "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
     "country": "AU",
     "level": null,
-    "impressions": 950,
-    "clicks": 16,
-    "reach": 780,
-    "leads": 2,
-    "spend": 290.0
+    "impressions": 1900,
+    "clicks": 32,
+    "reach": 1560,
+    "leads": 4,
+    "spend": 580.0
   }
 ]
