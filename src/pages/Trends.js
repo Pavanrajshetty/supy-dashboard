@@ -74,6 +74,14 @@ function toDayKey(value) {
   return d.toISOString().slice(0, 10);
 }
 
+function formatShortDate(value) {
+  const d = parseDate(value);
+  if (!d) return value;
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+  return `${day}/${month}`;
+}
+
 function getDateRange(rangeKey) {
   const now = new Date();
 
@@ -180,38 +188,46 @@ function getAllGeos(metaRows, leadRows) {
     .sort((a, b) => a.localeCompare(b));
 }
 
-function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos) {
-  const map = {};
+function getRangeDateKeys(rangeKey) {
+  const { start, end } = getDateRange(rangeKey);
+  const out = [];
+  const d = new Date(start);
 
-  const ensureRow = (dateKey, geo) => {
-    const key = `${dateKey}__${geo}`;
-    if (!map[key]) {
-      map[key] = {
-        date: dateKey,
-        geo,
-        spend: 0,
-        mql: 0,
-        sql: 0,
-        pipeline: 0,
-        closure: 0,
-      };
-    }
-    return map[key];
-  };
+  while (d <= end) {
+    out.push(d.toISOString().slice(0, 10));
+    d.setDate(d.getDate() + 1);
+  }
+
+  return out;
+}
+
+function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos) {
+  const allDates = getRangeDateKeys(rangeKey);
+  const byDate = {};
+
+  allDates.forEach((dateKey) => {
+    byDate[dateKey] = {
+      date: dateKey,
+      spend: 0,
+      mql: 0,
+      sql: 0,
+      pipeline: 0,
+      closure: 0,
+    };
+  });
 
   (metaRows || []).forEach((row) => {
     const rowDate = getMetaDate(row);
     if (!isWithinRange(rowDate, rangeKey)) return;
 
     const dateKey = toDayKey(rowDate);
-    if (!dateKey) return;
+    if (!dateKey || !byDate[dateKey]) return;
 
     const geo = normalizeMetaCountry(getMetaCountry(row));
     if (!selectedGeos.includes(geo)) return;
 
-    const bucket = ensureRow(dateKey, geo);
-    bucket.spend += getMetaSpend(row);
-    bucket.mql += getMetaLeads(row);
+    byDate[dateKey].spend += getMetaSpend(row);
+    byDate[dateKey].mql += getMetaLeads(row);
   });
 
   (leadRows || []).forEach((row) => {
@@ -220,33 +236,51 @@ function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos) {
 
     if (row?.sql === true && isWithinRange(row?.hs_v2_date_entered_salesqualifiedlead, rangeKey)) {
       const dateKey = toDayKey(row?.hs_v2_date_entered_salesqualifiedlead);
-      if (dateKey) {
-        const bucket = ensureRow(dateKey, geo);
-        bucket.sql += 1;
-        bucket.pipeline += safeNum(row.sql_amount_usd);
+      if (dateKey && byDate[dateKey]) {
+        byDate[dateKey].sql += 1;
+        byDate[dateKey].pipeline += safeNum(row.sql_amount_usd);
       }
     }
 
     if (row?.closed_won === true && isWithinRange(row?.hs_v2_date_entered_51997770, rangeKey)) {
       const dateKey = toDayKey(row?.hs_v2_date_entered_51997770);
-      if (dateKey) {
-        const bucket = ensureRow(dateKey, geo);
-        bucket.closure += safeNum(row.deal_amount_usd);
+      if (dateKey && byDate[dateKey]) {
+        byDate[dateKey].closure += safeNum(row.deal_amount_usd);
       }
     }
   });
 
-  return Object.values(map).sort((a, b) => {
-    if (a.date === b.date) return a.geo.localeCompare(b.geo);
-    return new Date(a.date) - new Date(b.date);
-  });
+  return allDates.map((dateKey) => byDate[dateKey]);
 }
 
-// ── Inline SVG line chart — keep same UI style ───────────────
+function getNiceMax(maxVal) {
+  if (maxVal <= 0) return 10;
+  const exponent = Math.floor(Math.log10(maxVal));
+  const fraction = maxVal / Math.pow(10, exponent);
+
+  let niceFraction = 1;
+  if (fraction <= 1) niceFraction = 1;
+  else if (fraction <= 2) niceFraction = 2;
+  else if (fraction <= 5) niceFraction = 5;
+  else niceFraction = 10;
+
+  return niceFraction * Math.pow(10, exponent);
+}
+
+function getTickValues(maxVal, count = 5) {
+  const niceMax = getNiceMax(maxVal);
+  const ticks = [];
+  for (let i = 0; i <= count; i++) {
+    ticks.push((niceMax / count) * i);
+  }
+  return ticks;
+}
+
+// ── Better chart ─────────────────────────────────────────────
 function LineChart({ data, metricKey, metricFmt }) {
-  const W = 800;
-  const H = 160;
-  const PAD = { top: 20, right: 16, bottom: 40, left: 8 };
+  const W = 1100;
+  const H = 340;
+  const PAD = { top: 24, right: 24, bottom: 56, left: 76 };
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
 
@@ -258,7 +292,7 @@ function LineChart({ data, metricKey, metricFmt }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "#a099b5",
+          color: "#8d86a8",
           fontSize: 14,
         }}
       >
@@ -267,20 +301,29 @@ function LineChart({ data, metricKey, metricFmt }) {
     );
   }
 
-  const vals = data.map((d) => safeNum(d[metricKey]));
-  const maxVal = Math.max(...vals, 1);
+  const values = data.map((d) => safeNum(d[metricKey]));
+  const rawMax = Math.max(...values, 0);
+  const maxVal = getNiceMax(rawMax || 10);
+  const ticks = getTickValues(maxVal, 5);
 
-  const xStep = innerW / Math.max(data.length - 1, 1);
+  const xOf = (i) =>
+    PAD.left + (data.length === 1 ? innerW / 2 : (i * innerW) / (data.length - 1));
+
   const yOf = (v) => PAD.top + innerH - (safeNum(v) / maxVal) * innerH;
-  const xOf = (i) => PAD.left + (data.length === 1 ? innerW / 2 : i * xStep);
 
-  const points = data.map((d, i) => `${xOf(i)},${yOf(d[metricKey] || 0)}`).join(" ");
+  const points = data.map((d, i) => `${xOf(i)},${yOf(d[metricKey])}`).join(" ");
 
   const fillPoints = [
     `${xOf(0)},${PAD.top + innerH}`,
-    ...data.map((d, i) => `${xOf(i)},${yOf(d[metricKey] || 0)}`),
+    ...data.map((d, i) => `${xOf(i)},${yOf(d[metricKey])}`),
     `${xOf(data.length - 1)},${PAD.top + innerH}`,
   ].join(" ");
+
+  const xLabelStep =
+    data.length <= 10 ? 1 :
+    data.length <= 20 ? 2 :
+    data.length <= 35 ? 4 :
+    data.length <= 60 ? 6 : 8;
 
   return (
     <svg
@@ -288,37 +331,98 @@ function LineChart({ data, metricKey, metricFmt }) {
       style={{ width: "100%", height: H, overflow: "visible" }}
       aria-label="line chart"
     >
+      {/* grid lines + y labels */}
+      {ticks.map((tick, idx) => {
+        const y = yOf(tick);
+        return (
+          <g key={idx}>
+            <line
+              x1={PAD.left}
+              y1={y}
+              x2={PAD.left + innerW}
+              y2={y}
+              stroke="rgba(124,79,214,0.12)"
+              strokeWidth="1"
+            />
+            <text
+              x={PAD.left - 12}
+              y={y + 4}
+              textAnchor="end"
+              fontSize="11"
+              fill="#8d86a8"
+            >
+              {metricFmt === "aed" || metricFmt === "usd"
+                ? fmtNum(tick)
+                : fmtNum(tick)}
+            </text>
+          </g>
+        );
+      })}
+
+      {/* axes */}
+      <line
+        x1={PAD.left}
+        y1={PAD.top}
+        x2={PAD.left}
+        y2={PAD.top + innerH}
+        stroke="rgba(124,79,214,0.18)"
+      />
+      <line
+        x1={PAD.left}
+        y1={PAD.top + innerH}
+        x2={PAD.left + innerW}
+        y2={PAD.top + innerH}
+        stroke="rgba(124,79,214,0.18)"
+      />
+
+      {/* area */}
       <polygon points={fillPoints} fill="rgba(124,79,214,0.08)" />
 
+      {/* line */}
       <polyline
         points={points}
         fill="none"
         stroke="#7c4fd6"
-        strokeWidth="2.5"
+        strokeWidth="3"
         strokeLinejoin="round"
         strokeLinecap="round"
       />
 
+      {/* dots */}
       {data.map((d, i) => {
         const cx = xOf(i);
-        const cy = yOf(d[metricKey] || 0);
-        const val = d[metricKey] || 0;
-        const lbl = `${d.date.slice(5)} ${d.geo}`;
-
+        const cy = yOf(d[metricKey]);
         return (
-          <g key={`${d.date}-${d.geo}-${i}`}>
-            <circle cx={cx} cy={cy} r={4} fill="#7c4fd6" stroke="#ffffff" strokeWidth={2} />
-            <circle cx={cx} cy={cy} r={14} fill="transparent">
-              <title>{`${d.geo}: ${fmtValue(val, metricFmt)}`}</title>
+          <g key={`${d.date}-${i}`}>
+            <circle cx={cx} cy={cy} r={4.5} fill="#7c4fd6" stroke="#ffffff" strokeWidth={2} />
+            <circle cx={cx} cy={cy} r={12} fill="transparent">
+              <title>{`${d.date}: ${fmtValue(d[metricKey], metricFmt)}`}</title>
             </circle>
+          </g>
+        );
+      })}
+
+      {/* x labels */}
+      {data.map((d, i) => {
+        if (i % xLabelStep !== 0 && i !== data.length - 1) return null;
+        const x = xOf(i);
+        return (
+          <g key={`x-${d.date}-${i}`}>
+            <line
+              x1={x}
+              y1={PAD.top + innerH}
+              x2={x}
+              y2={PAD.top + innerH + 6}
+              stroke="rgba(124,79,214,0.18)"
+            />
             <text
-              x={cx}
-              y={PAD.top + innerH + 14}
+              x={x}
+              y={PAD.top + innerH + 22}
               textAnchor="middle"
-              fontSize="9"
-              fill="#a099b5"
+              fontSize="11"
+              fill="#8d86a8"
             >
-              {lbl}
+              {formatShortDate(d.date)}
             </text>
           </g>
         );
@@ -329,8 +433,6 @@ function LineChart({ data, metricKey, metricFmt }) {
 
 // ── Page ─────────────────────────────────────────────────────
 export default function Trends() {
-  const [dateRange, setDateRange] = useState("30d");
-
   const allGeos = useMemo(() => {
     return getAllGeos(
       Array.isArray(metaMasterData) ? metaMasterData : [],
@@ -338,6 +440,7 @@ export default function Trends() {
     );
   }, []);
 
+  const [dateRange, setDateRange] = useState("30d");
   const [selectedGeos, setSelectedGeos] = useState(allGeos);
   const [selectedMetric, setSelectedMetric] = useState("mql");
 
@@ -405,7 +508,7 @@ export default function Trends() {
       </div>
 
       <div className="card chart-placeholder">
-        <h3 className="section-title">{metric.label} over time</h3>
+        <h3 className="section-title">{metric.label.toUpperCase()} OVER TIME</h3>
         <LineChart
           data={trendRows}
           metricKey={selectedMetric}
@@ -420,7 +523,6 @@ export default function Trends() {
             <thead>
               <tr>
                 <th>Date</th>
-                <th>Geo</th>
                 {TREND_METRICS.map((m) => (
                   <th key={m.key}>{m.label}</th>
                 ))}
@@ -429,11 +531,8 @@ export default function Trends() {
             <tbody>
               {trendRows.length > 0 ? (
                 trendRows.map((row, i) => (
-                  <tr key={`${row.date}-${row.geo}-${i}`}>
+                  <tr key={`${row.date}-${i}`}>
                     <td>{row.date}</td>
-                    <td>
-                      <span className="geo-tag">{row.geo}</span>
-                    </td>
                     {TREND_METRICS.map((m) => (
                       <td key={m.key} className="num-cell">
                         {fmtValue(row[m.key], m.fmt)}
@@ -443,7 +542,7 @@ export default function Trends() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={2 + TREND_METRICS.length} className="num-cell">
+                  <td colSpan={1 + TREND_METRICS.length} className="num-cell">
                     No data found
                   </td>
                 </tr>
