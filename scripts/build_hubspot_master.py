@@ -1,4 +1,3 @@
-
 import os
 import json
 from datetime import datetime, timezone
@@ -9,22 +8,18 @@ MASTER_FILE = os.path.join(PROCESSED_DIR, "master.json")
 STATE_FILE = os.path.join(PROCESSED_DIR, "build_state.json")
 REPORT_FILE = os.path.join(PROCESSED_DIR, "build_report.json")
 
-FOLDERS = {
-    "hubspot_leads": "data/Hubspot/Leads",
-    "meta_leads": "data/meta/leads",
-    "sql": "data/Hubspot/SQL",
-    "closed_won": "data/Hubspot/Closed-won"
-}
+HUBSPOT_LEADS_FOLDER = os.path.join("data", "Hubspot", "Leads")
+META_LEADS_FOLDER = os.path.join("data", "meta", "leads")
 
 FULL_REBUILD = os.getenv("FULL_REBUILD", "false").lower() == "true"
 
 
-def load_json_file(path):
+def load_json_file(path, default):
     try:
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception:
-        return []
+        return default
 
 
 def save_json(path, data):
@@ -50,28 +45,44 @@ def now():
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
+def get_json_files(folder):
+    if not os.path.exists(folder):
+        return []
+    return sorted([f for f in os.listdir(folder) if f.endswith(".json")])
+
+
 def load_state():
     if FULL_REBUILD:
-        return {k: [] for k in FOLDERS}
-    if os.path.exists(STATE_FILE):
-        state = load_json_file(STATE_FILE)
-        if isinstance(state, dict):
-            for k in FOLDERS:
-                state.setdefault(k, [])
-            return state
-    return {k: [] for k in FOLDERS}
+        return {"hubspot_leads_files_processed": []}
+
+    state = load_json_file(STATE_FILE, {})
+    if not isinstance(state, dict):
+        state = {}
+
+    state.setdefault("hubspot_leads_files_processed", [])
+    return state
 
 
 def get_new_files(folder, processed_files):
-    all_files = sorted(os.listdir(folder)) if os.path.exists(folder) else []
-    return [f for f in all_files if f.endswith(".json") and f not in processed_files]
+    all_files = get_json_files(folder)
+    return [f for f in all_files if f not in processed_files]
 
 
 def load_folder_data(folder, files):
     data = []
     for f in files:
         path = os.path.join(folder, f)
-        rows = load_json_file(path)
+        rows = load_json_file(path, [])
+        if isinstance(rows, list):
+            data.extend(rows)
+    return data
+
+
+def load_all_folder_data(folder):
+    data = []
+    for f in get_json_files(folder):
+        path = os.path.join(folder, f)
+        rows = load_json_file(path, [])
         if isinstance(rows, list):
             data.extend(rows)
     return data
@@ -109,10 +120,6 @@ def empty_row():
         "form_name": None,
         "meta_match_found": False,
         "meta_match_type": None,
-
-        "hs_v2_date_entered_salesqualifiedlead": None,
-        "hs_v2_date_entered_opportunity": None,
-        "hs_v2_date_entered_51997770": None,
 
         "sql": False,
         "sql_date": None,
@@ -244,7 +251,7 @@ def apply_meta(master_row, by_lead_id, by_email, by_name_company):
                 match_type = "name_company"
 
     if meta is None:
-        return
+        return False
 
     set_if_present(master_row, meta, "campaign_id")
     set_if_present(master_row, meta, "campaign_name")
@@ -263,27 +270,30 @@ def apply_meta(master_row, by_lead_id, by_email, by_name_company):
     ]):
         master_row["meta_match_found"] = True
         master_row["meta_match_type"] = match_type
+        return True
+
+    return False
 
 
 def main():
+    os.makedirs(PROCESSED_DIR, exist_ok=True)
+
     state = load_state()
+
     report = {
         "time": now(),
         "stats": {
-            "files_processed": {},
+            "hubspot_leads_files_processed": [],
             "new_rows_created_from_leads": 0,
-            "new_rows_created_from_sql": 0,
-            "new_rows_created_from_closed_won": 0,
             "updated_from_leads": 0,
-            "updated_from_sql": 0,
-            "updated_from_closed_won": 0,
-            "meta_matched_rows": 0
+            "meta_matched_rows": 0,
+            "total_rows": 0
         }
     }
 
     master = []
     if not FULL_REBUILD and os.path.exists(MASTER_FILE):
-        master = load_json_file(MASTER_FILE)
+        master = load_json_file(MASTER_FILE, [])
 
     master_dict = {}
     if isinstance(master, list):
@@ -292,20 +302,20 @@ def main():
             if lead_id:
                 master_dict[str(lead_id)] = row
 
-    new_files = {}
-    data = {}
+    new_hubspot_files = get_new_files(
+        HUBSPOT_LEADS_FOLDER,
+        state.get("hubspot_leads_files_processed", [])
+    )
 
-    for key, folder in FOLDERS.items():
-        files = get_new_files(folder, state.get(key, []))
-        new_files[key] = files
-        data[key] = load_folder_data(folder, files)
+    hubspot_rows = load_folder_data(HUBSPOT_LEADS_FOLDER, new_hubspot_files)
 
-    report["stats"]["files_processed"] = new_files
+    # meta is loaded fully every run for matching reference
+    meta_rows = load_all_folder_data(META_LEADS_FOLDER)
+    meta_by_lead_id, meta_by_email, meta_by_name_company = build_meta_lookups(meta_rows)
 
-    meta_by_lead_id, meta_by_email, meta_by_name_company = build_meta_lookups(data["meta_leads"])
+    report["stats"]["hubspot_leads_files_processed"] = new_hubspot_files
 
-    # 1. HubSpot Leads
-    for row in data["hubspot_leads"]:
+    for row in hubspot_rows:
         lead_id = row.get("lead_id")
         if not lead_id:
             continue
@@ -323,94 +333,16 @@ def main():
             "hs_analytics_source_data_2", "new_lead_source"
         ])
 
-        apply_meta(m, meta_by_lead_id, meta_by_email, meta_by_name_company)
+        matched = apply_meta(m, meta_by_lead_id, meta_by_email, meta_by_name_company)
         m["last_updated"] = now()
+
+        if matched:
+            report["stats"]["meta_matched_rows"] += 1
 
         if is_new:
             report["stats"]["new_rows_created_from_leads"] += 1
         else:
             report["stats"]["updated_from_leads"] += 1
-
-    # 2. SQL
-    for row in data["sql"]:
-        lead_id = row.get("lead_id")
-        if not lead_id:
-            continue
-
-        lead_id = str(lead_id)
-        is_new = lead_id not in master_dict
-        m = get_or_create_master_row(master_dict, lead_id)
-
-        fill_if_blank(m, row, [
-            "lead_id", "lead_link", "createdate",
-            "firstname", "lastname", "email", "phone", "jobtitle",
-            "company", "country", "number_of_locations",
-            "lifecyclestage", "hs_lead_status",
-            "hs_analytics_source", "hs_analytics_source_data_1",
-            "hs_analytics_source_data_2", "new_lead_source"
-        ])
-
-        m["sql"] = True
-        set_if_present(m, row, "hs_v2_date_entered_salesqualifiedlead")
-        set_if_present(m, row, "hs_v2_date_entered_opportunity")
-        set_if_present(m, row, "hs_v2_date_entered_salesqualifiedlead", "sql_date")
-        set_if_present(m, row, "deal_amount_usd", "sql_amount_usd")
-
-        for field in [
-            "deal_id", "deal_link", "deal_name", "deal_createdate",
-            "deal_stage", "deal_amount", "deal_currency_code",
-            "deal_amount_usd", "number_of_branches"
-        ]:
-            set_if_present(m, row, field)
-
-        apply_meta(m, meta_by_lead_id, meta_by_email, meta_by_name_company)
-        m["last_updated"] = now()
-
-        if is_new:
-            report["stats"]["new_rows_created_from_sql"] += 1
-        else:
-            report["stats"]["updated_from_sql"] += 1
-
-    # 3. Closed Won
-    for row in data["closed_won"]:
-        lead_id = row.get("lead_id")
-        if not lead_id:
-            continue
-
-        lead_id = str(lead_id)
-        is_new = lead_id not in master_dict
-        m = get_or_create_master_row(master_dict, lead_id)
-
-        fill_if_blank(m, row, [
-            "lead_id", "lead_link", "createdate",
-            "firstname", "lastname", "email", "phone", "jobtitle",
-            "company", "country", "number_of_locations",
-            "lifecyclestage", "hs_lead_status",
-            "hs_analytics_source", "hs_analytics_source_data_1",
-            "hs_analytics_source_data_2", "new_lead_source"
-        ])
-
-        m["closed_won"] = True
-        set_if_present(m, row, "hs_v2_date_entered_salesqualifiedlead")
-        set_if_present(m, row, "hs_v2_date_entered_opportunity")
-        set_if_present(m, row, "hs_v2_date_entered_51997770")
-        set_if_present(m, row, "hs_v2_date_entered_51997770", "closed_won_date")
-        set_if_present(m, row, "deal_amount_usd", "closed_won_amount_usd")
-
-        for field in [
-            "deal_id", "deal_link", "deal_name", "deal_createdate",
-            "deal_stage", "deal_amount", "deal_currency_code",
-            "deal_amount_usd", "number_of_branches"
-        ]:
-            set_if_present(m, row, field)
-
-        apply_meta(m, meta_by_lead_id, meta_by_email, meta_by_name_company)
-        m["last_updated"] = now()
-
-        if is_new:
-            report["stats"]["new_rows_created_from_closed_won"] += 1
-        else:
-            report["stats"]["updated_from_closed_won"] += 1
 
     final_master = sorted(
         list(master_dict.values()),
@@ -420,20 +352,21 @@ def main():
         )
     )
 
-    report["stats"]["meta_matched_rows"] = sum(
-        1 for row in final_master if row.get("meta_match_found")
-    )
     report["stats"]["total_rows"] = len(final_master)
 
     save_json(MASTER_FILE, final_master)
 
-    for k in state:
-        state[k].extend(new_files[k])
+    state["hubspot_leads_files_processed"] = sorted(
+        list(set(state.get("hubspot_leads_files_processed", []) + new_hubspot_files))
+    )
     save_json(STATE_FILE, state)
 
     save_json(REPORT_FILE, report)
 
-    print(f"Master build complete: {len(final_master)} rows")
+    print(
+        f"Done. New HubSpot files processed={len(new_hubspot_files)}, "
+        f"files={new_hubspot_files}, total master rows={len(final_master)}"
+    )
 
 
 if __name__ == "__main__":
