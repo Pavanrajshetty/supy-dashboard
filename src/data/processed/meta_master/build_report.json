@@ -1,11 +1,13 @@
 {
   "build_name": "meta_master",
-  "built_at": "2026-04-09T04:17:31.180347+00:00",
+  "built_at": "2026-04-09T04:19:20.640600+00:00",
   "source_dir": "data/meta/Data",
   "output_file": "src/data/processed/meta_master/meta_master.json",
-  "files_found": 6,
-  "files_processed": 6,
-  "processed_files": [
+  "files_found": 7,
+  "files_processed": 0,
+  "processed_files": [],
+  "files_unchanged": 6,
+  "unchanged_files": [
     "sample.json",
     "test1.json",
     "test2.json",
@@ -13,19 +15,17 @@
     "test6.json",
     "test7.json"
   ],
-  "files_unchanged": 0,
-  "unchanged_files": [],
   "changed_files": [
-    "sample.json",
-    "test1.json",
-    "test2.json",
-    "test5.json",
-    "test6.json",
-    "test7.json"
+    "test8.json"
   ],
-  "total_rows_seen": 45,
-  "skipped_rows": 1,
+  "total_rows_seen": 0,
+  "skipped_rows": 0,
   "output_rows": 44,
-  "error_count": 0,
-  "errors": []
+  "error_count": 1,
+  "errors": [
+    {
+      "file": "test8.json",
+      "error": "Not a JSON array"
+    }
+  ]
 }
