@@ -1,9 +1,0 @@
-{
-  "time": "2026-04-09T11:17:06+00:00",
-  "stats": {
-    "closed_won_file_processed": null,
-    "new_rows_created_from_closed_won": 0,
-    "updated_from_closed_won": 0,
-    "total_master_rows": 30
-  }
-}
