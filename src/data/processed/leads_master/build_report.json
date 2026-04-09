@@ -1,0 +1,13 @@
+{
+  "time": "2026-04-09T11:59:34+00:00",
+  "stats": {
+    "hubspot_leads_files_processed": [
+      "sample.json",
+      "test1.json"
+    ],
+    "new_rows_created_from_leads": 6,
+    "updated_from_leads": 0,
+    "meta_matched_rows": 6,
+    "total_rows": 6
+  }
+}
