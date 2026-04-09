@@ -1,0 +1,137 @@
+[
+  {
+    "lead_id": "hub_001",
+    "lead_link": "https://hubspot.com/lead/001",
+
+    "createdate": "2026-04-01T08:12:00Z",
+    "hs_v2_date_entered_marketingqualifiedlead": "2026-04-01T09:00:00Z",
+    "hs_v2_date_entered_salesqualifiedlead": "2026-04-02T10:30:00Z",
+    "hs_v2_date_entered_opportunity": "2026-04-03T11:00:00Z",
+
+    "deal_id": "deal_001",
+    "deal_link": "https://hubspot.com/deal/001",
+    "deal_name": "Miller Foods - Closed Won",
+    "deal_createdate": "2026-04-03T11:15:00Z",
+    "deal_stage": "closedwon",
+    "deal_amount": 2500,
+    "deal_amount_usd": 2500,
+    "closedate": "2026-04-07T12:00:00Z",
+    "hs_v2_date_entered_51997770": "2026-04-07T12:00:00Z",
+    "deal_currency_code": "USD",
+    "number_of_branches": 3,
+
+    "firstname": "John",
+    "lastname": "Miller",
+    "email": "john.miller@example.com",
+    "phone": "+61412345678",
+    "jobtitle": "Owner",
+    "company": "Miller Foods",
+    "country": "AU",
+    "number_of_locations": 3,
+
+    "lifecyclestage": "customer",
+    "hs_lead_status": "CLOSED_WON",
+
+    "hs_analytics_source": "PAID_SOCIAL",
+    "hs_analytics_source_data_1": "Facebook",
+    "hs_analytics_source_data_2": "Lead Ad",
+    "new_lead_source": "Meta",
+
+    "utm_source": "facebook",
+    "utm_medium": "paid_social",
+    "utm_campaign": "supy_au_leadgen_apr",
+    "utm_content": "inventory_ad",
+
+    "last_updated": "2026-04-07T12:00:00Z"
+  },
+  {
+    "lead_id": "hub_002",
+    "lead_link": "https://hubspot.com/lead/002",
+
+    "createdate": "2026-04-02T10:25:00Z",
+    "hs_v2_date_entered_marketingqualifiedlead": "2026-04-02T11:00:00Z",
+    "hs_v2_date_entered_salesqualifiedlead": "2026-04-04T09:30:00Z",
+    "hs_v2_date_entered_opportunity": "2026-04-04T10:00:00Z",
+
+    "deal_id": "deal_002",
+    "deal_link": "https://hubspot.com/deal/002",
+    "deal_name": "Clark Dining Group - SQL",
+    "deal_createdate": "2026-04-04T10:15:00Z",
+    "deal_stage": "qualifiedtobuy",
+    "deal_amount": 2200,
+    "deal_amount_usd": 2200,
+    "closedate": "2026-04-08T10:00:00Z",
+    "hs_v2_date_entered_51997770": "2026-04-08T10:00:00Z",
+    "deal_currency_code": "USD",
+    "number_of_branches": 5,
+
+    "firstname": "Emily",
+    "lastname": "Clark",
+    "email": "emily.clark@example.co.uk",
+    "phone": "+447911123456",
+    "jobtitle": "Operations Manager",
+    "company": "Clark Dining Group",
+    "country": "UK",
+    "number_of_locations": 5,
+
+    "lifecyclestage": "salesqualifiedlead",
+    "hs_lead_status": "OPEN",
+
+    "hs_analytics_source": "PAID_SEARCH",
+    "hs_analytics_source_data_1": "Google",
+    "hs_analytics_source_data_2": "Search Ad",
+    "new_lead_source": "Google",
+
+    "utm_source": "google",
+    "utm_medium": "cpc",
+    "utm_campaign": "supy_uk_search_apr",
+    "utm_content": "ai_invoice_ad",
+
+    "last_updated": "2026-04-08T10:00:00Z"
+  },
+  {
+    "lead_id": "hub_009",
+    "lead_link": "https://hubspot.com/lead/009",
+
+    "createdate": "2026-04-09T09:10:00Z",
+    "hs_v2_date_entered_marketingqualifiedlead": "2026-04-09T09:30:00Z",
+    "hs_v2_date_entered_salesqualifiedlead": "2026-04-10T08:00:00Z",
+    "hs_v2_date_entered_opportunity": "2026-04-10T08:30:00Z",
+
+    "deal_id": "deal_009",
+    "deal_link": "https://hubspot.com/deal/009",
+    "deal_name": "Al Noor Restaurants - SQL",
+    "deal_createdate": "2026-04-10T09:00:00Z",
+    "deal_stage": "appointmentscheduled",
+    "deal_amount": 1800,
+    "deal_amount_usd": 1800,
+    "closedate": "2026-04-12T11:00:00Z",
+    "hs_v2_date_entered_51997770": "2026-04-12T11:00:00Z",
+    "deal_currency_code": "USD",
+    "number_of_branches": 4,
+
+    "firstname": "Omar",
+    "lastname": "Ali",
+    "email": "omar.ali@example.ae",
+    "phone": "+971521234567",
+    "jobtitle": "Operations Head",
+    "company": "Al Noor Restaurants",
+    "country": "AE",
+    "number_of_locations": 4,
+
+    "lifecyclestage": "salesqualifiedlead",
+    "hs_lead_status": "OPEN",
+
+    "hs_analytics_source": "PAID_SOCIAL",
+    "hs_analytics_source_data_1": "Facebook",
+    "hs_analytics_source_data_2": "Retargeting",
+    "new_lead_source": "Meta",
+
+    "utm_source": "facebook",
+    "utm_medium": "paid_social",
+    "utm_campaign": "supy_ae_retargeting_apr",
+    "utm_content": "demo_cta_ad",
+
+    "last_updated": "2026-04-12T11:00:00Z"
+  }
+]
