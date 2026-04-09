@@ -1,6 +1,6 @@
 {
   "build_name": "meta_master",
-  "last_built_at": "2026-04-09T04:19:20.640612+00:00",
+  "last_built_at": "2026-04-09T04:20:02.203880+00:00",
   "source_dir": "data/meta/Data",
   "output_dir": "src/data/processed/meta_master",
   "files_found": 7,
@@ -40,9 +40,8 @@
     },
     "test8.json": {
       "hash": "128012c9d3705aee65741668ae8b1551",
-      "status": "error",
-      "date": null,
-      "error": "Not a JSON array"
+      "status": "unchanged",
+      "date": null
     }
   }
 }
