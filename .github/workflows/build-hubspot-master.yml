@@ -1,19 +1,51 @@
+name: Build Leads Master
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'data/Hubspot/Leads/**'
+  workflow_dispatch:
+
 concurrency:
   group: leads-master
   cancel-in-progress: true
 
-# inside steps ↓
-- name: Commit processed files if changed
-  run: |
-    git config user.name "github-actions[bot]"
-    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+jobs:
+  build-leads-master:
+    runs-on: ubuntu-latest
 
-    git add src/data/processed/leads_master/
+    permissions:
+      contents: write
 
-    if git diff --cached --quiet; then
-      echo "No changes to commit"
-      exit 0
-    fi
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    git commit -m "update leads master (hubspot leads incremental)"
-    git push origin HEAD:main
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Leads + Meta Builder
+        env:
+          FULL_REBUILD: "false"
+        run: python scripts/build_hubspot_master.py
+
+      - name: Commit processed files if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add src/data/processed/leads_master/
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "update leads master (hubspot leads incremental)"
+          git push origin HEAD:main
