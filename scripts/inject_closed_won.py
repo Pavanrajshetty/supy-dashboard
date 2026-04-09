@@ -198,6 +198,10 @@ def upsert_closed_won_row(master_dict, cw_row):
     row["closed_won_date"] = cw_row.get("hs_v2_date_entered_51997770")
     row["closed_won_amount_usd"] = cw_row.get("deal_amount_usd")
 
+    # only new condition added
+    if row.get("sql_date") is None:
+        row["sql_date"] = cw_row.get("hs_v2_date_entered_salesqualifiedlead")
+
     return created, True, lead_id
 
 
