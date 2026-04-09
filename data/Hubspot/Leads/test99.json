@@ -1,0 +1,134 @@
+[
+  {
+    "lead_id": "pavan001",
+    "lead_link": "https://hubspot.com/contacts/pavan001",
+    "createdate": "2026-04-01T10:00:00Z",
+
+    "hs_v2_date_entered_marketingqualifiedlead": "2026-04-01T12:00:00Z",
+    "hs_v2_date_entered_salesqualifiedlead": null,
+    "hs_v2_date_entered_opportunity": null,
+
+    "deal_id": null,
+    "deal_link": null,
+    "deal_name": null,
+    "deal_createdate": null,
+    "deal_stage": null,
+    "deal_amount": null,
+    "deal_amount_usd": null,
+    "closedate": null,
+    "hs_v2_date_entered_51997770": null,
+
+    "deal_currency_code": "USD",
+    "number_of_branches": null,
+
+    "firstname": "John",
+    "lastname": "Doe",
+    "email": "john@example.com",
+    "phone": "+1234567890",
+    "jobtitle": "Owner",
+    "company": "ABC Restaurant",
+    "country": "Australia",
+    "number_of_locations": 3,
+    "lifecyclestage": "lead",
+    "hs_lead_status": "NEW",
+
+    "hs_analytics_source": "PAID_SOCIAL",
+    "hs_analytics_source_data_1": "Facebook",
+    "hs_analytics_source_data_2": "Lead Ad",
+
+    "new_lead_source": "Facebook",
+
+    "utm_source": null,
+    "utm_medium": null,
+    "utm_campaign": null,
+    "utm_content": null
+  },
+  {
+    "lead_id": "pavan002",
+    "lead_link": "https://hubspot.com/contacts/pavan002",
+    "createdate": "2026-04-02T11:30:00Z",
+
+    "hs_v2_date_entered_marketingqualifiedlead": "2026-04-02T13:00:00Z",
+    "hs_v2_date_entered_salesqualifiedlead": null,
+    "hs_v2_date_entered_opportunity": null,
+
+    "deal_id": null,
+    "deal_link": null,
+    "deal_name": null,
+    "deal_createdate": null,
+    "deal_stage": null,
+    "deal_amount": null,
+    "deal_amount_usd": null,
+    "closedate": null,
+    "hs_v2_date_entered_51997770": null,
+
+    "deal_currency_code": "USD",
+    "number_of_branches": null,
+
+    "firstname": "Sarah",
+    "lastname": "Lee",
+    "email": "sarah@example.com",
+    "phone": "+1987654321",
+    "jobtitle": "Manager",
+    "company": "Food Hub",
+    "country": "UK",
+    "number_of_locations": 2,
+    "lifecyclestage": "lead",
+    "hs_lead_status": "OPEN",
+
+    "hs_analytics_source": "PAID_SEARCH",
+    "hs_analytics_source_data_1": "Google",
+    "hs_analytics_source_data_2": "Search",
+
+    "new_lead_source": "Google Ads",
+
+    "utm_source": null,
+    "utm_medium": null,
+    "utm_campaign": null,
+    "utm_content": null
+  },
+  {
+    "lead_id": "pavan003",
+    "lead_link": "https://hubspot.com/contacts/pavan003",
+    "createdate": "2026-04-03T09:15:00Z",
+
+    "hs_v2_date_entered_marketingqualifiedlead": "2026-04-03T10:30:00Z",
+    "hs_v2_date_entered_salesqualifiedlead": null,
+    "hs_v2_date_entered_opportunity": null,
+
+    "deal_id": null,
+    "deal_link": null,
+    "deal_name": null,
+    "deal_createdate": null,
+    "deal_stage": null,
+    "deal_amount": null,
+    "deal_amount_usd": null,
+    "closedate": null,
+    "hs_v2_date_entered_51997770": null,
+
+    "deal_currency_code": "USD",
+    "number_of_branches": null,
+
+    "firstname": "Alex",
+    "lastname": "Smith",
+    "email": "alex@example.com",
+    "phone": "+1122334455",
+    "jobtitle": "Founder",
+    "company": "Quick Bites",
+    "country": "Singapore",
+    "number_of_locations": 4,
+    "lifecyclestage": "lead",
+    "hs_lead_status": "NEW",
+
+    "hs_analytics_source": "ORGANIC_SEARCH",
+    "hs_analytics_source_data_1": "Google",
+    "hs_analytics_source_data_2": "SEO",
+
+    "new_lead_source": "Organic",
+
+    "utm_source": null,
+    "utm_medium": null,
+    "utm_campaign": null,
+    "utm_content": null
+  }
+]
