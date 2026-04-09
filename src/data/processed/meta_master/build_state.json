@@ -1,67 +1,42 @@
 {
   "build_name": "meta_master",
-  "last_built_at": "2026-04-09T04:13:07.076779+00:00",
+  "last_built_at": "2026-04-09T04:13:24.882546+00:00",
   "source_dir": "data/meta/Data",
   "output_dir": "src/data/processed/meta_master",
   "files_found": 6,
-  "files_processed": 6,
-  "processed_files": [
-    "sample.json",
-    "test1.json",
-    "test2.json",
-    "test5.json",
-    "test6.json",
-    "test7.json"
-  ],
+  "files_processed": 0,
+  "processed_files": [],
   "output_rows": 44,
   "file_states": {
     "sample.json": {
       "hash": "9d7079c466f3f0e80ed86f0758e0f990",
-      "status": "processed",
-      "rows": 1,
-      "aggregated_rows": 0,
-      "date": "sample",
-      "processed_at": "2026-04-09T04:13:07.075876+00:00"
+      "status": "unchanged",
+      "date": "sample"
     },
     "test1.json": {
       "hash": "48143415dfdf6f38c2343257fe530451",
-      "status": "processed",
-      "rows": 8,
-      "aggregated_rows": 8,
-      "date": "test1",
-      "processed_at": "2026-04-09T04:13:07.076095+00:00"
+      "status": "unchanged",
+      "date": "test1"
     },
     "test2.json": {
       "hash": "ecd166e11f2559ce9b5aa50e307ee0a4",
-      "status": "processed",
-      "rows": 8,
-      "aggregated_rows": 8,
-      "date": "test2",
-      "processed_at": "2026-04-09T04:13:07.076276+00:00"
+      "status": "unchanged",
+      "date": "test2"
     },
     "test5.json": {
       "hash": "ecd166e11f2559ce9b5aa50e307ee0a4",
-      "status": "processed",
-      "rows": 8,
-      "aggregated_rows": 8,
-      "date": "test5",
-      "processed_at": "2026-04-09T04:13:07.076429+00:00"
+      "status": "unchanged",
+      "date": "test5"
     },
     "test6.json": {
       "hash": "00ef4d3cb147ee9ae682133bc72773b0",
-      "status": "processed",
-      "rows": 10,
-      "aggregated_rows": 10,
-      "date": "test6",
-      "processed_at": "2026-04-09T04:13:07.076584+00:00"
+      "status": "unchanged",
+      "date": "test6"
     },
     "test7.json": {
       "hash": "fef7221d7db1378aec93a460830e436b",
-      "status": "processed",
-      "rows": 10,
-      "aggregated_rows": 10,
-      "date": "test7",
-      "processed_at": "2026-04-09T04:13:07.076744+00:00"
+      "status": "unchanged",
+      "date": "test7"
     }
   }
 }
