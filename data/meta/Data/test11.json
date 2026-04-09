@@ -1,0 +1,62 @@
+[
+  {
+    "date": "2026-04-11",
+    "campaign_id": "act_555111222_sg_brand",
+    "campaign_name": "Supy_Facebook_SG_Brand_Leadgen",
+    "adset_id": "adset_brand_sg_ops",
+    "adset_name": "Brand_Operators_SG",
+    "ad_id": "ad_brand_sg_video1",
+    "ad_name": "SG_Brand_Video_Ad_1",
+    "country": "SG",
+    "impressions": 2100,
+    "clicks": 45,
+    "reach": 1750,
+    "leads": 6,
+    "spend": 520
+  },
+  {
+    "date": "2026-04-13",
+    "campaign_id": "act_888333444_uk_ret",
+    "campaign_name": "Supy_Facebook_UK_Retargeting",
+    "adset_id": "adset_ret_uk_30d",
+    "adset_name": "UK_Website_Visitors_30D",
+    "ad_id": "ad_ret_uk_static1",
+    "ad_name": "UK_Retargeting_Static_Ad_1",
+    "country": "UK",
+    "impressions": 1650,
+    "clicks": 38,
+    "reach": 1300,
+    "leads": 5,
+    "spend": 480
+  },
+  {
+    "date": "2026-04-15",
+    "campaign_id": "act_777999666_ind_nb",
+    "campaign_name": "Supy_Facebook_India_NonBrand",
+    "adset_id": "adset_nb_ind_restaurants",
+    "adset_name": "NB_Restaurant_Owners_India",
+    "ad_id": "ad_nb_ind_video2",
+    "ad_name": "India_NB_Video_Ad_2",
+    "country": "IN",
+    "impressions": 3200,
+    "clicks": 72,
+    "reach": 2600,
+    "leads": 9,
+    "spend": 610
+  },
+  {
+    "date": "2026-04-17",
+    "campaign_id": "act_444222999_uae_lal",
+    "campaign_name": "Supy_Facebook_UAE_LAL_Leadgen",
+    "adset_id": "adset_lal_uae_admin",
+    "adset_name": "LAL_Admin_UAE",
+    "ad_id": "ad_lal_uae_video1",
+    "ad_name": "UAE_LAL_Video_Ad_1",
+    "country": "AE",
+    "impressions": 1850,
+    "clicks": 34,
+    "reach": 1500,
+    "leads": 4,
+    "spend": 550
+  }
+]
