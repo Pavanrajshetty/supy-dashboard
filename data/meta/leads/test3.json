@@ -1,0 +1,202 @@
+[
+  {
+    "lead_id": "27030653919860310",
+    "created_time": "2026-02-10T10:00:00Z",
+    "form_name": "META India Feb 2026",
+    "campaign_id": "CAMP_101",
+    "campaign_name": "Supy_Facebook_IND_Leadgen",
+    "adset_id": "ADSET_101",
+    "adset_name": "IND_Admin_LAL",
+    "ad_id": "AD_101",
+    "ad_name": "IND_LAL_Video_1",
+    "first_name": "Arjun",
+    "last_name": "Reddy",
+    "email": "arjun.reddy@test.com",
+    "phone_number": "+919000000010",
+    "company_name": "Reddy Foods",
+    "country": "India",
+    "custom_fields": {
+      "work_email": "arjun.reddy@test.com"
+    }
+  },
+  {
+    "lead_id": "27030653919860311",
+    "created_time": "2026-02-11T11:10:00Z",
+    "form_name": "META India Feb 2026",
+    "campaign_id": "CAMP_102",
+    "campaign_name": "Supy_Facebook_IND_Leadgen",
+    "adset_id": "ADSET_102",
+    "adset_name": "IND_Admin_Broad",
+    "ad_id": "AD_102",
+    "ad_name": "IND_Static_Ad_1",
+    "first_name": "Priya",
+    "last_name": "Iyer",
+    "email": "priya.iyer@test.com",
+    "phone_number": "+919000000011",
+    "company_name": "Iyer Cafe",
+    "country": "India",
+    "custom_fields": {
+      "work_email": "priya.iyer@test.com"
+    }
+  },
+  {
+    "lead_id": "27030653919860312",
+    "created_time": "2026-02-12T09:40:00Z",
+    "form_name": "META India Feb 2026",
+    "campaign_id": "CAMP_103",
+    "campaign_name": "Supy_Facebook_IND_Leadgen",
+    "adset_id": "ADSET_103",
+    "adset_name": "IND_Admin_Retargeting",
+    "ad_id": "AD_103",
+    "ad_name": "IND_RTG_Video_2",
+    "first_name": "Karan",
+    "last_name": "Mehta",
+    "email": "karan.mehta@test.com",
+    "phone_number": "+919000000012",
+    "company_name": "Mehta Bites",
+    "country": "India",
+    "custom_fields": {
+      "work_email": "karan.mehta@test.com"
+    }
+  },
+  {
+    "lead_id": "27030653919860313",
+    "created_time": "2026-02-13T08:30:00Z",
+    "form_name": "META India Feb 2026",
+    "campaign_id": "CAMP_104",
+    "campaign_name": "Supy_Facebook_IND_Leadgen",
+    "adset_id": "ADSET_104",
+    "adset_name": "IND_Admin_LAL",
+    "ad_id": "AD_104",
+    "ad_name": "IND_LAL_Static_2",
+    "first_name": "Sneha",
+    "last_name": "Kapoor",
+    "email": "sneha.kapoor@test.com",
+    "phone_number": "+919000000013",
+    "company_name": "Kapoor Kitchen",
+    "country": "India",
+    "custom_fields": {
+      "work_email": "sneha.kapoor@test.com"
+    }
+  },
+  {
+    "lead_id": "27030653919860314",
+    "created_time": "2026-02-14T12:20:00Z",
+    "form_name": "META India Feb 2026",
+    "campaign_id": "CAMP_105",
+    "campaign_name": "Supy_Facebook_IND_Leadgen",
+    "adset_id": "ADSET_105",
+    "adset_name": "IND_Admin_Broad",
+    "ad_id": "AD_105",
+    "ad_name": "IND_Static_Ad_2",
+    "first_name": "Vikram",
+    "last_name": "Singh",
+    "email": "vikram.singh@test.com",
+    "phone_number": "+919000000014",
+    "company_name": "Singh Dhaba",
+    "country": "India",
+    "custom_fields": {
+      "work_email": "vikram.singh@test.com"
+    }
+  },
+  {
+    "lead_id": "27030653919860315",
+    "created_time": "2026-02-15T13:45:00Z",
+    "form_name": "META India Feb 2026",
+    "campaign_id": "CAMP_106",
+    "campaign_name": "Supy_Facebook_IND_Leadgen",
+    "adset_id": "ADSET_106",
+    "adset_name": "IND_Admin_LAL",
+    "ad_id": "AD_106",
+    "ad_name": "IND_LAL_Video_3",
+    "first_name": "Anjali",
+    "last_name": "Das",
+    "email": "anjali.das@test.com",
+    "phone_number": "+919000000015",
+    "company_name": "Das Delights",
+    "country": "India",
+    "custom_fields": {
+      "work_email": "anjali.das@test.com"
+    }
+  },
+  {
+    "lead_id": "27030653919860316",
+    "created_time": "2026-02-16T14:10:00Z",
+    "form_name": "META India Feb 2026",
+    "campaign_id": "CAMP_107",
+    "campaign_name": "Supy_Facebook_IND_Leadgen",
+    "adset_id": "ADSET_107",
+    "adset_name": "IND_Admin_Retargeting",
+    "ad_id": "AD_107",
+    "ad_name": "IND_RTG_Static_1",
+    "first_name": "Rakesh",
+    "last_name": "Jain",
+    "email": "rakesh.jain@test.com",
+    "phone_number": "+919000000016",
+    "company_name": "Jain Foods",
+    "country": "India",
+    "custom_fields": {
+      "work_email": "rakesh.jain@test.com"
+    }
+  },
+  {
+    "lead_id": "27030653919860317",
+    "created_time": "2026-02-17T09:25:00Z",
+    "form_name": "META India Feb 2026",
+    "campaign_id": "CAMP_108",
+    "campaign_name": "Supy_Facebook_IND_Leadgen",
+    "adset_id": "ADSET_108",
+    "adset_name": "IND_Admin_Broad",
+    "ad_id": "AD_108",
+    "ad_name": "IND_Static_Ad_3",
+    "first_name": "Pooja",
+    "last_name": "Shah",
+    "email": "pooja.shah@test.com",
+    "phone_number": "+919000000017",
+    "company_name": "Shah Cafe",
+    "country": "India",
+    "custom_fields": {
+      "work_email": "pooja.shah@test.com"
+    }
+  },
+  {
+    "lead_id": "27030653919860318",
+    "created_time": "2026-02-18T10:55:00Z",
+    "form_name": "META India Feb 2026",
+    "campaign_id": "CAMP_109",
+    "campaign_name": "Supy_Facebook_IND_Leadgen",
+    "adset_id": "ADSET_109",
+    "adset_name": "IND_Admin_LAL",
+    "ad_id": "AD_109",
+    "ad_name": "IND_LAL_Video_4",
+    "first_name": "Deepak",
+    "last_name": "Yadav",
+    "email": "deepak.yadav@test.com",
+    "phone_number": "+919000000018",
+    "company_name": "Yadav Meals",
+    "country": "India",
+    "custom_fields": {
+      "work_email": "deepak.yadav@test.com"
+    }
+  },
+  {
+    "lead_id": "27030653919860319",
+    "created_time": "2026-02-19T08:15:00Z",
+    "form_name": "META India Feb 2026",
+    "campaign_id": "CAMP_110",
+    "campaign_name": "Supy_Facebook_IND_Leadgen",
+    "adset_id": "ADSET_110",
+    "adset_name": "IND_Admin_Retargeting",
+    "ad_id": "AD_110",
+    "ad_name": "IND_RTG_Video_1",
+    "first_name": "Manish",
+    "last_name": "Patel",
+    "email": "manish.patel@test.com",
+    "phone_number": "+919000000019",
+    "company_name": "Patel Snacks",
+    "country": "India",
+    "custom_fields": {
+      "work_email": "manish.patel@test.com"
+    }
+  }
+]
