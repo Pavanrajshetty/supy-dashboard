@@ -6,9 +6,6 @@ on:
       - main
     paths:
       - 'data/Hubspot/Leads/**'
-      - 'data/meta/leads/**'
-      - 'scripts/build_hubspot_master.py'
-      - '.github/workflows/build-leads-master.yml'
   workflow_dispatch:
 
 jobs:
@@ -31,7 +28,7 @@ jobs:
 
       - name: Run Leads + Meta Builder
         env:
-          FULL_REBUILD: "true"
+          FULL_REBUILD: "false"
         run: python scripts/build_hubspot_master.py
 
       - name: Commit processed files if changed
@@ -44,7 +41,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "update leads master (leads + meta)"
+            git commit -m "update leads master (hubspot leads incremental)"
             git pull --rebase origin main
             git push origin main
           fi
