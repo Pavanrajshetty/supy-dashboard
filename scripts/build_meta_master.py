@@ -225,52 +225,54 @@ def main():
 
     changed_files = []
     unchanged_files = []
+    processed_files = []
     error_files = []
 
     current_file_states = {}
-    touched_dates = set()
 
     total_rows_seen = 0
     skipped_rows = 0
-    files_processed = 0
 
+    # First pass: decide changed vs unchanged
     for file_path in json_files:
         file_hash = get_file_hash(file_path)
-
-        current_file_states[file_path.name] = {
-            "hash": file_hash
-        }
-
         old_hash = previous_file_states.get(file_path.name, {}).get("hash")
+
         if old_hash == file_hash:
             unchanged_files.append(file_path.name)
+            current_file_states[file_path.name] = {
+                "hash": file_hash,
+                "status": "unchanged",
+                "date": previous_file_states.get(file_path.name, {}).get("date")
+            }
             continue
 
         changed_files.append(file_path)
 
+    # Second pass: process only changed/new files
     for file_path in changed_files:
+        file_hash = get_file_hash(file_path)
+
         try:
             raw_rows = rows_from_file(file_path)
-
-            for row in raw_rows:
-                if isinstance(row, dict):
-                    row_date = row.get("date") or get_date_from_filename(file_path)
-                    touched_dates.add(row_date)
-                else:
-                    touched_dates.add(get_date_from_filename(file_path))
-
             aggregated_rows, seen_count, skipped_count = aggregate_rows(raw_rows)
 
             total_rows_seen += seen_count
             skipped_rows += skipped_count
-            files_processed += 1
 
             file_date = get_date_from_filename(file_path)
-            current_file_states[file_path.name]["rows"] = len(raw_rows)
-            current_file_states[file_path.name]["aggregated_rows"] = len(aggregated_rows)
-            current_file_states[file_path.name]["date"] = file_date
 
             existing_by_date[file_date] = aggregated_rows
+            processed_files.append(file_path.name)
+
+            current_file_states[file_path.name] = {
+                "hash": file_hash,
+                "status": "processed",
+                "rows": len(raw_rows),
+                "aggregated_rows": len(aggregated_rows),
+                "date": file_date,
+                "processed_at": utc_now()
+            }
 
             print(f"Processed changed file: {file_path.name}")
 
@@ -279,6 +281,15 @@ def main():
                 "file": file_path.name,
                 "error": str(e)
             })
+
+            old_state = previous_file_states.get(file_path.name, {})
+            current_file_states[file_path.name] = {
+                "hash": file_hash,
+                "status": "error",
+                "date": old_state.get("date"),
+                "error": str(e)
+            }
+
             print(f"Error in {file_path.name}: {e}")
 
     final_master = []
@@ -287,6 +298,8 @@ def main():
 
     sort_meta_master(final_master)
 
+    files_processed = len(processed_files)
+
     report = {
         "build_name": "meta_master",
         "built_at": utc_now(),
@@ -294,7 +307,9 @@ def main():
         "output_file": str(META_MASTER_OUTPUT),
         "files_found": files_found,
         "files_processed": files_processed,
+        "processed_files": processed_files,
         "files_unchanged": len(unchanged_files),
+        "unchanged_files": unchanged_files,
         "changed_files": [f.name for f in changed_files],
         "total_rows_seen": total_rows_seen,
         "skipped_rows": skipped_rows,
@@ -310,6 +325,7 @@ def main():
         "output_dir": str(OUTPUT_DIR),
         "files_found": files_found,
         "files_processed": files_processed,
+        "processed_files": processed_files,
         "output_rows": len(final_master),
         "file_states": current_file_states
     }
@@ -320,6 +336,7 @@ def main():
 
     print(f"Files found: {files_found}")
     print(f"Files processed this run: {files_processed}")
+    print(f"Processed files: {processed_files}")
     print(f"Files unchanged: {len(unchanged_files)}")
     print(f"Output rows: {len(final_master)}")
 
