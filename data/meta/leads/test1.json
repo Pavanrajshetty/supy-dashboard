@@ -1,0 +1,122 @@
+[
+  {
+    "lead_id": "lead_001",
+    "created_time": "2026-04-01T08:12:00Z",
+    "form_name": "Demo Request Form",
+    "campaign_id": "CAMP_101",
+    "campaign_name": "Supy_Global_Leadgen_Apr",
+    "adset_id": "ADSET_201",
+    "adset_name": "Restaurant Owners AU",
+    "ad_id": "AD_301",
+    "ad_name": "Inventory Pain Point Ad",
+    "first_name": "John",
+    "last_name": "Miller",
+    "email": "john.miller@example.com",
+    "phone_number": "+61412345678",
+    "company_name": "Miller Foods",
+    "country": "AU",
+    "custom_fields": {
+      "work_email": "john@millerfoods.com"
+    }
+  },
+  {
+    "lead_id": "lead_002",
+    "created_time": "2026-04-02T10:25:00Z",
+    "form_name": "Demo Request Form",
+    "campaign_id": "CAMP_102",
+    "campaign_name": "Supy_UK_Search",
+    "adset_id": "ADSET_202",
+    "adset_name": "Restaurant Chains UK",
+    "ad_id": "AD_302",
+    "ad_name": "AI Invoice Feature Ad",
+    "first_name": "Emily",
+    "last_name": "Clark",
+    "email": "emily.clark@example.co.uk",
+    "phone_number": "+447911123456",
+    "company_name": "Clark Dining Group",
+    "country": "UK",
+    "custom_fields": {
+      "work_email": "emily@clarkdining.co.uk"
+    }
+  },
+  {
+    "lead_id": "lead_003",
+    "created_time": "2026-04-03T12:40:00Z",
+    "form_name": "WhatsApp Demo Form",
+    "campaign_id": "CAMP_103",
+    "campaign_name": "Supy_PH_Leadgen",
+    "adset_id": "ADSET_203",
+    "adset_name": "Restaurant Managers PH",
+    "ad_id": "AD_303",
+    "ad_name": "Reduce Food Waste Ad",
+    "first_name": "Carlos",
+    "last_name": "Reyes",
+    "email": "carlos.reyes@example.ph",
+    "phone_number": "+639171234567",
+    "company_name": "Reyes Kitchen",
+    "country": "PH",
+    "custom_fields": {
+      "work_email": "carlos@reyeskitchen.ph"
+    }
+  },
+  {
+    "lead_id": "lead_004",
+    "created_time": "2026-04-04T14:05:00Z",
+    "form_name": "Demo Request Form",
+    "campaign_id": "CAMP_104",
+    "campaign_name": "Supy_MY_LAL",
+    "adset_id": "ADSET_204",
+    "adset_name": "Lookalike SQL MY",
+    "ad_id": "AD_304",
+    "ad_name": "Multi-Outlet Growth Ad",
+    "first_name": "Aiman",
+    "last_name": "Rahman",
+    "email": "aiman.rahman@example.my",
+    "phone_number": "+60123456789",
+    "company_name": "Rahman Group",
+    "country": "MY",
+    "custom_fields": {
+      "work_email": "aiman@rahmangroup.my"
+    }
+  },
+  {
+    "lead_id": "lead_005",
+    "created_time": "2026-04-05T09:55:00Z",
+    "form_name": "Demo Request Form",
+    "campaign_id": "CAMP_105",
+    "campaign_name": "Supy_TH_Search",
+    "adset_id": "ADSET_205",
+    "adset_name": "Restaurant Owners TH",
+    "ad_id": "AD_305",
+    "ad_name": "Cost Saving Ad",
+    "first_name": "Niran",
+    "last_name": "Sukchai",
+    "email": "niran.sukchai@example.th",
+    "phone_number": "+66812345678",
+    "company_name": "Sukchai Foods",
+    "country": "TH",
+    "custom_fields": {
+      "work_email": "niran@sukchaifoods.th"
+    }
+  },
+  {
+    "lead_id": "lead_006",
+    "created_time": "2026-04-06T16:20:00Z",
+    "form_name": "WhatsApp Demo Form",
+    "campaign_id": "CAMP_106",
+    "campaign_name": "Supy_UAE_Retargeting",
+    "adset_id": "ADSET_206",
+    "adset_name": "Website Visitors UAE",
+    "ad_id": "AD_306",
+    "ad_name": "Book Demo Retargeting Ad",
+    "first_name": "Ahmed",
+    "last_name": "Khan",
+    "email": "ahmed.khan@example.ae",
+    "phone_number": "+971501234567",
+    "company_name": "Khan Hospitality",
+    "country": "AE",
+    "custom_fields": {
+      "work_email": "ahmed@khanhospitality.ae"
+    }
+  }
+]
