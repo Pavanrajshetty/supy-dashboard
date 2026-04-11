@@ -1,15 +1,14 @@
 {
   "build_name": "meta_master",
-  "built_at": "2026-04-11T14:27:57.529373+00:00",
+  "built_at": "2026-04-11T14:28:07.232382+00:00",
   "source_dir": "data/meta/Data",
   "output_file": "src/data/processed/meta_master/meta_master.json",
-  "files_found": 6,
+  "files_found": 5,
   "files_processed": 0,
   "processed_files": [],
-  "files_unchanged": 6,
+  "files_unchanged": 5,
   "unchanged_files": [
     "sample.json",
-    "test2.json",
     "test5.json",
     "test6.json",
     "test7.json",
