@@ -1,24 +1,25 @@
 {
   "build_name": "meta_master",
-  "built_at": "2026-04-11T15:19:30.560317+00:00",
+  "built_at": "2026-04-11T15:41:08.852110+00:00",
   "source_dir": "data/meta/Data",
   "output_file": "src/data/processed/meta_master/meta_master.json",
-  "files_found": 3,
+  "files_found": 4,
   "files_processed": 1,
   "processed_files": [
-    "Mar-02-2026.json"
+    "Mar-03-2026.json"
   ],
-  "files_unchanged": 2,
+  "files_unchanged": 3,
   "unchanged_files": [
     "Mar-01-2026.json",
+    "Mar-02-2026.json",
     "sample.json"
   ],
   "changed_files": [
-    "Mar-02-2026.json"
+    "Mar-03-2026.json"
   ],
-  "total_rows_seen": 14,
+  "total_rows_seen": 20,
   "skipped_rows": 0,
-  "output_rows": 31,
+  "output_rows": 51,
   "error_count": 0,
   "errors": []
 }
