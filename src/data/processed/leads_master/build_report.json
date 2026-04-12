@@ -1,12 +1,10 @@
 {
-  "time": "2026-04-12T10:33:54+00:00",
+  "time": "2026-04-12T11:42:46+00:00",
   "stats": {
-    "hubspot_leads_files_processed": [
-      "data2.json"
-    ],
-    "new_rows_created_from_leads": 145,
+    "hubspot_leads_files_processed": [],
+    "new_rows_created_from_leads": 0,
     "updated_from_leads": 0,
-    "meta_matched_rows": 77,
-    "total_rows": 145
+    "meta_matched_rows": 0,
+    "total_rows": 0
   }
 }
