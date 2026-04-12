@@ -31,7 +31,7 @@
     "deal_stage": "Under Negotiation",
     "deal_amount": 440,
     "deal_currency_code": "NZD",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 268.29,
     "number_of_branches": 2
   },
   {
@@ -101,7 +101,7 @@
     "deal_stage": "Demo Run",
     "deal_amount": 900,
     "deal_currency_code": "AUD",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 588.24,
     "number_of_branches": 2
   },
   {
@@ -136,7 +136,7 @@
     "deal_stage": "Closed/Lost",
     "deal_amount": 458,
     "deal_currency_code": "NZD",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 279.27,
     "number_of_branches": 2
   },
   {
@@ -171,7 +171,7 @@
     "deal_stage": "Delayed/Deferred",
     "deal_amount": 150,
     "deal_currency_code": "GBP",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 201.86,
     "number_of_branches": 10
   },
   {
@@ -206,7 +206,7 @@
     "deal_stage": "Demo Run",
     "deal_amount": 900,
     "deal_currency_code": "AUD",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 588.24,
     "number_of_branches": 3
   },
   {
@@ -311,7 +311,7 @@
     "deal_stage": "Proposal Sent",
     "deal_amount": 994,
     "deal_currency_code": "AUD",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 649.67,
     "number_of_branches": 6
   },
   {
@@ -486,7 +486,7 @@
     "deal_stage": "Demo Booked",
     "deal_amount": 200,
     "deal_currency_code": "GBP",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 269.15,
     "number_of_branches": 2
   },
   {
