@@ -1,0 +1,9 @@
+{
+  "time": "2026-04-12T11:43:45+00:00",
+  "stats": {
+    "sql_file_processed": "test1.json",
+    "new_rows_created_from_sql": 4,
+    "updated_from_sql": 0,
+    "total_master_rows": 4
+  }
+}
