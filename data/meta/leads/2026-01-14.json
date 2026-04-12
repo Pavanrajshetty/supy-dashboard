@@ -1,0 +1,142 @@
+[
+  {
+    "lead_id": "1557552778799998",
+    "created_time": "2026-01-13T22:10:10+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209460358900775",
+    "adset_name": "LAL_Consolidated_KSA_Facebook_NA",
+    "ad_id": "120209460358890775",
+    "ad_name": "LAL_Consolidated_KSA_Facebook_Video_Ad",
+    "first_name": "Ahmad",
+    "last_name": "Ashoor",
+    "email": null,
+    "phone_number": "+966575882507",
+    "company_name": "Meknan Est",
+    "country": null,
+    "custom_fields": {
+      "work_email": "ahmadashoor6@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1437203347929447",
+    "created_time": "2026-01-13T18:59:03+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209460358900775",
+    "adset_name": "LAL_Consolidated_KSA_Facebook_NA",
+    "ad_id": "120209460358890775",
+    "ad_name": "LAL_Consolidated_KSA_Facebook_Video_Ad",
+    "first_name": "Kinara Restaurant  مطعم",
+    "last_name": "كينارا",
+    "email": null,
+    "phone_number": "+966504702594",
+    "company_name": "Kinara",
+    "country": null,
+    "custom_fields": {
+      "work_email": "kinara.taif@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1577903313358697",
+    "created_time": "2026-01-14T11:23:57+0000",
+    "form_name": "META Lead Form Australia HQ (03/11/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120211091446780775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "120211091446770775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "first_name": "Roland",
+    "last_name": "Zammit",
+    "email": null,
+    "phone_number": "+61418531100",
+    "company_name": "Waterfall gully Cafe Nursery",
+    "country": null,
+    "custom_fields": {
+      "work_email": "rpzammit@hotmail.com"
+    }
+  },
+  {
+    "lead_id": "4473783412849500",
+    "created_time": "2026-01-14T06:02:00+0000",
+    "form_name": "META Lead Form Australia HQ (03/11/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120211091446780775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "120211091446770775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "first_name": "Mike",
+    "last_name": "Edwards",
+    "email": null,
+    "phone_number": "+653326558",
+    "company_name": "Wakamo",
+    "country": null,
+    "custom_fields": {
+      "work_email": "Me@wakamo.com"
+    }
+  },
+  {
+    "lead_id": "758170760656965",
+    "created_time": "2026-01-14T03:33:54+0000",
+    "form_name": "META Lead Form Australia HQ (03/11/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120234978194630775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Auto",
+    "ad_id": "120234978194640775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad_auto_v1",
+    "first_name": "Nick",
+    "last_name": "Kenos",
+    "email": null,
+    "phone_number": "+61481246796",
+    "company_name": "Calvino coffee",
+    "country": null,
+    "custom_fields": {
+      "work_email": "Nick@calvinocoffee.com.au"
+    }
+  },
+  {
+    "lead_id": "863316806595302",
+    "created_time": "2026-01-13T19:42:55+0000",
+    "form_name": "META Lead Form Australia HQ (03/11/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120211091446780775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "120211091446770775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "first_name": "Joshua",
+    "last_name": "Stapleton",
+    "email": null,
+    "phone_number": "+61431297102",
+    "company_name": "Ray White Griffith",
+    "country": null,
+    "custom_fields": {
+      "work_email": "Josh.stapleton@raywhite.com"
+    }
+  },
+  {
+    "lead_id": "2037540736812479",
+    "created_time": "2026-01-14T14:05:26+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120227305650640775",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "adset_id": "120227305650710775",
+    "adset_name": "LAL_Admin_HK_MY_Facebook_Leadgen",
+    "ad_id": "120227305650700775",
+    "ad_name": "LAL_Admin_HK_MY _Facebook_Lead_Ad",
+    "first_name": "Natureway food",
+    "last_name": "Manufacturing",
+    "email": null,
+    "phone_number": "0169409369",
+    "company_name": "fusion harmony",
+    "country": "MY",
+    "custom_fields": {
+      "work_email": "natalie.tkt@gmail.com"
+    }
+  }
+]

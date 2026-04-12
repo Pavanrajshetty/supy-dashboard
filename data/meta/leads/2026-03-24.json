@@ -1,0 +1,202 @@
+[
+  {
+    "lead_id": "897096749814139",
+    "created_time": "2026-03-24T11:27:07+0000",
+    "form_name": "META Italy  03/2026",
+    "campaign_id": null,
+    "campaign_name": null,
+    "adset_id": null,
+    "adset_name": null,
+    "ad_id": null,
+    "ad_name": null,
+    "first_name": "test",
+    "last_name": "test",
+    "email": null,
+    "phone_number": "+918123836309",
+    "company_name": "meta form italy",
+    "country": "Italy",
+    "custom_fields": {
+      "work_email": "Pavan+test1451@supy.io"
+    }
+  },
+  {
+    "lead_id": "1473767624458317",
+    "created_time": "2026-03-24T17:18:03+0000",
+    "form_name": "META Nigeria  03/2026",
+    "campaign_id": "120240098293900775",
+    "campaign_name": "Supy_Facebook_Nigeria_Meta",
+    "adset_id": "120240098293660775",
+    "adset_name": "Meta_Nigeria_Facebook_Leadgen_Broad",
+    "ad_id": "120240098293650775",
+    "ad_name": "Interest_Nigeria_Facebook_Lead_Ad",
+    "first_name": "Victoria",
+    "last_name": "Restaurant",
+    "email": null,
+    "phone_number": "+2347064053730",
+    "company_name": "Blackbell",
+    "country": "Nigeria",
+    "custom_fields": {
+      "work_email": "vavuru@blackbell.com"
+    }
+  },
+  {
+    "lead_id": "1493904222301202",
+    "created_time": "2026-03-24T15:36:40+0000",
+    "form_name": "META Nigeria  03/2026",
+    "campaign_id": "120240098293900775",
+    "campaign_name": "Supy_Facebook_Nigeria_Meta",
+    "adset_id": "120240098293660775",
+    "adset_name": "Meta_Nigeria_Facebook_Leadgen_Broad",
+    "ad_id": "120240098293650775",
+    "ad_name": "Interest_Nigeria_Facebook_Lead_Ad",
+    "first_name": "Justine",
+    "last_name": "Harry",
+    "email": null,
+    "phone_number": "+2349025552095",
+    "company_name": "Los Angeles, California, United States",
+    "country": "Nigeria",
+    "custom_fields": {
+      "work_email": "Maintenance service opportunities"
+    }
+  },
+  {
+    "lead_id": "1732023087765673",
+    "created_time": "2026-03-24T14:50:07+0000",
+    "form_name": "META Nigeria  03/2026",
+    "campaign_id": "120240098293900775",
+    "campaign_name": "Supy_Facebook_Nigeria_Meta",
+    "adset_id": "120240098293660775",
+    "adset_name": "Meta_Nigeria_Facebook_Leadgen_Broad",
+    "ad_id": "120240098293650775",
+    "ad_name": "Interest_Nigeria_Facebook_Lead_Ad",
+    "first_name": "Çäll Mhie",
+    "last_name": "Gamji",
+    "email": null,
+    "phone_number": "08068859590",
+    "company_name": "Dan Gote",
+    "country": "Nigeria",
+    "custom_fields": {
+      "work_email": "nazifushuaibukaraye@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1281378750597708",
+    "created_time": "2026-03-24T14:33:56+0000",
+    "form_name": "META Nigeria  03/2026",
+    "campaign_id": "120240098293900775",
+    "campaign_name": "Supy_Facebook_Nigeria_Meta",
+    "adset_id": "120240098293660775",
+    "adset_name": "Meta_Nigeria_Facebook_Leadgen_Broad",
+    "ad_id": "120240098293650775",
+    "ad_name": "Interest_Nigeria_Facebook_Lead_Ad",
+    "first_name": "Edet",
+    "last_name": "Wagner",
+    "email": null,
+    "phone_number": "+2348057880990",
+    "company_name": "wagnet",
+    "country": "Nigeria",
+    "custom_fields": {
+      "work_email": "edetwagnet@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1259924472298020",
+    "created_time": "2026-03-24T18:22:57+0000",
+    "form_name": "META South Africa v1 03/2026",
+    "campaign_id": "120239106390650775",
+    "campaign_name": "Supy_Facebook_South_Africa_Meta",
+    "adset_id": "120239106390670775",
+    "adset_name": "Meta_South_Africa_Facebook_Leadgen_Broad",
+    "ad_id": "120239106390660775",
+    "ad_name": "Interest_South_Africa_Facebook_Lead_Ad",
+    "first_name": "Michael",
+    "last_name": "Dingaan",
+    "email": null,
+    "phone_number": "+27784746960",
+    "company_name": "Cafe 69",
+    "country": "South Africa",
+    "custom_fields": {
+      "work_email": "michaelmnguni75@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1311066247509145",
+    "created_time": "2026-03-24T17:06:08+0000",
+    "form_name": "META South Africa v1 03/2026",
+    "campaign_id": "120239106390650775",
+    "campaign_name": "Supy_Facebook_South_Africa_Meta",
+    "adset_id": "120239106390670775",
+    "adset_name": "Meta_South_Africa_Facebook_Leadgen_Broad",
+    "ad_id": "120239106390660775",
+    "ad_name": "Interest_South_Africa_Facebook_Lead_Ad",
+    "first_name": "Zianda",
+    "last_name": "Mcweba",
+    "email": null,
+    "phone_number": "0718288340",
+    "company_name": "Shoprite South Africa",
+    "country": "South Africa",
+    "custom_fields": {
+      "work_email": "Yda"
+    }
+  },
+  {
+    "lead_id": "933607219401554",
+    "created_time": "2026-03-24T15:44:10+0000",
+    "form_name": "META GCC 02/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209460358900775",
+    "adset_name": "LAL_Consolidated_KSA_Facebook_NA",
+    "ad_id": "120209460358890775",
+    "ad_name": "LAL_Consolidated_KSA_Facebook_Video_Ad",
+    "first_name": "Mohd",
+    "last_name": "Eshgi",
+    "email": null,
+    "phone_number": "+966541255155",
+    "company_name": "Akl",
+    "country": null,
+    "custom_fields": {
+      "work_email": "Eshgi84@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1659973942095040",
+    "created_time": "2026-03-24T14:21:37+0000",
+    "form_name": "META GCC 02/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209460358900775",
+    "adset_name": "LAL_Consolidated_KSA_Facebook_NA",
+    "ad_id": "120209460358890775",
+    "ad_name": "LAL_Consolidated_KSA_Facebook_Video_Ad",
+    "first_name": "Billy",
+    "last_name": "Tabares",
+    "email": null,
+    "phone_number": "+966593250639",
+    "company_name": "Nesma",
+    "country": null,
+    "custom_fields": {
+      "work_email": "billy@nesma.com"
+    }
+  },
+  {
+    "lead_id": "983737847310961",
+    "created_time": "2026-03-24T10:39:51+0000",
+    "form_name": "META Morocco 02/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Fatimazahra",
+    "last_name": "El",
+    "email": null,
+    "phone_number": "+212607951208",
+    "company_name": "Sallam",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "Fatimazahrasellam68@gmail.com"
+    }
+  }
+]

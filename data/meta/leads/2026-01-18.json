@@ -1,0 +1,142 @@
+[
+  {
+    "lead_id": "769823322816546",
+    "created_time": "2026-01-18T15:12:01+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209460358900775",
+    "adset_name": "LAL_Consolidated_KSA_Facebook_NA",
+    "ad_id": "120209460358890775",
+    "ad_name": "LAL_Consolidated_KSA_Facebook_Video_Ad",
+    "first_name": "Meshal",
+    "last_name": "العبدالكريم",
+    "email": null,
+    "phone_number": "+966505402444",
+    "company_name": "Foods gate",
+    "country": null,
+    "custom_fields": {
+      "work_email": "Info@foodsgate.net"
+    }
+  },
+  {
+    "lead_id": "1451358286600062",
+    "created_time": "2026-01-18T08:57:25+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209460358900775",
+    "adset_name": "LAL_Consolidated_KSA_Facebook_NA",
+    "ad_id": "120209460358890775",
+    "ad_name": "LAL_Consolidated_KSA_Facebook_Video_Ad",
+    "first_name": "Ammär",
+    "last_name": "ALateeqi",
+    "email": null,
+    "phone_number": "+966548326969",
+    "company_name": "Step by step",
+    "country": null,
+    "custom_fields": {
+      "work_email": "AmmarAlateeqi37@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1371268464249427",
+    "created_time": "2026-01-17T21:40:08+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209460358900775",
+    "adset_name": "LAL_Consolidated_KSA_Facebook_NA",
+    "ad_id": "120209460358890775",
+    "ad_name": "LAL_Consolidated_KSA_Facebook_Video_Ad",
+    "first_name": "Noura",
+    "last_name": "N.",
+    "email": null,
+    "phone_number": "+966548777768",
+    "company_name": "bayt altawabel",
+    "country": null,
+    "custom_fields": {
+      "work_email": "noura@tawabel.com"
+    }
+  },
+  {
+    "lead_id": "1474715557582452",
+    "created_time": "2026-01-17T21:38:39+0000",
+    "form_name": "META Lead Form Australia HQ (03/11/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120234978194630775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Auto",
+    "ad_id": "120234978194640775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad_auto_v1",
+    "first_name": "Ami",
+    "last_name": "St.claire",
+    "email": null,
+    "phone_number": "+61477518665",
+    "company_name": "Chocolate Box Solutions",
+    "country": null,
+    "custom_fields": {
+      "work_email": "Ops@ssimaritime.com"
+    }
+  },
+  {
+    "lead_id": "675059968931012",
+    "created_time": "2026-01-17T19:56:50+0000",
+    "form_name": "META Lead Form Australia HQ (03/11/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120234978194630775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Auto",
+    "ad_id": "120234978194640775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad_auto_v1",
+    "first_name": "Jack",
+    "last_name": "Latanis",
+    "email": null,
+    "phone_number": "+61415145483",
+    "company_name": "Signature Analytics Pty Ltd",
+    "country": null,
+    "custom_fields": {
+      "work_email": "Jacklatanis@gmail.com"
+    }
+  },
+  {
+    "lead_id": "3920352564763210",
+    "created_time": "2026-01-18T17:10:51+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120227305650640775",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "adset_id": "120234967340970775",
+    "adset_name": "LAL_Admin_HK_Facebook_Leadgen_Launch",
+    "ad_id": "120234967340980775",
+    "ad_name": "LAL_Admin_HK _Facebook_Lead_Ad",
+    "first_name": "Vishal",
+    "last_name": "Kirpalani",
+    "email": null,
+    "phone_number": "+85298169022",
+    "company_name": "App It",
+    "country": "HK",
+    "custom_fields": {
+      "work_email": "vishal@appit.com.hk"
+    }
+  },
+  {
+    "lead_id": "1189015116549499",
+    "created_time": "2026-01-18T09:27:26+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120237266135990775",
+    "adset_name": "LAL_Target_UK_Facebook",
+    "ad_id": "120237266135980775",
+    "ad_name": "LAL_Target_UK_Facebook_Video_Ad",
+    "first_name": "Liang",
+    "last_name": "Wong",
+    "email": null,
+    "phone_number": "+447736643854",
+    "company_name": "Fineasi ltd",
+    "country": "GB",
+    "custom_fields": {
+      "work_email": "Liangw@fineasi.com"
+    }
+  }
+]

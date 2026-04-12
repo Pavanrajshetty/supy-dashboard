@@ -1,0 +1,602 @@
+[
+  {
+    "lead_id": "3951085401858993",
+    "created_time": "2026-03-05T08:27:22+0000",
+    "form_name": "META Morocco Otp 03/2026",
+    "campaign_id": null,
+    "campaign_name": null,
+    "adset_id": null,
+    "adset_name": null,
+    "ad_id": null,
+    "ad_name": null,
+    "first_name": "test",
+    "last_name": "test",
+    "email": null,
+    "phone_number": "+918123836029",
+    "company_name": "meta form morcoo otp",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "Pavan+test1031@supy.io"
+    }
+  },
+  {
+    "lead_id": "1429132825374939",
+    "created_time": "2026-03-05T14:08:34+0000",
+    "form_name": "META Retargetting 03/26",
+    "campaign_id": "120239176621310775",
+    "campaign_name": "Supy_Facebook_Retargetting_TOFU_campaign",
+    "adset_id": "120239178068160775",
+    "adset_name": "Supy_Facebook_Retargetting_Form_clicks",
+    "ad_id": "120239178068150775",
+    "ad_name": "Supy_Retargetting_form_opean",
+    "first_name": "Bk",
+    "last_name": "Kag",
+    "email": null,
+    "phone_number": "+918369448688",
+    "company_name": "Baroda",
+    "country": "thailand",
+    "custom_fields": {
+      "work_email": "bkkag0465@gmail.com"
+    }
+  },
+  {
+    "lead_id": "2114889836013180",
+    "created_time": "2026-03-05T12:10:40+0000",
+    "form_name": "META Retargetting 03/26",
+    "campaign_id": "120239176621310775",
+    "campaign_name": "Supy_Facebook_Retargetting_TOFU_campaign",
+    "adset_id": "120239176621300775",
+    "adset_name": "Supy_Facebook_Retargetting_website",
+    "ad_id": "120239176621320775",
+    "ad_name": "Supy_Retargetting_website",
+    "first_name": "Shatmanyusinh",
+    "last_name": "Gour",
+    "email": null,
+    "phone_number": "+918698166664",
+    "company_name": "No Nonsense Meals",
+    "country": "india",
+    "custom_fields": {
+      "work_email": "shatmanyu.gour@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1377457997731930",
+    "created_time": "2026-03-05T11:34:25+0000",
+    "form_name": "META Retargetting 03/26",
+    "campaign_id": "120239176621310775",
+    "campaign_name": "Supy_Facebook_Retargetting_TOFU_campaign",
+    "adset_id": "120239178068160775",
+    "adset_name": "Supy_Facebook_Retargetting_Form_clicks",
+    "ad_id": "120239178068150775",
+    "ad_name": "Supy_Retargetting_form_opean",
+    "first_name": "Raymond",
+    "last_name": "Waingi",
+    "email": null,
+    "phone_number": "+67570315683",
+    "company_name": "Granville Motel",
+    "country": "australia",
+    "custom_fields": {
+      "work_email": "Consultant@granvillemotelpom.com"
+    }
+  },
+  {
+    "lead_id": "1549337722811075",
+    "created_time": "2026-03-05T11:06:22+0000",
+    "form_name": "META Retargetting 03/26",
+    "campaign_id": "120239176621310775",
+    "campaign_name": "Supy_Facebook_Retargetting_TOFU_campaign",
+    "adset_id": "120239178068160775",
+    "adset_name": "Supy_Facebook_Retargetting_Form_clicks",
+    "ad_id": "120239178068150775",
+    "ad_name": "Supy_Retargetting_form_opean",
+    "first_name": "Pete",
+    "last_name": "Bota",
+    "email": null,
+    "phone_number": "+16718486924",
+    "company_name": "GDP",
+    "country": "australia",
+    "custom_fields": {
+      "work_email": "botapete99@gmail.com"
+    }
+  },
+  {
+    "lead_id": "895898733057397",
+    "created_time": "2026-03-05T11:04:25+0000",
+    "form_name": "META Retargetting 03/26",
+    "campaign_id": "120239176621310775",
+    "campaign_name": "Supy_Facebook_Retargetting_TOFU_campaign",
+    "adset_id": "120239176621300775",
+    "adset_name": "Supy_Facebook_Retargetting_website",
+    "ad_id": "120239176621320775",
+    "ad_name": "Supy_Retargetting_website",
+    "first_name": "Faiyaz",
+    "last_name": "Qaisari",
+    "email": null,
+    "phone_number": "+919844943432",
+    "company_name": "Hotel Monarch",
+    "country": "india",
+    "custom_fields": {
+      "work_email": "faiyaz@monarchhotels.in"
+    }
+  },
+  {
+    "lead_id": "905990258901600",
+    "created_time": "2026-03-05T09:53:36+0000",
+    "form_name": "META Retargetting 03/26",
+    "campaign_id": "120239176621310775",
+    "campaign_name": "Supy_Facebook_Retargetting_TOFU_campaign",
+    "adset_id": "120239176621300775",
+    "adset_name": "Supy_Facebook_Retargetting_website",
+    "ad_id": "120239176621320775",
+    "ad_name": "Supy_Retargetting_website",
+    "first_name": "Rajat",
+    "last_name": "Senior",
+    "email": null,
+    "phone_number": "+917278940359",
+    "company_name": "Citigroup",
+    "country": "india",
+    "custom_fields": {
+      "work_email": "rajat630@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1328250169127160",
+    "created_time": "2026-03-05T09:36:11+0000",
+    "form_name": "META Retargetting 03/26",
+    "campaign_id": "120239176621310775",
+    "campaign_name": "Supy_Facebook_Retargetting_TOFU_campaign",
+    "adset_id": "120239178068160775",
+    "adset_name": "Supy_Facebook_Retargetting_Form_clicks",
+    "ad_id": "120239178068150775",
+    "ad_name": "Supy_Retargetting_form_opean",
+    "first_name": "Sumukh",
+    "last_name": "Mehta",
+    "email": null,
+    "phone_number": "+919008291999",
+    "company_name": "Eleven BAKEHOUSE",
+    "country": "india",
+    "custom_fields": {
+      "work_email": "smkhmehta9@gmail.com"
+    }
+  },
+  {
+    "lead_id": "872302375805938",
+    "created_time": "2026-03-05T05:47:12+0000",
+    "form_name": "META Retargetting 03/26",
+    "campaign_id": "120239176621310775",
+    "campaign_name": "Supy_Facebook_Retargetting_TOFU_campaign",
+    "adset_id": "120239178068160775",
+    "adset_name": "Supy_Facebook_Retargetting_Form_clicks",
+    "ad_id": "120239178068150775",
+    "ad_name": "Supy_Retargetting_form_opean",
+    "first_name": "Robert",
+    "last_name": "Karume",
+    "email": null,
+    "phone_number": "+254722829867",
+    "company_name": "Self-employed",
+    "country": "south_africa",
+    "custom_fields": {
+      "work_email": "robertmkarume@gmail.com"
+    }
+  },
+  {
+    "lead_id": "900413576171973",
+    "created_time": "2026-03-05T05:04:47+0000",
+    "form_name": "META Retargetting 03/26",
+    "campaign_id": "120239176621310775",
+    "campaign_name": "Supy_Facebook_Retargetting_TOFU_campaign",
+    "adset_id": "120239176621300775",
+    "adset_name": "Supy_Facebook_Retargetting_website",
+    "ad_id": "120239176621320775",
+    "ad_name": "Supy_Retargetting_website",
+    "first_name": "Jitendra",
+    "last_name": "Sujvanni",
+    "email": null,
+    "phone_number": "9424821460",
+    "company_name": "Nbkk",
+    "country": "india",
+    "custom_fields": {
+      "work_email": "Jeetusujwani@gmail.com"
+    }
+  },
+  {
+    "lead_id": "953133153809239",
+    "created_time": "2026-03-05T03:44:28+0000",
+    "form_name": "META Retargetting 03/26",
+    "campaign_id": "120239176621310775",
+    "campaign_name": "Supy_Facebook_Retargetting_TOFU_campaign",
+    "adset_id": "120239176621300775",
+    "adset_name": "Supy_Facebook_Retargetting_website",
+    "ad_id": "120239176621320775",
+    "ad_name": "Supy_Retargetting_website",
+    "first_name": "Al Mamun Ur Rashid",
+    "last_name": "Mahim",
+    "email": null,
+    "phone_number": "+8801770440051",
+    "company_name": "AMUR architecture",
+    "country": "india",
+    "custom_fields": {
+      "work_email": "almamunurrashid.amur@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1613170939991032",
+    "created_time": "2026-03-05T03:23:28+0000",
+    "form_name": "META Retargetting 03/26",
+    "campaign_id": "120239176621310775",
+    "campaign_name": "Supy_Facebook_Retargetting_TOFU_campaign",
+    "adset_id": "120239176621300775",
+    "adset_name": "Supy_Facebook_Retargetting_website",
+    "ad_id": "120239176621320775",
+    "ad_name": "Supy_Retargetting_website",
+    "first_name": "Mahesh",
+    "last_name": "Verma",
+    "email": null,
+    "phone_number": "+9779816370052",
+    "company_name": "Akuda automobiles pvt ltd",
+    "country": "india",
+    "custom_fields": {
+      "work_email": "Mv9816370052@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1420853909782997",
+    "created_time": "2026-03-05T03:05:01+0000",
+    "form_name": "META Retargetting 03/26",
+    "campaign_id": "120239176621310775",
+    "campaign_name": "Supy_Facebook_Retargetting_TOFU_campaign",
+    "adset_id": "120239176621300775",
+    "adset_name": "Supy_Facebook_Retargetting_website",
+    "ad_id": "120239176621320775",
+    "ad_name": "Supy_Retargetting_website",
+    "first_name": "Amara",
+    "last_name": "Sidibe",
+    "email": null,
+    "phone_number": "+231779091149",
+    "company_name": "China company",
+    "country": "united_states",
+    "custom_fields": {
+      "work_email": "amarafofana945@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1254753146053820",
+    "created_time": "2026-03-05T02:13:24+0000",
+    "form_name": "META Retargetting 03/26",
+    "campaign_id": "120239176621310775",
+    "campaign_name": "Supy_Facebook_Retargetting_TOFU_campaign",
+    "adset_id": "120239178068160775",
+    "adset_name": "Supy_Facebook_Retargetting_Form_clicks",
+    "ad_id": "120239178068150775",
+    "ad_name": "Supy_Retargetting_form_opean",
+    "first_name": "Pravin",
+    "last_name": "Kanago",
+    "email": null,
+    "phone_number": "+919890303826",
+    "company_name": "Kanvin Association",
+    "country": "india",
+    "custom_fields": {
+      "work_email": "kanvin333@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1323019136358527",
+    "created_time": "2026-03-05T13:07:42+0000",
+    "form_name": "META South Africa v1 03/2026",
+    "campaign_id": "120239106390650775",
+    "campaign_name": "Supy_Facebook_South_Africa_Meta",
+    "adset_id": "120239106390670775",
+    "adset_name": "Meta_South_Africa_Facebook_Leadgen_Broad",
+    "ad_id": "120239106390660775",
+    "ad_name": "Interest_South_Africa_Facebook_Lead_Ad",
+    "first_name": "Justin",
+    "last_name": "Meck",
+    "email": null,
+    "phone_number": "+27792454774",
+    "company_name": "Self-employed",
+    "country": "South Africa",
+    "custom_fields": {
+      "work_email": "hamutendimeck@gmail.com"
+    }
+  },
+  {
+    "lead_id": "863965916691434",
+    "created_time": "2026-03-05T18:15:51+0000",
+    "form_name": "META Morrco Algeria Tunisia v1 03/2026",
+    "campaign_id": "120239145556720775",
+    "campaign_name": "Supy_Facebook_Algeria_Tunisia_Meta",
+    "adset_id": "120239145556630775",
+    "adset_name": "Meta_Algeria_Tunisia_Facebook_Leadgen_Broad",
+    "ad_id": "120239145556730775",
+    "ad_name": "Interest_Algeria_Tunisia_Facebook_Lead_Ad",
+    "first_name": "Ahmed",
+    "last_name": "Charbti",
+    "email": null,
+    "phone_number": "+21655640712",
+    "company_name": "Croissant Rouge Tunisien - الهلال الأحمر التونسي - Tunisian Red Crescent",
+    "country": null,
+    "custom_fields": {
+      "work_email": "ahmed.charbti@gmail.com"
+    }
+  },
+  {
+    "lead_id": "893482113453552",
+    "created_time": "2026-03-05T05:23:49+0000",
+    "form_name": "META Morrco Algeria Tunisia v1 03/2026",
+    "campaign_id": "120239145556720775",
+    "campaign_name": "Supy_Facebook_Algeria_Tunisia_Meta",
+    "adset_id": "120239145556630775",
+    "adset_name": "Meta_Algeria_Tunisia_Facebook_Leadgen_Broad",
+    "ad_id": "120239145556730775",
+    "ad_name": "Interest_Algeria_Tunisia_Facebook_Lead_Ad",
+    "first_name": "Nadjenh",
+    "last_name": "Ben Hamam",
+    "email": null,
+    "phone_number": "+213664340206",
+    "company_name": "KEXP",
+    "country": null,
+    "custom_fields": {
+      "work_email": "nadjehbenhamam@gmail.com"
+    }
+  },
+  {
+    "lead_id": "956045737080006",
+    "created_time": "2026-03-05T04:21:03+0000",
+    "form_name": "META Thailand 03/2026",
+    "campaign_id": "120239081704630775",
+    "campaign_name": "Supy_Facebook_Thailand_Meta",
+    "adset_id": "120239081704650775",
+    "adset_name": "Meta_Thailand_Facebook_Leadgen_Broad",
+    "ad_id": "120239081704640775",
+    "ad_name": "Interest_Thailand_Facebook_Lead_Ad",
+    "first_name": "Dani",
+    "last_name": "Betancor",
+    "email": null,
+    "phone_number": "+66989311433",
+    "company_name": "La Tasca Bangkok",
+    "country": "Thailand",
+    "custom_fields": {
+      "work_email": "latascabkk@gmail.com"
+    }
+  },
+  {
+    "lead_id": "893602723476118",
+    "created_time": "2026-03-05T06:58:25+0000",
+    "form_name": "META Ireland 02/2026",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120238470739920775",
+    "adset_name": "Facebook_Ireland_Broad",
+    "ad_id": "120238470739930775",
+    "ad_name": "Facebook_Ireland_Broad_ad",
+    "first_name": "James",
+    "last_name": "Rath",
+    "email": null,
+    "phone_number": "0872807987",
+    "company_name": "Rath grocery retail",
+    "country": "Ireland",
+    "custom_fields": {
+      "work_email": "Jamesdrath@live.com"
+    }
+  },
+  {
+    "lead_id": "1911618253056462",
+    "created_time": "2026-03-05T16:42:25+0000",
+    "form_name": "META Philippines 02/2026",
+    "campaign_id": "120237959815840775",
+    "campaign_name": "Supy_Facebook_Philippines_Meta",
+    "adset_id": "120237959815830775",
+    "adset_name": "Meta_Philippines_Facebook_Leadgen_Enterprise_Broad",
+    "ad_id": "120237959815820775",
+    "ad_name": "Interest_Philippines_Facebook_Lead_Ad",
+    "first_name": "Eleck",
+    "last_name": "Diestro",
+    "email": null,
+    "phone_number": "+639063686944",
+    "company_name": "Eleckuisine",
+    "country": "Philippines",
+    "custom_fields": {
+      "work_email": "Eleckuisine@gmail.com"
+    }
+  },
+  {
+    "lead_id": "26154181520905286",
+    "created_time": "2026-03-05T13:25:01+0000",
+    "form_name": "META Philippines 02/2026",
+    "campaign_id": "120237959815840775",
+    "campaign_name": "Supy_Facebook_Philippines_Meta",
+    "adset_id": "120237959815830775",
+    "adset_name": "Meta_Philippines_Facebook_Leadgen_Enterprise_Broad",
+    "ad_id": "120237959815820775",
+    "ad_name": "Interest_Philippines_Facebook_Lead_Ad",
+    "first_name": "Prayot",
+    "last_name": "Boonsirithum",
+    "email": null,
+    "phone_number": "+63885625415",
+    "company_name": "Kah thai products",
+    "country": "Philippines",
+    "custom_fields": {
+      "work_email": "kahthaiproducts@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1951330078824908",
+    "created_time": "2026-03-05T11:31:24+0000",
+    "form_name": "META Philippines 02/2026",
+    "campaign_id": "120237959815840775",
+    "campaign_name": "Supy_Facebook_Philippines_Meta",
+    "adset_id": "120237959815830775",
+    "adset_name": "Meta_Philippines_Facebook_Leadgen_Enterprise_Broad",
+    "ad_id": "120237959815820775",
+    "ad_name": "Interest_Philippines_Facebook_Lead_Ad",
+    "first_name": "Rejel",
+    "last_name": "Rosales",
+    "email": null,
+    "phone_number": "+639062381079",
+    "company_name": "REJELCOPH",
+    "country": "Philippines",
+    "custom_fields": {
+      "work_email": "rejelrosales.jbvc@gmail.com"
+    }
+  },
+  {
+    "lead_id": "2071074257074844",
+    "created_time": "2026-03-05T09:04:20+0000",
+    "form_name": "META Philippines 02/2026",
+    "campaign_id": "120237959815840775",
+    "campaign_name": "Supy_Facebook_Philippines_Meta",
+    "adset_id": "120237959815830775",
+    "adset_name": "Meta_Philippines_Facebook_Leadgen_Enterprise_Broad",
+    "ad_id": "120237959815820775",
+    "ad_name": "Interest_Philippines_Facebook_Lead_Ad",
+    "first_name": "Hans",
+    "last_name": "Alcanzare",
+    "email": null,
+    "phone_number": "+639175059768",
+    "company_name": "Ninoy Aquino International Airport",
+    "country": "Philippines",
+    "custom_fields": {
+      "work_email": "hans_alcanzare@yahoo.com"
+    }
+  },
+  {
+    "lead_id": "2131161984383397",
+    "created_time": "2026-03-05T08:20:12+0000",
+    "form_name": "META Philippines 02/2026",
+    "campaign_id": "120237959815840775",
+    "campaign_name": "Supy_Facebook_Philippines_Meta",
+    "adset_id": "120237959815830775",
+    "adset_name": "Meta_Philippines_Facebook_Leadgen_Enterprise_Broad",
+    "ad_id": "120237959815820775",
+    "ad_name": "Interest_Philippines_Facebook_Lead_Ad",
+    "first_name": "Jed Lendl",
+    "last_name": "Castillones",
+    "email": null,
+    "phone_number": "+639483113240",
+    "company_name": "Taps&Burg x Kapelity",
+    "country": "Philippines",
+    "custom_fields": {
+      "work_email": "kapelitymobilecoffee@gmail.com"
+    }
+  },
+  {
+    "lead_id": "4254976681485503",
+    "created_time": "2026-03-05T07:27:36+0000",
+    "form_name": "META Philippines 02/2026",
+    "campaign_id": "120237959815840775",
+    "campaign_name": "Supy_Facebook_Philippines_Meta",
+    "adset_id": "120237959815830775",
+    "adset_name": "Meta_Philippines_Facebook_Leadgen_Enterprise_Broad",
+    "ad_id": "120237959815820775",
+    "ad_name": "Interest_Philippines_Facebook_Lead_Ad",
+    "first_name": "Panny",
+    "last_name": "Kyriakopoulos",
+    "email": null,
+    "phone_number": "+31624800092",
+    "company_name": "kosmos",
+    "country": "Philippines",
+    "custom_fields": {
+      "work_email": "panny.kosmosdesigns@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1255591729241983",
+    "created_time": "2026-03-05T02:07:36+0000",
+    "form_name": "META Morocco 02/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "fouad",
+    "last_name": "douama",
+    "email": null,
+    "phone_number": "+212636032831",
+    "company_name": "خاص",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "douamafouad123@gmail.com"
+    }
+  },
+  {
+    "lead_id": "903917325762466",
+    "created_time": "2026-03-05T01:51:26+0000",
+    "form_name": "META Morocco 02/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Med",
+    "last_name": "Oulidi",
+    "email": null,
+    "phone_number": "+212656064640",
+    "company_name": "Beanshouse",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "Oulidi.mohamed@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1246266410353572",
+    "created_time": "2026-03-05T16:00:23+0000",
+    "form_name": "META Hong Kong 02/2026",
+    "campaign_id": "120227305650640775",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "adset_id": "120234967340970775",
+    "adset_name": "LAL_Admin_HK_Facebook_Leadgen_Launch",
+    "ad_id": "120234967340980775",
+    "ad_name": "LAL_Admin_HK _Facebook_Lead_Ad",
+    "first_name": "Umed",
+    "last_name": "Panwar",
+    "email": null,
+    "phone_number": "+85293935848",
+    "company_name": "Hong Kong",
+    "country": "Hong Kong",
+    "custom_fields": {
+      "work_email": "ummedpanwer789@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1218917607108399",
+    "created_time": "2026-03-04T22:15:14+0000",
+    "form_name": "META Hong Kong 02/2026",
+    "campaign_id": "120227305650640775",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "adset_id": "120234967340970775",
+    "adset_name": "LAL_Admin_HK_Facebook_Leadgen_Launch",
+    "ad_id": "120234967340980775",
+    "ad_name": "LAL_Admin_HK _Facebook_Lead_Ad",
+    "first_name": "Kent",
+    "last_name": "Bon",
+    "email": null,
+    "phone_number": "+85265237771",
+    "company_name": "Goodwinfood",
+    "country": "Hong Kong",
+    "custom_fields": {
+      "work_email": "papanui_z@yahoo.com.hk"
+    }
+  },
+  {
+    "lead_id": "947696714451173",
+    "created_time": "2026-03-05T10:26:36+0000",
+    "form_name": "META Malaysia 02/2026",
+    "campaign_id": "120227305650640775",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "adset_id": "120227305650710775",
+    "adset_name": "LAL_Admin_HK_MY_Facebook_Leadgen",
+    "ad_id": "120227305650700775",
+    "ad_name": "LAL_Admin_HK_MY _Facebook_Lead_Ad",
+    "first_name": "Yazid",
+    "last_name": "Ajid",
+    "email": null,
+    "phone_number": "+60182900015",
+    "company_name": "The rack boutique cafe",
+    "country": "Malaysia",
+    "custom_fields": {
+      "work_email": "therackexclusive@gmail.com"
+    }
+  }
+]

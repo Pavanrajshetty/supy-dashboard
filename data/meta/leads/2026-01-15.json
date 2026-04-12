@@ -1,0 +1,182 @@
+[
+  {
+    "lead_id": "857260657185950",
+    "created_time": "2026-01-15T13:59:56+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120208328766140775",
+    "adset_name": "LAL_Consolidated_GCC_Facebook_NA",
+    "ad_id": "120208328766170775",
+    "ad_name": "LAL_Consolidated_GCC_Facebook_Video_Ad",
+    "first_name": "Nguyen",
+    "last_name": "Nguyen",
+    "email": null,
+    "phone_number": "+971543779779",
+    "company_name": "Vietnamese snack food cafe restaurant",
+    "country": null,
+    "custom_fields": {
+      "work_email": "mayalee0103@gmail.com"
+    }
+  },
+  {
+    "lead_id": "2054908691969092",
+    "created_time": "2026-01-15T12:05:14+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209460358900775",
+    "adset_name": "LAL_Consolidated_KSA_Facebook_NA",
+    "ad_id": "120209460358890775",
+    "ad_name": "LAL_Consolidated_KSA_Facebook_Video_Ad",
+    "first_name": "مشاري",
+    "last_name": "الشهراني",
+    "email": null,
+    "phone_number": "+966547699699",
+    "company_name": "Rakeez",
+    "country": null,
+    "custom_fields": {
+      "work_email": "meshari02@hotmail.com"
+    }
+  },
+  {
+    "lead_id": "2120849828730409",
+    "created_time": "2026-01-15T11:41:24+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209460358900775",
+    "adset_name": "LAL_Consolidated_KSA_Facebook_NA",
+    "ad_id": "120209460358890775",
+    "ad_name": "LAL_Consolidated_KSA_Facebook_Video_Ad",
+    "first_name": "Ahmad",
+    "last_name": "Darazi",
+    "email": null,
+    "phone_number": "+966504423799",
+    "company_name": "Hospitality Business Management",
+    "country": null,
+    "custom_fields": {
+      "work_email": "ahmadarazi51@gmail.com"
+    }
+  },
+  {
+    "lead_id": "879483608383587",
+    "created_time": "2026-01-14T23:26:00+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209460358900775",
+    "adset_name": "LAL_Consolidated_KSA_Facebook_NA",
+    "ad_id": "120209460358890775",
+    "ad_name": "LAL_Consolidated_KSA_Facebook_Video_Ad",
+    "first_name": "Mudasir",
+    "last_name": "Manzoor",
+    "email": null,
+    "phone_number": "+966580978632",
+    "company_name": "Esar",
+    "country": null,
+    "custom_fields": {
+      "work_email": "CA@ESAR.SA"
+    }
+  },
+  {
+    "lead_id": "1429263565420574",
+    "created_time": "2026-01-15T04:53:19+0000",
+    "form_name": "META Lead Form Australia HQ (03/11/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120234978194630775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Auto",
+    "ad_id": "120234978194640775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad_auto_v1",
+    "first_name": "Amaya Restaurant &",
+    "last_name": "lounge",
+    "email": null,
+    "phone_number": "+61411606778",
+    "company_name": "Amaya",
+    "country": null,
+    "custom_fields": {
+      "work_email": "Info@amayarestaurant.com.au"
+    }
+  },
+  {
+    "lead_id": "1926837891593333",
+    "created_time": "2026-01-15T13:33:13+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120219950339920775",
+    "adset_name": "LAL_Admin_NZ_Facebook_Lead",
+    "ad_id": "120219950339930775",
+    "ad_name": "LAL_Admin_NZ_Facebook_Lead_Ad",
+    "first_name": "Murray",
+    "last_name": "Smith",
+    "email": null,
+    "phone_number": "+64272230636",
+    "company_name": "taitapu hotel",
+    "country": "NZ",
+    "custom_fields": {
+      "work_email": "murraysmith205@gmail.com"
+    }
+  },
+  {
+    "lead_id": "4208898442757753",
+    "created_time": "2026-01-15T00:25:17+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120211091399920775",
+    "adset_name": "LAL_LAL_UK_Facebook",
+    "ad_id": "120211091399910775",
+    "ad_name": "LAL_Deal_UK_Facebook_Video_Ad",
+    "first_name": "Tenmaru",
+    "last_name": "London",
+    "email": null,
+    "phone_number": "+447478612501",
+    "company_name": "SOJU",
+    "country": "GB",
+    "custom_fields": {
+      "work_email": "gmeurope@hotmail.com"
+    }
+  },
+  {
+    "lead_id": "2296715204182186",
+    "created_time": "2026-01-14T23:39:05+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120211091399920775",
+    "adset_name": "LAL_LAL_UK_Facebook",
+    "ad_id": "120211091399910775",
+    "ad_name": "LAL_Deal_UK_Facebook_Video_Ad",
+    "first_name": "Faizan",
+    "last_name": "ishfaq",
+    "email": null,
+    "phone_number": "+447853474786",
+    "company_name": "lochside Grillhub",
+    "country": "GB",
+    "custom_fields": {
+      "work_email": "faizan.ishfaq33@gmail.com"
+    }
+  },
+  {
+    "lead_id": "898839822639043",
+    "created_time": "2026-01-14T19:25:34+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120211091399920775",
+    "adset_name": "LAL_LAL_UK_Facebook",
+    "ad_id": "120211091399910775",
+    "ad_name": "LAL_Deal_UK_Facebook_Video_Ad",
+    "first_name": "Victoria",
+    "last_name": "Swindells",
+    "email": null,
+    "phone_number": "+447718416715",
+    "company_name": "Trilogy freight",
+    "country": "GB",
+    "custom_fields": {
+      "work_email": "Vswindell@trilogyfreight.com"
+    }
+  }
+]

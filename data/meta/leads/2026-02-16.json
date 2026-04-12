@@ -1,0 +1,162 @@
+[
+  {
+    "lead_id": "738513592460808",
+    "created_time": "2026-02-16T01:19:27+0000",
+    "form_name": "META Philippines 02/2026",
+    "campaign_id": "120237959815840775",
+    "campaign_name": "Supy_Facebook_Philippines_Meta",
+    "adset_id": "120237959815830775",
+    "adset_name": "Meta_Philippines_Facebook_Leadgen_Enterprise_Broad",
+    "ad_id": "120237959815820775",
+    "ad_name": "Interest_Philippines_Facebook_Lead_Ad",
+    "first_name": "Angel Ann",
+    "last_name": "Layto Geneciran",
+    "email": null,
+    "phone_number": "+639352012011",
+    "company_name": "Concentrix",
+    "country": "Philippines",
+    "custom_fields": {
+      "work_email": "ageneciran090@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1899891634226896",
+    "created_time": "2026-02-16T07:38:29+0000",
+    "form_name": "META Vietnam 5 Loc 02/2026",
+    "campaign_id": "120237828804040775",
+    "campaign_name": "Supy_Facebook_Vietnam_Meta",
+    "adset_id": "120237828804050775",
+    "adset_name": "Meta_Vietnam_Facebook_Leadgen_Enterprise_Broad",
+    "ad_id": "120237828804060775",
+    "ad_name": "Interest_Vietnam_Facebook_Lead_Ad",
+    "first_name": "Linh",
+    "last_name": "Anh",
+    "email": null,
+    "phone_number": "+84335898573",
+    "company_name": "Tản mạn về cuộc sống",
+    "country": "Vietnam",
+    "custom_fields": {
+      "work_email": "Linhthemcun@icloud.com"
+    }
+  },
+  {
+    "lead_id": "1619617635859104",
+    "created_time": "2026-02-15T21:17:14+0000",
+    "form_name": "META Cambodia 5 Loc 02/2026",
+    "campaign_id": "120237787403190775",
+    "campaign_name": "Supy_Facebook_Cambodia_Meta",
+    "adset_id": "120237787403170775",
+    "adset_name": "Meta_Cambodia_Facebook_Leadgen_Broad",
+    "ad_id": "120237787403180775",
+    "ad_name": "Interest_Cambodia_Facebook_Lead_Ad",
+    "first_name": "ប្រុសល្ងង់ ភូមិស្វាយ",
+    "last_name": "ភូមិស្វាយ",
+    "email": null,
+    "phone_number": "+855965794696",
+    "company_name": "14865297",
+    "country": "Cambodia",
+    "custom_fields": {
+      "work_email": "chengpon295@mail.com"
+    }
+  },
+  {
+    "lead_id": "1803877353640882",
+    "created_time": "2026-02-15T20:14:22+0000",
+    "form_name": "META Morocco 02/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "EL",
+    "last_name": "Habib",
+    "email": null,
+    "phone_number": "+212606968932",
+    "company_name": "Bon Arôme",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "habibkhadiri.el.2015@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1501123138109562",
+    "created_time": "2026-02-15T19:26:03+0000",
+    "form_name": "META Morocco 02/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Abdellatif",
+    "last_name": "Idali",
+    "email": null,
+    "phone_number": "+212697662923",
+    "company_name": "toubkalhiks",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "toubkalhikes@gmail.com"
+    }
+  },
+  {
+    "lead_id": "897496192980059",
+    "created_time": "2026-02-16T16:30:53+0000",
+    "form_name": "META Malaysia 02/2026",
+    "campaign_id": "120227305650640775",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "adset_id": "120227305650710775",
+    "adset_name": "LAL_Admin_HK_MY_Facebook_Leadgen",
+    "ad_id": "120227305650700775",
+    "ad_name": "LAL_Admin_HK_MY _Facebook_Lead_Ad",
+    "first_name": "Amirudin",
+    "last_name": "Jaafar",
+    "email": null,
+    "phone_number": "+601121141511",
+    "company_name": "Wok A Lot Culinary And F&B Resources",
+    "country": "Malaysia",
+    "custom_fields": {
+      "work_email": "amirdeanjr@gmail.com"
+    }
+  },
+  {
+    "lead_id": "892997830207479",
+    "created_time": "2026-02-16T18:21:44+0000",
+    "form_name": "META United Kingdom 02/2026",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120237266135990775",
+    "adset_name": "LAL_Target_UK_Facebook",
+    "ad_id": "120237266135980775",
+    "ad_name": "LAL_Target_UK_Facebook_Video_Ad",
+    "first_name": "Jacoby",
+    "last_name": "Boyd",
+    "email": null,
+    "phone_number": "+447502360117",
+    "company_name": "79 Castleton Ave, Wembley",
+    "country": "United Kingdom",
+    "custom_fields": {
+      "work_email": "jacobyboyd25@gmail.com"
+    }
+  },
+  {
+    "lead_id": "2424988067950511",
+    "created_time": "2026-02-15T22:43:06+0000",
+    "form_name": "META Australia HQ 02/2026",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120211091446780775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "120211091446770775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "first_name": "Cat",
+    "last_name": "Wang",
+    "email": null,
+    "phone_number": "+43473182760",
+    "company_name": "Làm tự do",
+    "country": "Australia",
+    "custom_fields": {
+      "work_email": "catwang39@gmail.com"
+    }
+  }
+]

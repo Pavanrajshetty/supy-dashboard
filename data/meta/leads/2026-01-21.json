@@ -1,0 +1,262 @@
+[
+  {
+    "lead_id": "1312529424031480",
+    "created_time": "2026-01-21T08:33:23+0000",
+    "form_name": "Test_form_nz",
+    "campaign_id": null,
+    "campaign_name": null,
+    "adset_id": null,
+    "adset_name": null,
+    "ad_id": null,
+    "ad_name": null,
+    "first_name": "test",
+    "last_name": "test",
+    "email": null,
+    "phone_number": "+918123112233",
+    "company_name": "meta test",
+    "country": "New Zealand",
+    "custom_fields": {
+      "work_email": "Nomail_test@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1934186594117759",
+    "created_time": "2026-01-21T05:59:10+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209603184100775",
+    "adset_name": "LAL_Admin_GCC_Facebook_NA",
+    "ad_id": "120209603184110775",
+    "ad_name": "LAL_Admin_GCC_Facebook_Video_Ad",
+    "first_name": "Nil",
+    "last_name": "Chhantyl",
+    "email": null,
+    "phone_number": "+96550696570",
+    "company_name": "mmc catering services kuwait",
+    "country": null,
+    "custom_fields": {
+      "work_email": "Chhantyaln35@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1577779836679914",
+    "created_time": "2026-01-20T19:30:15+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209603184100775",
+    "adset_name": "LAL_Admin_GCC_Facebook_NA",
+    "ad_id": "120209603184110775",
+    "ad_name": "LAL_Admin_GCC_Facebook_Video_Ad",
+    "first_name": "San Wan Hand Pulled Noodles",
+    "last_name": "Restaurant",
+    "email": null,
+    "phone_number": "0508151778",
+    "company_name": "Foodfluence dncc",
+    "country": null,
+    "custom_fields": {
+      "work_email": "hadi_at@hotmail.com"
+    }
+  },
+  {
+    "lead_id": "1248202820559946",
+    "created_time": "2026-01-21T10:46:14+0000",
+    "form_name": "META Lead Form Australia HQ (03/11/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120211091446780775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "120211091446770775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "first_name": "Michele",
+    "last_name": "Denman",
+    "email": null,
+    "phone_number": "+61400448718",
+    "company_name": "Besties canteen",
+    "country": null,
+    "custom_fields": {
+      "work_email": "afdenman@bigpond.net.au"
+    }
+  },
+  {
+    "lead_id": "2071606710360021",
+    "created_time": "2026-01-20T22:46:22+0000",
+    "form_name": "META Lead Form Australia HQ (03/11/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120211091446780775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "120211091446770775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "first_name": "Chefs Best",
+    "last_name": "Best",
+    "email": null,
+    "phone_number": "+61499590315",
+    "company_name": "Self-employed",
+    "country": null,
+    "custom_fields": {
+      "work_email": "0bvi0uslyg0d1@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1659941614979021",
+    "created_time": "2026-01-21T17:13:31+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120211091399920775",
+    "adset_name": "LAL_LAL_UK_Facebook",
+    "ad_id": "120211091399910775",
+    "ad_name": "LAL_Deal_UK_Facebook_Video_Ad",
+    "first_name": "Jacoby",
+    "last_name": "Boyd",
+    "email": null,
+    "phone_number": "+447502360117",
+    "company_name": "79 Castleton Ave, Wembley",
+    "country": "GB",
+    "custom_fields": {
+      "work_email": "jacobyboyd25@gmail.com"
+    }
+  },
+  {
+    "lead_id": "4285867651683907",
+    "created_time": "2026-01-21T16:34:14+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120219950339920775",
+    "adset_name": "LAL_Admin_NZ_Facebook_Lead",
+    "ad_id": "120219950339930775",
+    "ad_name": "LAL_Admin_NZ_Facebook_Lead_Ad",
+    "first_name": "Kate",
+    "last_name": "Brebner",
+    "email": null,
+    "phone_number": "+64212957882",
+    "company_name": "Bayleys Real Estate",
+    "country": "NZ",
+    "custom_fields": {
+      "work_email": "Kate.brebner@bayleys.co.nz"
+    }
+  },
+  {
+    "lead_id": "1978085579420604",
+    "created_time": "2026-01-21T16:26:15+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120237266135990775",
+    "adset_name": "LAL_Target_UK_Facebook",
+    "ad_id": "120237266135980775",
+    "ad_name": "LAL_Target_UK_Facebook_Video_Ad",
+    "first_name": "Gaurav",
+    "last_name": "Rai",
+    "email": null,
+    "phone_number": "+447415038654",
+    "company_name": "Self-employed",
+    "country": "GB",
+    "custom_fields": {
+      "work_email": "Gaurav.rai@bfrglobal.com"
+    }
+  },
+  {
+    "lead_id": "1251863030134258",
+    "created_time": "2026-01-21T16:14:20+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120211091399920775",
+    "adset_name": "LAL_LAL_UK_Facebook",
+    "ad_id": "120211091399910775",
+    "ad_name": "LAL_Deal_UK_Facebook_Video_Ad",
+    "first_name": "Ruslan",
+    "last_name": "Kybych",
+    "email": null,
+    "phone_number": "+447449249299",
+    "company_name": "Tryniga",
+    "country": "GB",
+    "custom_fields": {
+      "work_email": "ruslankybych83@gnail.com"
+    }
+  },
+  {
+    "lead_id": "900696552406219",
+    "created_time": "2026-01-21T08:56:05+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120211091399920775",
+    "adset_name": "LAL_LAL_UK_Facebook",
+    "ad_id": "120211091399910775",
+    "ad_name": "LAL_Deal_UK_Facebook_Video_Ad",
+    "first_name": "Jason",
+    "last_name": "Pepperell",
+    "email": null,
+    "phone_number": "+447720895222",
+    "company_name": "JKCN Group",
+    "country": "United Kingdom",
+    "custom_fields": {
+      "work_email": "jason@jkcngroup.co.uk"
+    }
+  },
+  {
+    "lead_id": "2875942935942416",
+    "created_time": "2026-01-21T08:43:16+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120227305650640775",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "adset_id": "120227305650710775",
+    "adset_name": "LAL_Admin_HK_MY_Facebook_Leadgen",
+    "ad_id": "120227305650700775",
+    "ad_name": "LAL_Admin_HK_MY _Facebook_Lead_Ad",
+    "first_name": "KOPILOU | catering • popup • event",
+    "last_name": "planner",
+    "email": null,
+    "phone_number": "+60173881050",
+    "company_name": "Kopilou",
+    "country": "MY",
+    "custom_fields": {
+      "work_email": "kopilouresources@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1247566543918466",
+    "created_time": "2026-01-21T01:37:16+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120227305650640775",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "adset_id": "120234967340970775",
+    "adset_name": "LAL_Admin_HK_Facebook_Leadgen_Launch",
+    "ad_id": "120234967340980775",
+    "ad_name": "LAL_Admin_HK _Facebook_Lead_Ad",
+    "first_name": "Singh",
+    "last_name": "Baljoet",
+    "email": null,
+    "phone_number": "+85262151048",
+    "company_name": "Mint & Basil Limited",
+    "country": "HK",
+    "custom_fields": {
+      "work_email": "Baljoet@chillilime.com.hk"
+    }
+  },
+  {
+    "lead_id": "2254197248405361",
+    "created_time": "2026-01-20T20:56:08+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120211091399920775",
+    "adset_name": "LAL_LAL_UK_Facebook",
+    "ad_id": "120211091399910775",
+    "ad_name": "LAL_Deal_UK_Facebook_Video_Ad",
+    "first_name": "Vivienne",
+    "last_name": "Spud",
+    "email": null,
+    "phone_number": "+447784222002",
+    "company_name": "Keefe ltd",
+    "country": "GB",
+    "custom_fields": {
+      "work_email": "Vivvv@msn.com"
+    }
+  }
+]

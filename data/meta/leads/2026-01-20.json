@@ -1,0 +1,182 @@
+[
+  {
+    "lead_id": "2324041391390822",
+    "created_time": "2026-01-20T16:49:10+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120208328766140775",
+    "adset_name": "LAL_Consolidated_GCC_Facebook_NA",
+    "ad_id": "120208328766170775",
+    "ad_name": "LAL_Consolidated_GCC_Facebook_Video_Ad",
+    "first_name": "Bassam",
+    "last_name": "Kiwan",
+    "email": null,
+    "phone_number": "50287301",
+    "company_name": "Microclear",
+    "country": null,
+    "custom_fields": {
+      "work_email": "microclear@hotmail.com"
+    }
+  },
+  {
+    "lead_id": "1443195163811477",
+    "created_time": "2026-01-20T06:18:02+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120208328766140775",
+    "adset_name": "LAL_Consolidated_GCC_Facebook_NA",
+    "ad_id": "120208328766170775",
+    "ad_name": "LAL_Consolidated_GCC_Facebook_Video_Ad",
+    "first_name": "Shashankk",
+    "last_name": "Krishna",
+    "email": null,
+    "phone_number": "+971566270929",
+    "company_name": "Dubai",
+    "country": null,
+    "custom_fields": {
+      "work_email": "shashankkrishnamurthy19@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1202967678595428",
+    "created_time": "2026-01-20T05:07:19+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120220642567630775",
+    "adset_name": "LAL_Consolidated_GCC_Facebook_Dubai/AbuDhabi",
+    "ad_id": "120220642567620775",
+    "ad_name": "LAL_Consolidated_GCC_Facebook_Dubai/AbuDhabi",
+    "first_name": "Phattu",
+    "last_name": "Thapa",
+    "email": null,
+    "phone_number": "+9779707722749",
+    "company_name": "Island Group",
+    "country": null,
+    "custom_fields": {
+      "work_email": "rockanish30@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1588115962222081",
+    "created_time": "2026-01-20T07:52:47+0000",
+    "form_name": "META Lead Form Australia HQ (03/11/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120211091446780775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "120211091446770775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "first_name": "Calin",
+    "last_name": "Mccabe",
+    "email": null,
+    "phone_number": "+61418450595",
+    "company_name": "calinmccabe",
+    "country": null,
+    "custom_fields": {
+      "work_email": "juniorcrim23@gmail.com"
+    }
+  },
+  {
+    "lead_id": "869415015879855",
+    "created_time": "2026-01-20T15:19:04+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120219950339920775",
+    "adset_name": "LAL_Admin_NZ_Facebook_Lead",
+    "ad_id": "120219950339930775",
+    "ad_name": "LAL_Admin_NZ_Facebook_Lead_Ad",
+    "first_name": "Nope",
+    "last_name": "Bad Targeting",
+    "email": null,
+    "phone_number": "+64290435521",
+    "company_name": "Your targeting sucks",
+    "country": "AO",
+    "custom_fields": {
+      "work_email": "youradtargetingsucks@gmail.com"
+    }
+  },
+  {
+    "lead_id": "936469412366417",
+    "created_time": "2026-01-20T10:01:52+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120227305650640775",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "adset_id": "120227305650710775",
+    "adset_name": "LAL_Admin_HK_MY_Facebook_Leadgen",
+    "ad_id": "120227305650700775",
+    "ad_name": "LAL_Admin_HK_MY _Facebook_Lead_Ad",
+    "first_name": "Jessin",
+    "last_name": "Wong",
+    "email": null,
+    "phone_number": "+60169236518",
+    "company_name": "Self-employed",
+    "country": "MY",
+    "custom_fields": {
+      "work_email": "hockbeebros@gmail.com"
+    }
+  },
+  {
+    "lead_id": "861249980121637",
+    "created_time": "2026-01-20T06:45:26+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120211091399920775",
+    "adset_name": "LAL_LAL_UK_Facebook",
+    "ad_id": "120211091399910775",
+    "ad_name": "LAL_Deal_UK_Facebook_Video_Ad",
+    "first_name": "Sanjay",
+    "last_name": "Malik",
+    "email": null,
+    "phone_number": "+447989994107",
+    "company_name": "SD Ltd",
+    "country": "United Kingdom",
+    "custom_fields": {
+      "work_email": "Sanjmalik@yahoo.com"
+    }
+  },
+  {
+    "lead_id": "929044679781114",
+    "created_time": "2026-01-20T00:36:24+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120211091399920775",
+    "adset_name": "LAL_LAL_UK_Facebook",
+    "ad_id": "120211091399910775",
+    "ad_name": "LAL_Deal_UK_Facebook_Video_Ad",
+    "first_name": "Mark",
+    "last_name": "Blake",
+    "email": null,
+    "phone_number": "+447870917338",
+    "company_name": "Operations Director at West Coast Hospitality",
+    "country": "GB",
+    "custom_fields": {
+      "work_email": "markwilsonblake@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1142390474467168",
+    "created_time": "2026-01-19T19:46:58+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120219950339920775",
+    "adset_name": "LAL_Admin_NZ_Facebook_Lead",
+    "ad_id": "120219950339930775",
+    "ad_name": "LAL_Admin_NZ_Facebook_Lead_Ad",
+    "first_name": "Ken",
+    "last_name": "Toyota",
+    "email": null,
+    "phone_number": "+6421905158",
+    "company_name": "Lucky 8",
+    "country": "New Zealand",
+    "custom_fields": {
+      "work_email": "Ken@lucky8.co.nz"
+    }
+  }
+]

@@ -1,0 +1,242 @@
+[
+  {
+    "lead_id": "3902018640090803",
+    "created_time": "2026-01-23T16:51:37+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209603184100775",
+    "adset_name": "LAL_Admin_GCC_Facebook_NA",
+    "ad_id": "120209603184110775",
+    "ad_name": "LAL_Admin_GCC_Facebook_Video_Ad",
+    "first_name": "Alfi",
+    "last_name": "Schokman",
+    "email": null,
+    "phone_number": "+96894544937",
+    "company_name": "BBQ STATION",
+    "country": null,
+    "custom_fields": {
+      "work_email": "schokmanalfi@gmail.com"
+    }
+  },
+  {
+    "lead_id": "25767411872943610",
+    "created_time": "2026-01-23T15:55:56+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120211091446780775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "120211091446770775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "first_name": "Mike",
+    "last_name": "Bradstock",
+    "email": null,
+    "phone_number": "+61408714043",
+    "company_name": "Waste ad makers time",
+    "country": null,
+    "custom_fields": {
+      "work_email": "mikebradstock@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1388585873008219",
+    "created_time": "2026-01-23T15:48:05+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209603184100775",
+    "adset_name": "LAL_Admin_GCC_Facebook_NA",
+    "ad_id": "120209603184110775",
+    "ad_name": "LAL_Admin_GCC_Facebook_Video_Ad",
+    "first_name": "Arun",
+    "last_name": "Uzagare",
+    "email": null,
+    "phone_number": "+96899429648",
+    "company_name": "Self-employed",
+    "country": null,
+    "custom_fields": {
+      "work_email": "arunuzagare@gmail.com"
+    }
+  },
+  {
+    "lead_id": "4321551754782732",
+    "created_time": "2026-01-23T15:20:10+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Michaël",
+    "last_name": "Saro",
+    "email": null,
+    "phone_number": "+2126900866746",
+    "company_name": "L’abrive",
+    "country": null,
+    "custom_fields": {
+      "work_email": "Saro.michael3@gmail.com"
+    }
+  },
+  {
+    "lead_id": "873015025735019",
+    "created_time": "2026-01-23T14:45:23+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Ismail.Z",
+    "last_name": "Zemmama",
+    "email": null,
+    "phone_number": "+212661588370",
+    "company_name": "Assalah Delights",
+    "country": null,
+    "custom_fields": {
+      "work_email": "Ismailzemmama@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1152373186764637",
+    "created_time": "2026-01-23T11:51:57+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120220642567630775",
+    "adset_name": "LAL_Consolidated_GCC_Facebook_Dubai/AbuDhabi",
+    "ad_id": "120220642567620775",
+    "ad_name": "LAL_Consolidated_GCC_Facebook_Dubai/AbuDhabi",
+    "first_name": "Munira",
+    "last_name": "Hijazi",
+    "email": null,
+    "phone_number": "+971505442334",
+    "company_name": "Breakfast in Istanbul",
+    "country": null,
+    "custom_fields": {
+      "work_email": "munirahijazi@gmail.com"
+    }
+  },
+  {
+    "lead_id": "872810422121141",
+    "created_time": "2026-01-23T03:57:37+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209603184100775",
+    "adset_name": "LAL_Admin_GCC_Facebook_NA",
+    "ad_id": "120209603184110775",
+    "ad_name": "LAL_Admin_GCC_Facebook_Video_Ad",
+    "first_name": "Mahmoud",
+    "last_name": "Aalian",
+    "email": null,
+    "phone_number": "+971588585120",
+    "company_name": "Chef beirut",
+    "country": null,
+    "custom_fields": {
+      "work_email": "M7moud373@gmail.com"
+    }
+  },
+  {
+    "lead_id": "907956758315064",
+    "created_time": "2026-01-22T23:34:50+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209460358900775",
+    "adset_name": "LAL_Consolidated_KSA_Facebook_NA",
+    "ad_id": "120209460358890775",
+    "ad_name": "LAL_Consolidated_KSA_Facebook_Video_Ad",
+    "first_name": "Niyaj",
+    "last_name": "Khan",
+    "email": null,
+    "phone_number": "+966508808208",
+    "company_name": "Aqsha trading",
+    "country": null,
+    "custom_fields": {
+      "work_email": "niyazkhan2335@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1268142305147739",
+    "created_time": "2026-01-22T23:01:45+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Ayoub",
+    "last_name": "Nr",
+    "email": null,
+    "phone_number": "+212634573483",
+    "company_name": "Nurconsulting",
+    "country": null,
+    "custom_fields": {
+      "work_email": "ayoub.nourdine.ae@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1204317465143077",
+    "created_time": "2026-01-22T21:19:00+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "ilham123",
+    "last_name": "Skkaf",
+    "email": null,
+    "phone_number": "+212674509384",
+    "company_name": "مكناس",
+    "country": null,
+    "custom_fields": {
+      "work_email": "mlakmkas57@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1521483782486104",
+    "created_time": "2026-01-23T15:21:45+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120227305650640775",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "adset_id": "120227305650710775",
+    "adset_name": "LAL_Admin_HK_MY_Facebook_Leadgen",
+    "ad_id": "120227305650700775",
+    "ad_name": "LAL_Admin_HK_MY _Facebook_Lead_Ad",
+    "first_name": "Liang Yong",
+    "last_name": "Chew",
+    "email": null,
+    "phone_number": "+60187905749",
+    "company_name": "Kota Bharu",
+    "country": "ID",
+    "custom_fields": {
+      "work_email": "yong@salamkugrocery.com"
+    }
+  },
+  {
+    "lead_id": "1978855129679891",
+    "created_time": "2026-01-22T21:27:09+0000",
+    "form_name": "META Lead Form (11/09/2025)",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120237266135990775",
+    "adset_name": "LAL_Target_UK_Facebook",
+    "ad_id": "120237266135980775",
+    "ad_name": "LAL_Target_UK_Facebook_Video_Ad",
+    "first_name": "Saurav",
+    "last_name": "Kumar",
+    "email": null,
+    "phone_number": "+447379959424",
+    "company_name": "La Fontana italian restaurant Leicester",
+    "country": "GB",
+    "custom_fields": {
+      "work_email": "Om@lafontana.uk"
+    }
+  }
+]

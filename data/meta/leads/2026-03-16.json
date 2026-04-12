@@ -1,0 +1,142 @@
+[
+  {
+    "lead_id": "1658114662270787",
+    "created_time": "2026-03-16T15:00:15+0000",
+    "form_name": "META Philippines 02/2026",
+    "campaign_id": "120237959815840775",
+    "campaign_name": "Supy_Facebook_Philippines_Meta",
+    "adset_id": "120237959815830775",
+    "adset_name": "Meta_Philippines_Facebook_Leadgen_Enterprise_Broad",
+    "ad_id": "120237959815820775",
+    "ad_name": "Interest_Philippines_Facebook_Lead_Ad",
+    "first_name": "Mark",
+    "last_name": "Cua",
+    "email": null,
+    "phone_number": "+639178672557",
+    "company_name": "globalink",
+    "country": "Philippines",
+    "custom_fields": {
+      "work_email": "markdavidson.cua@gmail.com"
+    }
+  },
+  {
+    "lead_id": "2165626050910605",
+    "created_time": "2026-03-16T14:04:57+0000",
+    "form_name": "META Philippines 02/2026",
+    "campaign_id": "120237959815840775",
+    "campaign_name": "Supy_Facebook_Philippines_Meta",
+    "adset_id": "120237959815830775",
+    "adset_name": "Meta_Philippines_Facebook_Leadgen_Enterprise_Broad",
+    "ad_id": "120237959815820775",
+    "ad_name": "Interest_Philippines_Facebook_Lead_Ad",
+    "first_name": "janrey",
+    "last_name": "dejino",
+    "email": null,
+    "phone_number": "+639311736394",
+    "company_name": "none",
+    "country": "Philippines",
+    "custom_fields": {
+      "work_email": "janreydejino79@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1365327218690471",
+    "created_time": "2026-03-16T01:16:03+0000",
+    "form_name": "META Philippines 02/2026",
+    "campaign_id": "120237959815840775",
+    "campaign_name": "Supy_Facebook_Philippines_Meta",
+    "adset_id": "120237959815830775",
+    "adset_name": "Meta_Philippines_Facebook_Leadgen_Enterprise_Broad",
+    "ad_id": "120237959815820775",
+    "ad_name": "Interest_Philippines_Facebook_Lead_Ad",
+    "first_name": "Reymark",
+    "last_name": "Cubillan",
+    "email": null,
+    "phone_number": "+639358782685",
+    "company_name": "RC101Company",
+    "country": "Philippines",
+    "custom_fields": {
+      "work_email": "cubillanreymark737@gmail.com"
+    }
+  },
+  {
+    "lead_id": "982684888269556",
+    "created_time": "2026-03-16T08:02:30+0000",
+    "form_name": "META Morocco 02/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120239493491710775",
+    "adset_name": "Facebook_Morroco_LAL_Global",
+    "ad_id": "120239493491720775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Walid",
+    "last_name": "Ahgour",
+    "email": null,
+    "phone_number": "+212601514730",
+    "company_name": "طالب",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "zawalid437@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1250762087240624",
+    "created_time": "2026-03-16T12:27:29+0000",
+    "form_name": "META New Zealand 02/2026",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120219950339920775",
+    "adset_name": "LAL_Admin_NZ_Facebook_Lead",
+    "ad_id": "120219950339930775",
+    "ad_name": "LAL_Admin_NZ_Facebook_Lead_Ad",
+    "first_name": "Rupesh",
+    "last_name": "Kumar",
+    "email": null,
+    "phone_number": "+64212514683",
+    "company_name": "Classic Residence by Hyatt",
+    "country": "New Zealand",
+    "custom_fields": {
+      "work_email": "Info@sangam.co.nz"
+    }
+  },
+  {
+    "lead_id": "2412810835812819",
+    "created_time": "2026-03-16T12:39:05+0000",
+    "form_name": "META Australia HQ 02/2026",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120211091446780775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "120211091446770775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "first_name": "Tinsley",
+    "last_name": "Halika",
+    "email": null,
+    "phone_number": "0404903065",
+    "company_name": "Roslyn primary school",
+    "country": "Australia",
+    "custom_fields": {
+      "work_email": "Pugz123@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1699333424397596",
+    "created_time": "2026-03-16T09:26:50+0000",
+    "form_name": "META Australia HQ 02/2026",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120211091446780775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "120211091446770775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "first_name": "Ray",
+    "last_name": "Pavlovic",
+    "email": null,
+    "phone_number": "+61412624632",
+    "company_name": "Pavis cafe and deli",
+    "country": "Australia",
+    "custom_fields": {
+      "work_email": "ray.pavlovic@gmail.com"
+    }
+  }
+]

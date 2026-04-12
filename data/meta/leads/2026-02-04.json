@@ -1,0 +1,562 @@
+[
+  {
+    "lead_id": "922194160266685",
+    "created_time": "2026-02-04T05:19:41+0000",
+    "form_name": "META Philippines 02/2026",
+    "campaign_id": null,
+    "campaign_name": null,
+    "adset_id": null,
+    "adset_name": null,
+    "ad_id": null,
+    "ad_name": null,
+    "first_name": "test",
+    "last_name": "test",
+    "email": null,
+    "phone_number": "+918123743291",
+    "company_name": "meta form singapore",
+    "country": "Philippines",
+    "custom_fields": {
+      "work_email": "Nomail_testv421@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1235908078503109",
+    "created_time": "2026-02-04T04:19:28+0000",
+    "form_name": "META Laos 5 Loc 02/2026",
+    "campaign_id": null,
+    "campaign_name": null,
+    "adset_id": null,
+    "adset_name": null,
+    "ad_id": null,
+    "ad_name": null,
+    "first_name": "test",
+    "last_name": "test",
+    "email": null,
+    "phone_number": "+918123743274",
+    "company_name": "meta form singapore",
+    "country": "Laos",
+    "custom_fields": {
+      "work_email": "Nomail_testv403@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1777031852973041",
+    "created_time": "2026-02-04T18:00:40+0000",
+    "form_name": "META Vietnam 5 Loc 02/2026",
+    "campaign_id": "120237828804040775",
+    "campaign_name": "Supy_Facebook_Vietnam_Meta",
+    "adset_id": "120237828804050775",
+    "adset_name": "Meta_Vietnam_Facebook_Leadgen_Enterprise_Broad",
+    "ad_id": "120237828804060775",
+    "ad_name": "Interest_Vietnam_Facebook_Lead_Ad",
+    "first_name": "Đinh",
+    "last_name": "Cường",
+    "email": null,
+    "phone_number": "+84975551818",
+    "company_name": "GQG",
+    "country": "Vietnam",
+    "custom_fields": {
+      "work_email": "cuongdinh.cny@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1098983232357307",
+    "created_time": "2026-02-04T14:28:48+0000",
+    "form_name": "META Cambodia 5 Loc 02/2026",
+    "campaign_id": "120237787403190775",
+    "campaign_name": "Supy_Facebook_Cambodia_Meta",
+    "adset_id": "120237787403170775",
+    "adset_name": "Meta_Cambodia_Facebook_Leadgen_Broad",
+    "ad_id": "120237787403180775",
+    "ad_name": "Interest_Cambodia_Facebook_Lead_Ad",
+    "first_name": "ស្រា",
+    "last_name": "ចាន់ត្រា",
+    "email": null,
+    "phone_number": "+85587807603",
+    "company_name": "សហគ្រិនខ្មែរ",
+    "country": "Cambodia",
+    "custom_fields": {
+      "work_email": "realchantra504@gmil.com"
+    }
+  },
+  {
+    "lead_id": "1975948376467513",
+    "created_time": "2026-02-04T04:31:29+0000",
+    "form_name": "META Macau 02/2026",
+    "campaign_id": null,
+    "campaign_name": null,
+    "adset_id": null,
+    "adset_name": null,
+    "ad_id": null,
+    "ad_name": null,
+    "first_name": "test",
+    "last_name": "test",
+    "email": null,
+    "phone_number": "+918123743276",
+    "company_name": "meta form singapore",
+    "country": "Macau",
+    "custom_fields": {
+      "work_email": "Nomail_testv406@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1532810017802060",
+    "created_time": "2026-02-04T17:31:35+0000",
+    "form_name": "META Taiwan 02/2026",
+    "campaign_id": "120237782273820775",
+    "campaign_name": "Supy_Facebook_Taiwan_Meta",
+    "adset_id": "120237782273810775",
+    "adset_name": "Meta_Taiwan_Facebook_Leadgen_Broad",
+    "ad_id": "120237782273830775",
+    "ad_name": "Interest_ Macau_Facebook_Lead_Ad",
+    "first_name": "Grace",
+    "last_name": "Ko",
+    "email": null,
+    "phone_number": "+886980318828",
+    "company_name": "Wow Litson Manok & Inasal （葛瑞絲香草烤雞）",
+    "country": "Taiwan",
+    "custom_fields": {
+      "work_email": "Kojuiszu@gmail.com"
+    }
+  },
+  {
+    "lead_id": "910318201538837",
+    "created_time": "2026-02-04T17:48:28+0000",
+    "form_name": "META Morocco 02/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Fettouhi",
+    "last_name": "Zineb",
+    "email": null,
+    "phone_number": "+212606633633",
+    "company_name": "Facebook",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "didisdidis333@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1625261705165594",
+    "created_time": "2026-02-04T16:45:00+0000",
+    "form_name": "META Morocco 02/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Tarik",
+    "last_name": "El Kasmi",
+    "email": null,
+    "phone_number": "+212645607554",
+    "company_name": "Myt conseil et ingenrie",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "elkasmitarik81@gmail.com"
+    }
+  },
+  {
+    "lead_id": "2296586997474724",
+    "created_time": "2026-02-04T04:45:59+0000",
+    "form_name": "META Hong Kong 02/2026",
+    "campaign_id": null,
+    "campaign_name": null,
+    "adset_id": null,
+    "adset_name": null,
+    "ad_id": null,
+    "ad_name": null,
+    "first_name": "test",
+    "last_name": "test",
+    "email": null,
+    "phone_number": "+918123743283",
+    "company_name": "meta form singapore",
+    "country": "Hong Kong",
+    "custom_fields": {
+      "work_email": "Nomail_testv411@gmail.com"
+    }
+  },
+  {
+    "lead_id": "872256758921989",
+    "created_time": "2026-02-04T04:48:22+0000",
+    "form_name": "META Malaysia 5 Loc 02/2026",
+    "campaign_id": null,
+    "campaign_name": null,
+    "adset_id": null,
+    "adset_name": null,
+    "ad_id": null,
+    "ad_name": null,
+    "first_name": "test",
+    "last_name": "test",
+    "email": null,
+    "phone_number": "+918123743284",
+    "company_name": "meta form singapore",
+    "country": "Malaysia",
+    "custom_fields": {
+      "work_email": "Nomail_testv413@gmail.com"
+    }
+  },
+  {
+    "lead_id": "779947208481898",
+    "created_time": "2026-02-04T04:54:45+0000",
+    "form_name": "META Malaysia 02/2026",
+    "campaign_id": null,
+    "campaign_name": null,
+    "adset_id": null,
+    "adset_name": null,
+    "ad_id": null,
+    "ad_name": null,
+    "first_name": "test",
+    "last_name": "test",
+    "email": null,
+    "phone_number": "+918123743286",
+    "company_name": "meta form singapore",
+    "country": "Malaysia",
+    "custom_fields": {
+      "work_email": "Nomail_testv417@gmail.com"
+    }
+  },
+  {
+    "lead_id": "905924288601152",
+    "created_time": "2026-02-04T04:56:07+0000",
+    "form_name": "META New Zealand 02/2026",
+    "campaign_id": null,
+    "campaign_name": null,
+    "adset_id": null,
+    "adset_name": null,
+    "ad_id": null,
+    "ad_name": null,
+    "first_name": "test",
+    "last_name": "test",
+    "email": null,
+    "phone_number": "+918123743287",
+    "company_name": "meta form singapore",
+    "country": "New Zealand",
+    "custom_fields": {
+      "work_email": "Nomail_testv418@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1307290144561206",
+    "created_time": "2026-02-04T04:59:00+0000",
+    "form_name": "META United Kingdom 02/2026",
+    "campaign_id": null,
+    "campaign_name": null,
+    "adset_id": null,
+    "adset_name": null,
+    "ad_id": null,
+    "ad_name": null,
+    "first_name": "test",
+    "last_name": "test",
+    "email": null,
+    "phone_number": "+918123743288",
+    "company_name": "meta form singapore",
+    "country": "United Kingdom",
+    "custom_fields": {
+      "work_email": "Nomail_testv419@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1614739599874079",
+    "created_time": "2026-02-04T12:45:49+0000",
+    "form_name": "META Australia HQ 02/2026",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120211091446780775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "120211091446770775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "first_name": "Coco",
+    "last_name": "Estephan",
+    "email": null,
+    "phone_number": "+61435559922",
+    "company_name": "Estephan Group Pty Ltd.",
+    "country": "Australia",
+    "custom_fields": {
+      "work_email": "estephangroup@outlook.com.au"
+    }
+  },
+  {
+    "lead_id": "3641905899285966",
+    "created_time": "2026-02-04T05:00:38+0000",
+    "form_name": "META Australia HQ 02/2026",
+    "campaign_id": null,
+    "campaign_name": null,
+    "adset_id": null,
+    "adset_name": null,
+    "ad_id": null,
+    "ad_name": null,
+    "first_name": "test",
+    "last_name": "test",
+    "email": null,
+    "phone_number": "+918123743291",
+    "company_name": "meta form singapore",
+    "country": "Australia",
+    "custom_fields": {
+      "work_email": "Nomail_testv420@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1572627504182314",
+    "created_time": "2026-02-04T09:48:52+0000",
+    "form_name": "META Leads Form Laos 29/01/2026",
+    "campaign_id": "120237828724960775",
+    "campaign_name": "Supy_Facebook_Laos_Meta",
+    "adset_id": "120237828724980775",
+    "adset_name": "Meta_Laos_Facebook_Leadgen_Broad",
+    "ad_id": "120237828724970775",
+    "ad_name": "Interest_Laos_Facebook_Lead_Ad",
+    "first_name": "P'Phou",
+    "last_name": "phou",
+    "email": null,
+    "phone_number": "+8562028965410",
+    "company_name": "money",
+    "country": "Laos",
+    "custom_fields": {
+      "work_email": "mkgld@gamli.vom"
+    }
+  },
+  {
+    "lead_id": "1217122949965620",
+    "created_time": "2026-02-03T18:55:40+0000",
+    "form_name": "META Leads Form Laos 29/01/2026",
+    "campaign_id": "120237828724960775",
+    "campaign_name": "Supy_Facebook_Laos_Meta",
+    "adset_id": "120237828724980775",
+    "adset_name": "Meta_Laos_Facebook_Leadgen_Broad",
+    "ad_id": "120237828724970775",
+    "ad_name": "Interest_Laos_Facebook_Lead_Ad",
+    "first_name": "ເຕົ່າ",
+    "last_name": "ເຜິ້ງ",
+    "email": null,
+    "phone_number": "+8562098885887",
+    "company_name": "daophet",
+    "country": "Laos",
+    "custom_fields": {
+      "work_email": "daophet281988@gmail.com"
+    }
+  },
+  {
+    "lead_id": "910320175274865",
+    "created_time": "2026-02-04T00:49:59+0000",
+    "form_name": "META Leads Form Cambodia 28/01/2026",
+    "campaign_id": "120237787403190775",
+    "campaign_name": "Supy_Facebook_Cambodia_Meta",
+    "adset_id": "120237787403170775",
+    "adset_name": "Meta_Cambodia_Facebook_Leadgen_Broad",
+    "ad_id": "120237787403180775",
+    "ad_name": "Interest_Cambodia_Facebook_Lead_Ad",
+    "first_name": "បូណា",
+    "last_name": "យ៉ុង",
+    "email": null,
+    "phone_number": "+85516968800",
+    "company_name": "ais",
+    "country": "Cambodia",
+    "custom_fields": {
+      "work_email": "youngbona2024@gmail.com"
+    }
+  },
+  {
+    "lead_id": "3256090621222647",
+    "created_time": "2026-02-04T04:20:53+0000",
+    "form_name": "META Leads Form Macau 28/01/2026",
+    "campaign_id": "120237780732490775",
+    "campaign_name": "Supy_Facebook_Macau_Meta",
+    "adset_id": "120237780732480775",
+    "adset_name": "Meta_Macau_Facebook_Leadgen_Broad",
+    "ad_id": "120237780732500775",
+    "ad_name": "Interest_Macau_Facebook_Lead_Ad",
+    "first_name": "Eric Leong",
+    "last_name": "Leong",
+    "email": null,
+    "phone_number": "+85366607804",
+    "company_name": "SAKERAKU Com. Ltd",
+    "country": "Macau",
+    "custom_fields": {
+      "work_email": "awata.trading@gmail.com"
+    }
+  },
+  {
+    "lead_id": "912295841336728",
+    "created_time": "2026-02-04T08:39:29+0000",
+    "form_name": "META Leads Form United Kingdom 22/01/2026",
+    "campaign_id": "120211055502090775",
+    "campaign_name": "Supy_Facebook_Ireland_Leadgen",
+    "adset_id": "120211091399920775",
+    "adset_name": "LAL_LAL_UK_Facebook",
+    "ad_id": "120211091399910775",
+    "ad_name": "LAL_Deal_UK_Facebook_Video_Ad",
+    "first_name": "رحيم",
+    "last_name": "Munavar",
+    "email": null,
+    "phone_number": "+447440666691",
+    "company_name": "Rumz catering ltd",
+    "country": "United Kingdom",
+    "custom_fields": {
+      "work_email": "argafoor73@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1709929353327070",
+    "created_time": "2026-02-04T00:31:05+0000",
+    "form_name": "META Leads Form Morocco 22/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Soufian",
+    "last_name": "Žh",
+    "email": null,
+    "phone_number": "+212634546992",
+    "company_name": "Soufian",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "zhourisofian@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1270144724966749",
+    "created_time": "2026-02-03T23:48:11+0000",
+    "form_name": "META Leads Form Morocco 22/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "🅼🆁🆄🅽🅴⊙🅴🅻🆄🅻🅸",
+    "last_name": "El",
+    "email": null,
+    "phone_number": "+212690399407",
+    "company_name": "FASHION Magazine",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "eloualimarouane956@gmail.com"
+    }
+  },
+  {
+    "lead_id": "862615869973314",
+    "created_time": "2026-02-03T20:33:43+0000",
+    "form_name": "META Leads Form Morocco 22/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Ahmed",
+    "last_name": "Baa",
+    "email": null,
+    "phone_number": "+212718684979",
+    "company_name": "Hconnexion",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "baaahmad5@gmail.com"
+    }
+  },
+  {
+    "lead_id": "893405673286548",
+    "created_time": "2026-02-03T19:40:42+0000",
+    "form_name": "META Leads Form Morocco 22/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Abderahman",
+    "last_name": "houssni",
+    "email": null,
+    "phone_number": "+212632381599",
+    "company_name": "sorec",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "abdohusnt@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1983162945602215",
+    "created_time": "2026-02-03T19:39:22+0000",
+    "form_name": "META Leads Form Morocco 22/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Malika",
+    "last_name": "Chadli",
+    "email": null,
+    "phone_number": "+212613344414",
+    "company_name": "El amal Boulemane",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "mchadli@live.fr"
+    }
+  },
+  {
+    "lead_id": "1286334009997874",
+    "created_time": "2026-02-03T19:37:57+0000",
+    "form_name": "META Leads Form Morocco 22/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "jamal",
+    "last_name": "bahi",
+    "email": null,
+    "phone_number": "+212626476122",
+    "company_name": "Halp homlos",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "bahijamal82@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1286138500177488",
+    "created_time": "2026-02-04T06:05:16+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120208328766140775",
+    "adset_name": "LAL_Consolidated_GCC_Facebook_NA",
+    "ad_id": "120208328766170775",
+    "ad_name": "LAL_Consolidated_GCC_Facebook_Video_Ad",
+    "first_name": "Gufran",
+    "last_name": "Naumani",
+    "email": null,
+    "phone_number": "+971506485800",
+    "company_name": "Restaurant",
+    "country": null,
+    "custom_fields": {
+      "work_email": "gufran.web@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1089033876699873",
+    "created_time": "2026-02-04T03:13:04+0000",
+    "form_name": "META Lead Form GCC HQ 07/01/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120209603184100775",
+    "adset_name": "LAL_Admin_GCC_Facebook_NA",
+    "ad_id": "120209603184110775",
+    "ad_name": "LAL_Admin_GCC_Facebook_Video_Ad",
+    "first_name": "Nagendra",
+    "last_name": "Kutani",
+    "email": null,
+    "phone_number": "+971585946447",
+    "company_name": "Zaychem drugstore",
+    "country": null,
+    "custom_fields": {
+      "work_email": "nagkutani@gmail.com"
+    }
+  }
+]

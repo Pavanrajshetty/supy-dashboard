@@ -1,0 +1,102 @@
+[
+  {
+    "lead_id": "1479504887025390",
+    "created_time": "2026-02-06T19:43:05+0000",
+    "form_name": "META Cambodia 5 Loc 02/2026",
+    "campaign_id": "120237787403190775",
+    "campaign_name": "Supy_Facebook_Cambodia_Meta",
+    "adset_id": "120237787403170775",
+    "adset_name": "Meta_Cambodia_Facebook_Leadgen_Broad",
+    "ad_id": "120237787403180775",
+    "ad_name": "Interest_Cambodia_Facebook_Lead_Ad",
+    "first_name": "កើតមកអ្នកក្រ",
+    "last_name": "កុំតូចចិត្ត",
+    "email": null,
+    "phone_number": "+85570979050",
+    "company_name": "ទុំវណ្ណ:",
+    "country": "Cambodia",
+    "custom_fields": {
+      "work_email": "tomvannak99@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1571436587424343",
+    "created_time": "2026-02-06T21:52:09+0000",
+    "form_name": "META Morocco 02/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Faycal",
+    "last_name": "Benabderazik",
+    "email": null,
+    "phone_number": "+212661422273",
+    "company_name": "cotebougiemarrakech",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "Kraftkitchenlab@gmail.com"
+    }
+  },
+  {
+    "lead_id": "1046239867718772",
+    "created_time": "2026-02-06T19:35:07+0000",
+    "form_name": "META Morocco 02/2026",
+    "campaign_id": "120208097408850775",
+    "campaign_name": "Supy_Facebook_GCC_LAL_Leadgen",
+    "adset_id": "120237560109240775",
+    "adset_name": "Facebook_Morroco_Broad",
+    "ad_id": "120237560109230775",
+    "ad_name": "LAL_Admin_ Morocco_Facebook_Video_Ad",
+    "first_name": "Simo El",
+    "last_name": "Khõudari",
+    "email": null,
+    "phone_number": "+212642749091",
+    "company_name": "سلا",
+    "country": "Morocco",
+    "custom_fields": {
+      "work_email": "simoelkhoudari5@gmail.com"
+    }
+  },
+  {
+    "lead_id": "3294884187345581",
+    "created_time": "2026-02-07T18:19:37+0000",
+    "form_name": "META Australia HQ 02/2026",
+    "campaign_id": "120207533114190775",
+    "campaign_name": "Supy_Facebook_AUS_LAL_Leadgen",
+    "adset_id": "120211091446780775",
+    "adset_name": "LAL_Admin_AUS_Facebook_Lead",
+    "ad_id": "120211091446770775",
+    "ad_name": "LAL_Admin_AUS_Facebook_Lead_Ad",
+    "first_name": "Nick",
+    "last_name": "Mastro",
+    "email": null,
+    "phone_number": "+61425289654",
+    "company_name": "adore cofee",
+    "country": "Australia",
+    "custom_fields": {
+      "work_email": "nick@cgroasters.com.au"
+    }
+  },
+  {
+    "lead_id": "924476999990512",
+    "created_time": "2026-02-07T18:28:13+0000",
+    "form_name": "META Leads Form Hong Kong 22/01/2026  v1",
+    "campaign_id": "120227305650640775",
+    "campaign_name": "Supy_Facebook_HK_MY_LAL_Leadgen",
+    "adset_id": "120234967340970775",
+    "adset_name": "LAL_Admin_HK_Facebook_Leadgen_Launch",
+    "ad_id": "120234967340980775",
+    "ad_name": "LAL_Admin_HK _Facebook_Lead_Ad",
+    "first_name": "Jacob",
+    "last_name": "Au Yeung",
+    "email": null,
+    "phone_number": "+85268000075",
+    "company_name": "Techfull Cosmos Limited",
+    "country": "Hong Kong",
+    "custom_fields": {
+      "work_email": "dignityacc2024@gmail.com"
+    }
+  }
+]
