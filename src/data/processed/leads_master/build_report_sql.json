@@ -1,9 +1,9 @@
 {
-  "time": "2026-04-12T11:45:09+00:00",
+  "time": "2026-04-12T11:49:44+00:00",
   "stats": {
-    "sql_file_processed": "sample.json",
-    "new_rows_created_from_sql": 0,
+    "sql_file_processed": "mar.json",
+    "new_rows_created_from_sql": 39,
     "updated_from_sql": 0,
-    "total_master_rows": 4
+    "total_master_rows": 43
   }
 }
