@@ -101,7 +101,7 @@
     "deal_stage": "Delayed/Deferred",
     "deal_amount": 300,
     "deal_currency_code": "GBP",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 403.72,
     "number_of_branches": 2
   },
   {
