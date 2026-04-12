@@ -31,7 +31,7 @@
     "deal_stage": "Closed/Lost",
     "deal_amount": 10000,
     "deal_currency_code": "SAR",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 2666.67,
     "number_of_branches": 10
   },
   {
@@ -66,7 +66,7 @@
     "deal_stage": "Closed/Lost",
     "deal_amount": 3750,
     "deal_currency_code": "SAR",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 1000.00,
     "number_of_branches": 30
   },
   {
@@ -101,7 +101,7 @@
     "deal_stage": "Closed/Lost",
     "deal_amount": 4500,
     "deal_currency_code": "SAR",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 1200.00,
     "number_of_branches": 2
   },
   {
@@ -136,7 +136,7 @@
     "deal_stage": "Closed/Lost",
     "deal_amount": 2250,
     "deal_currency_code": "SAR",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 600.00,
     "number_of_branches": 2
   },
   {
@@ -171,7 +171,7 @@
     "deal_stage": "Demo Booked",
     "deal_amount": 1500,
     "deal_currency_code": "SAR",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 400.00,
     "number_of_branches": 2
   },
   {
@@ -206,7 +206,7 @@
     "deal_stage": "Delayed/Deferred",
     "deal_amount": 127.5,
     "deal_currency_code": "GBP",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 161.93,
     "number_of_branches": 1
   },
   {
@@ -241,7 +241,7 @@
     "deal_stage": "Closed/Lost",
     "deal_amount": 340,
     "deal_currency_code": "GBP",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 431.80,
     "number_of_branches": 2
   },
   {
@@ -276,7 +276,7 @@
     "deal_stage": "Closed/Lost",
     "deal_amount": 1425,
     "deal_currency_code": "SAR",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 380.00,
     "number_of_branches": 2
   },
   {
@@ -311,7 +311,7 @@
     "deal_stage": "Closed/Lost",
     "deal_amount": 400,
     "deal_currency_code": "GBP",
-    "deal_amount_usd": null,
+    "deal_amount_usd": 508.00,
     "number_of_branches": 2
   },
   {
