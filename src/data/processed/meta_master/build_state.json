@@ -1,14 +1,14 @@
 {
   "build_name": "meta_master",
-  "last_built_at": "2026-04-12T04:39:39.185317+00:00",
+  "last_built_at": "2026-04-12T04:41:22.957956+00:00",
   "source_dir": "data/meta/Data",
   "output_dir": "src/data/processed/meta_master",
-  "files_found": 7,
+  "files_found": 8,
   "files_processed": 1,
   "processed_files": [
-    "2026-03-06.json"
+    "2026-03-07.json"
   ],
-  "output_rows": 114,
+  "output_rows": 133,
   "file_states": {
     "2026-03-01.json": {
       "hash": "b837ceb9b6830224d7bdad884311d2e5",
@@ -35,18 +35,23 @@
       "status": "unchanged",
       "date": "2026-03-05"
     },
+    "2026-03-06.json": {
+      "hash": "642bf4a35fa9a82982d5fda38adc02af",
+      "status": "unchanged",
+      "date": "2026-03-06"
+    },
     "sample.json": {
       "hash": "9d7079c466f3f0e80ed86f0758e0f990",
       "status": "unchanged",
       "date": "sample"
     },
-    "2026-03-06.json": {
-      "hash": "642bf4a35fa9a82982d5fda38adc02af",
+    "2026-03-07.json": {
+      "hash": "5ec0e09a96540555b0e28c8913ed37eb",
       "status": "processed",
-      "rows": 22,
-      "aggregated_rows": 22,
-      "date": "2026-03-06",
-      "processed_at": "2026-04-12T04:39:39.185242+00:00"
+      "rows": 19,
+      "aggregated_rows": 19,
+      "date": "2026-03-07",
+      "processed_at": "2026-04-12T04:41:22.957872+00:00"
     }
   }
 }
