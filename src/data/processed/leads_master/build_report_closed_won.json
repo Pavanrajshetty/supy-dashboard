@@ -1,9 +1,0 @@
-{
-  "time": "2026-04-12T12:22:37+00:00",
-  "stats": {
-    "closed_won_file_processed": "jan-apr10.json",
-    "new_rows_created_from_closed_won": 13,
-    "updated_from_closed_won": 1,
-    "total_master_rows": 63
-  }
-}
