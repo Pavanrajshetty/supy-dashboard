@@ -1,6 +1,7 @@
 {
   "sql_files_processed": [
     "apr1-10.json",
+    "jan-feb.json",
     "mar.json",
     "sample.json"
   ]
