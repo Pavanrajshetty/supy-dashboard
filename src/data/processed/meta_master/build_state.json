@@ -1,73 +1,308 @@
 {
   "build_name": "meta_master",
-  "last_built_at": "2026-04-12T09:56:31.760907+00:00",
+  "last_built_at": "2026-04-12T10:25:18.646908+00:00",
   "source_dir": "data/meta/Data",
   "output_dir": "src/data/processed/meta_master",
   "files_found": 101,
-  "files_processed": 59,
-  "processed_files": [
-    "2026-01-01.json",
-    "2026-01-02.json",
-    "2026-01-03.json",
-    "2026-01-04.json",
-    "2026-01-05.json",
-    "2026-01-06.json",
-    "2026-01-07.json",
-    "2026-01-08.json",
-    "2026-01-09.json",
-    "2026-01-10.json",
-    "2026-01-11.json",
-    "2026-01-12.json",
-    "2026-01-13.json",
-    "2026-01-14.json",
-    "2026-01-15.json",
-    "2026-01-16.json",
-    "2026-01-17.json",
-    "2026-01-18.json",
-    "2026-01-19.json",
-    "2026-01-20.json",
-    "2026-01-21.json",
-    "2026-01-22.json",
-    "2026-01-23.json",
-    "2026-01-24.json",
-    "2026-01-25.json",
-    "2026-01-26.json",
-    "2026-01-27.json",
-    "2026-01-28.json",
-    "2026-01-29.json",
-    "2026-01-30.json",
-    "2026-01-31.json",
-    "2026-02-01.json",
-    "2026-02-02.json",
-    "2026-02-03.json",
-    "2026-02-04.json",
-    "2026-02-05.json",
-    "2026-02-06.json",
-    "2026-02-07.json",
-    "2026-02-08.json",
-    "2026-02-09.json",
-    "2026-02-10.json",
-    "2026-02-11.json",
-    "2026-02-12.json",
-    "2026-02-13.json",
-    "2026-02-14.json",
-    "2026-02-15.json",
-    "2026-02-16.json",
-    "2026-02-17.json",
-    "2026-02-18.json",
-    "2026-02-19.json",
-    "2026-02-20.json",
-    "2026-02-21.json",
-    "2026-02-22.json",
-    "2026-02-23.json",
-    "2026-02-24.json",
-    "2026-02-25.json",
-    "2026-02-26.json",
-    "2026-02-27.json",
-    "2026-02-28.json"
-  ],
+  "files_processed": 0,
+  "processed_files": [],
   "output_rows": 2489,
   "file_states": {
+    "2026-01-01.json": {
+      "hash": "21ba11879e84d92e94d63f676bba0f23",
+      "status": "unchanged",
+      "date": "2026-01-01"
+    },
+    "2026-01-02.json": {
+      "hash": "bc6862066a525b3bfaec01fcc222550e",
+      "status": "unchanged",
+      "date": "2026-01-02"
+    },
+    "2026-01-03.json": {
+      "hash": "2f93ea8a6adfda6dae0b3e74df315348",
+      "status": "unchanged",
+      "date": "2026-01-03"
+    },
+    "2026-01-04.json": {
+      "hash": "afda3ab026797a2a90e0bd51cbba9cb5",
+      "status": "unchanged",
+      "date": "2026-01-04"
+    },
+    "2026-01-05.json": {
+      "hash": "c6136776b19e0c4e661be9c83a2fc1a2",
+      "status": "unchanged",
+      "date": "2026-01-05"
+    },
+    "2026-01-06.json": {
+      "hash": "8dcf77708cc6aa88e05b2ece6ecb7973",
+      "status": "unchanged",
+      "date": "2026-01-06"
+    },
+    "2026-01-07.json": {
+      "hash": "0114686576bd880295aa809742b30c03",
+      "status": "unchanged",
+      "date": "2026-01-07"
+    },
+    "2026-01-08.json": {
+      "hash": "70a7fa90242e36a1ec3ba680b02095ac",
+      "status": "unchanged",
+      "date": "2026-01-08"
+    },
+    "2026-01-09.json": {
+      "hash": "45815e0e0e8b0bba3d5d4fbfd03c73c3",
+      "status": "unchanged",
+      "date": "2026-01-09"
+    },
+    "2026-01-10.json": {
+      "hash": "ca3088511b1cdf073925dd5ab26f471b",
+      "status": "unchanged",
+      "date": "2026-01-10"
+    },
+    "2026-01-11.json": {
+      "hash": "3728dc5ffddee27a066081404ccd472b",
+      "status": "unchanged",
+      "date": "2026-01-11"
+    },
+    "2026-01-12.json": {
+      "hash": "e76b877ba32a3a13f0a9ba08babe98b7",
+      "status": "unchanged",
+      "date": "2026-01-12"
+    },
+    "2026-01-13.json": {
+      "hash": "136709dda88b95ed5ba7e8f371a643be",
+      "status": "unchanged",
+      "date": "2026-01-13"
+    },
+    "2026-01-14.json": {
+      "hash": "e473fcab8eda382ee917fcb94650797b",
+      "status": "unchanged",
+      "date": "2026-01-14"
+    },
+    "2026-01-15.json": {
+      "hash": "614fcb526ab41416e93690344bba6984",
+      "status": "unchanged",
+      "date": "2026-01-15"
+    },
+    "2026-01-16.json": {
+      "hash": "6f21b5ac6737583495c92c4c5e7b75e7",
+      "status": "unchanged",
+      "date": "2026-01-16"
+    },
+    "2026-01-17.json": {
+      "hash": "232f43b597ce4141f1b5e9fd05805e50",
+      "status": "unchanged",
+      "date": "2026-01-17"
+    },
+    "2026-01-18.json": {
+      "hash": "24526586d3c7f0db45c27346f10c2b00",
+      "status": "unchanged",
+      "date": "2026-01-18"
+    },
+    "2026-01-19.json": {
+      "hash": "191ff23ae5109b82d3124c2849d86a3a",
+      "status": "unchanged",
+      "date": "2026-01-19"
+    },
+    "2026-01-20.json": {
+      "hash": "ed835176ff92e3a37f4d670b2163893d",
+      "status": "unchanged",
+      "date": "2026-01-20"
+    },
+    "2026-01-21.json": {
+      "hash": "fc124cfabc09088f6994a526f8b6556f",
+      "status": "unchanged",
+      "date": "2026-01-21"
+    },
+    "2026-01-22.json": {
+      "hash": "b0c947f5b63247beb61afc9b5937b9a2",
+      "status": "unchanged",
+      "date": "2026-01-22"
+    },
+    "2026-01-23.json": {
+      "hash": "cc868d67c9ed72c7e4de597821ce8ffa",
+      "status": "unchanged",
+      "date": "2026-01-23"
+    },
+    "2026-01-24.json": {
+      "hash": "3ff700dd37d7c1892a921108f43c5dfb",
+      "status": "unchanged",
+      "date": "2026-01-24"
+    },
+    "2026-01-25.json": {
+      "hash": "dbb57310ae11167cdd77b9c68e19bdac",
+      "status": "unchanged",
+      "date": "2026-01-25"
+    },
+    "2026-01-26.json": {
+      "hash": "65f965421d820b60f6b5b9fc8e6fa0a6",
+      "status": "unchanged",
+      "date": "2026-01-26"
+    },
+    "2026-01-27.json": {
+      "hash": "b97ab011d74d5dbba5972f55e56d9a50",
+      "status": "unchanged",
+      "date": "2026-01-27"
+    },
+    "2026-01-28.json": {
+      "hash": "1aba9e0f54107fe98f9ec23cc3d48d44",
+      "status": "unchanged",
+      "date": "2026-01-28"
+    },
+    "2026-01-29.json": {
+      "hash": "a5d38841734811cf774f0c94c05c73fd",
+      "status": "unchanged",
+      "date": "2026-01-29"
+    },
+    "2026-01-30.json": {
+      "hash": "3ae1bf19f4512397b28de9d32de91830",
+      "status": "unchanged",
+      "date": "2026-01-30"
+    },
+    "2026-01-31.json": {
+      "hash": "a55501b37aa2233a9b53f1cb5cea8a95",
+      "status": "unchanged",
+      "date": "2026-01-31"
+    },
+    "2026-02-01.json": {
+      "hash": "167bb6f830fb3332a80a7c534a5d7aea",
+      "status": "unchanged",
+      "date": "2026-02-01"
+    },
+    "2026-02-02.json": {
+      "hash": "f5048fb2323f609fb550a25353124d3b",
+      "status": "unchanged",
+      "date": "2026-02-02"
+    },
+    "2026-02-03.json": {
+      "hash": "68227e2a7c7443d5534a5cd050f5771e",
+      "status": "unchanged",
+      "date": "2026-02-03"
+    },
+    "2026-02-04.json": {
+      "hash": "35aa27cd7c8dfc175e9bb60aa4c271fb",
+      "status": "unchanged",
+      "date": "2026-02-04"
+    },
+    "2026-02-05.json": {
+      "hash": "357297f6d319cf6daf9cee5d7c50550b",
+      "status": "unchanged",
+      "date": "2026-02-05"
+    },
+    "2026-02-06.json": {
+      "hash": "683139ce698c7a90f69db79c4f382b11",
+      "status": "unchanged",
+      "date": "2026-02-06"
+    },
+    "2026-02-07.json": {
+      "hash": "c74ee5db8f167959be39159fc4d52720",
+      "status": "unchanged",
+      "date": "2026-02-07"
+    },
+    "2026-02-08.json": {
+      "hash": "5381f425493b2408c820ebf6a5867a5b",
+      "status": "unchanged",
+      "date": "2026-02-08"
+    },
+    "2026-02-09.json": {
+      "hash": "852e186a14c56211ab78b3fec62a12c5",
+      "status": "unchanged",
+      "date": "2026-02-09"
+    },
+    "2026-02-10.json": {
+      "hash": "edffd484dbcd9a2e9f91fb33bde5dcec",
+      "status": "unchanged",
+      "date": "2026-02-10"
+    },
+    "2026-02-11.json": {
+      "hash": "29f28bfad8e7ca617c22c2288ce5fd8b",
+      "status": "unchanged",
+      "date": "2026-02-11"
+    },
+    "2026-02-12.json": {
+      "hash": "f4ecf3e7f1064e921f0dd3e41fd21ad7",
+      "status": "unchanged",
+      "date": "2026-02-12"
+    },
+    "2026-02-13.json": {
+      "hash": "76729808ff95767571efc0be7ad1c382",
+      "status": "unchanged",
+      "date": "2026-02-13"
+    },
+    "2026-02-14.json": {
+      "hash": "2531275a3d2fb69fa9b9507a893f5b27",
+      "status": "unchanged",
+      "date": "2026-02-14"
+    },
+    "2026-02-15.json": {
+      "hash": "428adb81bd74b02d54cfb07db5b983c6",
+      "status": "unchanged",
+      "date": "2026-02-15"
+    },
+    "2026-02-16.json": {
+      "hash": "b284303419f70c54db9c627e08dd1f56",
+      "status": "unchanged",
+      "date": "2026-02-16"
+    },
+    "2026-02-17.json": {
+      "hash": "bb8e5b01927c4298531ab89911d81f32",
+      "status": "unchanged",
+      "date": "2026-02-17"
+    },
+    "2026-02-18.json": {
+      "hash": "e8d841b01042be3ca7fbb4d35420a78d",
+      "status": "unchanged",
+      "date": "2026-02-18"
+    },
+    "2026-02-19.json": {
+      "hash": "fe1ab5c646a734203e4cb3145e04be65",
+      "status": "unchanged",
+      "date": "2026-02-19"
+    },
+    "2026-02-20.json": {
+      "hash": "b65b780821bf0b162c58bd37d28da9b4",
+      "status": "unchanged",
+      "date": "2026-02-20"
+    },
+    "2026-02-21.json": {
+      "hash": "8dd4dbde207bba80f1cd3900e34bd931",
+      "status": "unchanged",
+      "date": "2026-02-21"
+    },
+    "2026-02-22.json": {
+      "hash": "1e13d724d9f7a5015913e3b5f799a60e",
+      "status": "unchanged",
+      "date": "2026-02-22"
+    },
+    "2026-02-23.json": {
+      "hash": "06230bcfc77a9d691b3083ac77729b65",
+      "status": "unchanged",
+      "date": "2026-02-23"
+    },
+    "2026-02-24.json": {
+      "hash": "91167e2e207467f6fb51271a8a0b1b54",
+      "status": "unchanged",
+      "date": "2026-02-24"
+    },
+    "2026-02-25.json": {
+      "hash": "e44796e2ecbfcbadd1f916d77578b19f",
+      "status": "unchanged",
+      "date": "2026-02-25"
+    },
+    "2026-02-26.json": {
+      "hash": "8cc8617c198031fdbaa3da5972ad8f55",
+      "status": "unchanged",
+      "date": "2026-02-26"
+    },
+    "2026-02-27.json": {
+      "hash": "f00fd6670b6b2ed6e393949118d05c95",
+      "status": "unchanged",
+      "date": "2026-02-27"
+    },
+    "2026-02-28.json": {
+      "hash": "00b5f7ca3c9ebc28eda6c06d809e2244",
+      "status": "unchanged",
+      "date": "2026-02-28"
+    },
     "2026-03-01.json": {
       "hash": "b837ceb9b6830224d7bdad884311d2e5",
       "status": "unchanged",
@@ -277,478 +512,6 @@
       "hash": "9d7079c466f3f0e80ed86f0758e0f990",
       "status": "unchanged",
       "date": "sample"
-    },
-    "2026-01-01.json": {
-      "hash": "21ba11879e84d92e94d63f676bba0f23",
-      "status": "processed",
-      "rows": 22,
-      "aggregated_rows": 22,
-      "date": "2026-01-01",
-      "processed_at": "2026-04-12T09:56:31.736523+00:00"
-    },
-    "2026-01-02.json": {
-      "hash": "bc6862066a525b3bfaec01fcc222550e",
-      "status": "processed",
-      "rows": 25,
-      "aggregated_rows": 25,
-      "date": "2026-01-02",
-      "processed_at": "2026-04-12T09:56:31.736913+00:00"
-    },
-    "2026-01-03.json": {
-      "hash": "2f93ea8a6adfda6dae0b3e74df315348",
-      "status": "processed",
-      "rows": 25,
-      "aggregated_rows": 25,
-      "date": "2026-01-03",
-      "processed_at": "2026-04-12T09:56:31.737322+00:00"
-    },
-    "2026-01-04.json": {
-      "hash": "afda3ab026797a2a90e0bd51cbba9cb5",
-      "status": "processed",
-      "rows": 25,
-      "aggregated_rows": 25,
-      "date": "2026-01-04",
-      "processed_at": "2026-04-12T09:56:31.737697+00:00"
-    },
-    "2026-01-05.json": {
-      "hash": "c6136776b19e0c4e661be9c83a2fc1a2",
-      "status": "processed",
-      "rows": 25,
-      "aggregated_rows": 25,
-      "date": "2026-01-05",
-      "processed_at": "2026-04-12T09:56:31.738040+00:00"
-    },
-    "2026-01-06.json": {
-      "hash": "8dcf77708cc6aa88e05b2ece6ecb7973",
-      "status": "processed",
-      "rows": 25,
-      "aggregated_rows": 25,
-      "date": "2026-01-06",
-      "processed_at": "2026-04-12T09:56:31.738408+00:00"
-    },
-    "2026-01-07.json": {
-      "hash": "0114686576bd880295aa809742b30c03",
-      "status": "processed",
-      "rows": 25,
-      "aggregated_rows": 25,
-      "date": "2026-01-07",
-      "processed_at": "2026-04-12T09:56:31.738749+00:00"
-    },
-    "2026-01-08.json": {
-      "hash": "70a7fa90242e36a1ec3ba680b02095ac",
-      "status": "processed",
-      "rows": 25,
-      "aggregated_rows": 25,
-      "date": "2026-01-08",
-      "processed_at": "2026-04-12T09:56:31.739088+00:00"
-    },
-    "2026-01-09.json": {
-      "hash": "45815e0e0e8b0bba3d5d4fbfd03c73c3",
-      "status": "processed",
-      "rows": 25,
-      "aggregated_rows": 25,
-      "date": "2026-01-09",
-      "processed_at": "2026-04-12T09:56:31.739450+00:00"
-    },
-    "2026-01-10.json": {
-      "hash": "ca3088511b1cdf073925dd5ab26f471b",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-01-10",
-      "processed_at": "2026-04-12T09:56:31.739797+00:00"
-    },
-    "2026-01-11.json": {
-      "hash": "3728dc5ffddee27a066081404ccd472b",
-      "status": "processed",
-      "rows": 25,
-      "aggregated_rows": 25,
-      "date": "2026-01-11",
-      "processed_at": "2026-04-12T09:56:31.740146+00:00"
-    },
-    "2026-01-12.json": {
-      "hash": "e76b877ba32a3a13f0a9ba08babe98b7",
-      "status": "processed",
-      "rows": 25,
-      "aggregated_rows": 25,
-      "date": "2026-01-12",
-      "processed_at": "2026-04-12T09:56:31.740511+00:00"
-    },
-    "2026-01-13.json": {
-      "hash": "136709dda88b95ed5ba7e8f371a643be",
-      "status": "processed",
-      "rows": 25,
-      "aggregated_rows": 25,
-      "date": "2026-01-13",
-      "processed_at": "2026-04-12T09:56:31.740857+00:00"
-    },
-    "2026-01-14.json": {
-      "hash": "e473fcab8eda382ee917fcb94650797b",
-      "status": "processed",
-      "rows": 25,
-      "aggregated_rows": 25,
-      "date": "2026-01-14",
-      "processed_at": "2026-04-12T09:56:31.741190+00:00"
-    },
-    "2026-01-15.json": {
-      "hash": "614fcb526ab41416e93690344bba6984",
-      "status": "processed",
-      "rows": 25,
-      "aggregated_rows": 25,
-      "date": "2026-01-15",
-      "processed_at": "2026-04-12T09:56:31.741581+00:00"
-    },
-    "2026-01-16.json": {
-      "hash": "6f21b5ac6737583495c92c4c5e7b75e7",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-01-16",
-      "processed_at": "2026-04-12T09:56:31.741929+00:00"
-    },
-    "2026-01-17.json": {
-      "hash": "232f43b597ce4141f1b5e9fd05805e50",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-01-17",
-      "processed_at": "2026-04-12T09:56:31.742309+00:00"
-    },
-    "2026-01-18.json": {
-      "hash": "24526586d3c7f0db45c27346f10c2b00",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-01-18",
-      "processed_at": "2026-04-12T09:56:31.742661+00:00"
-    },
-    "2026-01-19.json": {
-      "hash": "191ff23ae5109b82d3124c2849d86a3a",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-01-19",
-      "processed_at": "2026-04-12T09:56:31.743002+00:00"
-    },
-    "2026-01-20.json": {
-      "hash": "ed835176ff92e3a37f4d670b2163893d",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-01-20",
-      "processed_at": "2026-04-12T09:56:31.743384+00:00"
-    },
-    "2026-01-21.json": {
-      "hash": "fc124cfabc09088f6994a526f8b6556f",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-01-21",
-      "processed_at": "2026-04-12T09:56:31.743738+00:00"
-    },
-    "2026-01-22.json": {
-      "hash": "b0c947f5b63247beb61afc9b5937b9a2",
-      "status": "processed",
-      "rows": 27,
-      "aggregated_rows": 27,
-      "date": "2026-01-22",
-      "processed_at": "2026-04-12T09:56:31.744098+00:00"
-    },
-    "2026-01-23.json": {
-      "hash": "cc868d67c9ed72c7e4de597821ce8ffa",
-      "status": "processed",
-      "rows": 27,
-      "aggregated_rows": 27,
-      "date": "2026-01-23",
-      "processed_at": "2026-04-12T09:56:31.744477+00:00"
-    },
-    "2026-01-24.json": {
-      "hash": "3ff700dd37d7c1892a921108f43c5dfb",
-      "status": "processed",
-      "rows": 27,
-      "aggregated_rows": 27,
-      "date": "2026-01-24",
-      "processed_at": "2026-04-12T09:56:31.744848+00:00"
-    },
-    "2026-01-25.json": {
-      "hash": "dbb57310ae11167cdd77b9c68e19bdac",
-      "status": "processed",
-      "rows": 27,
-      "aggregated_rows": 27,
-      "date": "2026-01-25",
-      "processed_at": "2026-04-12T09:56:31.745202+00:00"
-    },
-    "2026-01-26.json": {
-      "hash": "65f965421d820b60f6b5b9fc8e6fa0a6",
-      "status": "processed",
-      "rows": 27,
-      "aggregated_rows": 27,
-      "date": "2026-01-26",
-      "processed_at": "2026-04-12T09:56:31.745614+00:00"
-    },
-    "2026-01-27.json": {
-      "hash": "b97ab011d74d5dbba5972f55e56d9a50",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-01-27",
-      "processed_at": "2026-04-12T09:56:31.745964+00:00"
-    },
-    "2026-01-28.json": {
-      "hash": "1aba9e0f54107fe98f9ec23cc3d48d44",
-      "status": "processed",
-      "rows": 29,
-      "aggregated_rows": 29,
-      "date": "2026-01-28",
-      "processed_at": "2026-04-12T09:56:31.746373+00:00"
-    },
-    "2026-01-29.json": {
-      "hash": "a5d38841734811cf774f0c94c05c73fd",
-      "status": "processed",
-      "rows": 33,
-      "aggregated_rows": 33,
-      "date": "2026-01-29",
-      "processed_at": "2026-04-12T09:56:31.746803+00:00"
-    },
-    "2026-01-30.json": {
-      "hash": "3ae1bf19f4512397b28de9d32de91830",
-      "status": "processed",
-      "rows": 33,
-      "aggregated_rows": 33,
-      "date": "2026-01-30",
-      "processed_at": "2026-04-12T09:56:31.747251+00:00"
-    },
-    "2026-01-31.json": {
-      "hash": "a55501b37aa2233a9b53f1cb5cea8a95",
-      "status": "processed",
-      "rows": 33,
-      "aggregated_rows": 33,
-      "date": "2026-01-31",
-      "processed_at": "2026-04-12T09:56:31.747682+00:00"
-    },
-    "2026-02-01.json": {
-      "hash": "167bb6f830fb3332a80a7c534a5d7aea",
-      "status": "processed",
-      "rows": 33,
-      "aggregated_rows": 33,
-      "date": "2026-02-01",
-      "processed_at": "2026-04-12T09:56:31.748101+00:00"
-    },
-    "2026-02-02.json": {
-      "hash": "f5048fb2323f609fb550a25353124d3b",
-      "status": "processed",
-      "rows": 34,
-      "aggregated_rows": 34,
-      "date": "2026-02-02",
-      "processed_at": "2026-04-12T09:56:31.748576+00:00"
-    },
-    "2026-02-03.json": {
-      "hash": "68227e2a7c7443d5534a5cd050f5771e",
-      "status": "processed",
-      "rows": 34,
-      "aggregated_rows": 34,
-      "date": "2026-02-03",
-      "processed_at": "2026-04-12T09:56:31.749013+00:00"
-    },
-    "2026-02-04.json": {
-      "hash": "35aa27cd7c8dfc175e9bb60aa4c271fb",
-      "status": "processed",
-      "rows": 34,
-      "aggregated_rows": 34,
-      "date": "2026-02-04",
-      "processed_at": "2026-04-12T09:56:31.749485+00:00"
-    },
-    "2026-02-05.json": {
-      "hash": "357297f6d319cf6daf9cee5d7c50550b",
-      "status": "processed",
-      "rows": 33,
-      "aggregated_rows": 33,
-      "date": "2026-02-05",
-      "processed_at": "2026-04-12T09:56:31.749921+00:00"
-    },
-    "2026-02-06.json": {
-      "hash": "683139ce698c7a90f69db79c4f382b11",
-      "status": "processed",
-      "rows": 33,
-      "aggregated_rows": 33,
-      "date": "2026-02-06",
-      "processed_at": "2026-04-12T09:56:31.750364+00:00"
-    },
-    "2026-02-07.json": {
-      "hash": "c74ee5db8f167959be39159fc4d52720",
-      "status": "processed",
-      "rows": 33,
-      "aggregated_rows": 33,
-      "date": "2026-02-07",
-      "processed_at": "2026-04-12T09:56:31.750790+00:00"
-    },
-    "2026-02-08.json": {
-      "hash": "5381f425493b2408c820ebf6a5867a5b",
-      "status": "processed",
-      "rows": 33,
-      "aggregated_rows": 33,
-      "date": "2026-02-08",
-      "processed_at": "2026-04-12T09:56:31.751244+00:00"
-    },
-    "2026-02-09.json": {
-      "hash": "852e186a14c56211ab78b3fec62a12c5",
-      "status": "processed",
-      "rows": 33,
-      "aggregated_rows": 33,
-      "date": "2026-02-09",
-      "processed_at": "2026-04-12T09:56:31.751678+00:00"
-    },
-    "2026-02-10.json": {
-      "hash": "edffd484dbcd9a2e9f91fb33bde5dcec",
-      "status": "processed",
-      "rows": 34,
-      "aggregated_rows": 34,
-      "date": "2026-02-10",
-      "processed_at": "2026-04-12T09:56:31.752112+00:00"
-    },
-    "2026-02-11.json": {
-      "hash": "29f28bfad8e7ca617c22c2288ce5fd8b",
-      "status": "processed",
-      "rows": 34,
-      "aggregated_rows": 34,
-      "date": "2026-02-11",
-      "processed_at": "2026-04-12T09:56:31.752577+00:00"
-    },
-    "2026-02-12.json": {
-      "hash": "f4ecf3e7f1064e921f0dd3e41fd21ad7",
-      "status": "processed",
-      "rows": 34,
-      "aggregated_rows": 34,
-      "date": "2026-02-12",
-      "processed_at": "2026-04-12T09:56:31.753017+00:00"
-    },
-    "2026-02-13.json": {
-      "hash": "76729808ff95767571efc0be7ad1c382",
-      "status": "processed",
-      "rows": 38,
-      "aggregated_rows": 38,
-      "date": "2026-02-13",
-      "processed_at": "2026-04-12T09:56:31.753546+00:00"
-    },
-    "2026-02-14.json": {
-      "hash": "2531275a3d2fb69fa9b9507a893f5b27",
-      "status": "processed",
-      "rows": 29,
-      "aggregated_rows": 29,
-      "date": "2026-02-14",
-      "processed_at": "2026-04-12T09:56:31.754030+00:00"
-    },
-    "2026-02-15.json": {
-      "hash": "428adb81bd74b02d54cfb07db5b983c6",
-      "status": "processed",
-      "rows": 29,
-      "aggregated_rows": 29,
-      "date": "2026-02-15",
-      "processed_at": "2026-04-12T09:56:31.754459+00:00"
-    },
-    "2026-02-16.json": {
-      "hash": "b284303419f70c54db9c627e08dd1f56",
-      "status": "processed",
-      "rows": 30,
-      "aggregated_rows": 30,
-      "date": "2026-02-16",
-      "processed_at": "2026-04-12T09:56:31.754857+00:00"
-    },
-    "2026-02-17.json": {
-      "hash": "bb8e5b01927c4298531ab89911d81f32",
-      "status": "processed",
-      "rows": 28,
-      "aggregated_rows": 28,
-      "date": "2026-02-17",
-      "processed_at": "2026-04-12T09:56:31.755257+00:00"
-    },
-    "2026-02-18.json": {
-      "hash": "e8d841b01042be3ca7fbb4d35420a78d",
-      "status": "processed",
-      "rows": 29,
-      "aggregated_rows": 29,
-      "date": "2026-02-18",
-      "processed_at": "2026-04-12T09:56:31.755642+00:00"
-    },
-    "2026-02-19.json": {
-      "hash": "fe1ab5c646a734203e4cb3145e04be65",
-      "status": "processed",
-      "rows": 30,
-      "aggregated_rows": 30,
-      "date": "2026-02-19",
-      "processed_at": "2026-04-12T09:56:31.756028+00:00"
-    },
-    "2026-02-20.json": {
-      "hash": "b65b780821bf0b162c58bd37d28da9b4",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-02-20",
-      "processed_at": "2026-04-12T09:56:31.756393+00:00"
-    },
-    "2026-02-21.json": {
-      "hash": "8dd4dbde207bba80f1cd3900e34bd931",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-02-21",
-      "processed_at": "2026-04-12T09:56:31.756752+00:00"
-    },
-    "2026-02-22.json": {
-      "hash": "1e13d724d9f7a5015913e3b5f799a60e",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-02-22",
-      "processed_at": "2026-04-12T09:56:31.757099+00:00"
-    },
-    "2026-02-23.json": {
-      "hash": "06230bcfc77a9d691b3083ac77729b65",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-02-23",
-      "processed_at": "2026-04-12T09:56:31.757468+00:00"
-    },
-    "2026-02-24.json": {
-      "hash": "91167e2e207467f6fb51271a8a0b1b54",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-02-24",
-      "processed_at": "2026-04-12T09:56:31.757824+00:00"
-    },
-    "2026-02-25.json": {
-      "hash": "e44796e2ecbfcbadd1f916d77578b19f",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-02-25",
-      "processed_at": "2026-04-12T09:56:31.758166+00:00"
-    },
-    "2026-02-26.json": {
-      "hash": "8cc8617c198031fdbaa3da5972ad8f55",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-02-26",
-      "processed_at": "2026-04-12T09:56:31.758563+00:00"
-    },
-    "2026-02-27.json": {
-      "hash": "f00fd6670b6b2ed6e393949118d05c95",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-02-27",
-      "processed_at": "2026-04-12T09:56:31.758919+00:00"
-    },
-    "2026-02-28.json": {
-      "hash": "00b5f7ca3c9ebc28eda6c06d809e2244",
-      "status": "processed",
-      "rows": 26,
-      "aggregated_rows": 26,
-      "date": "2026-02-28",
-      "processed_at": "2026-04-12T09:56:31.759289+00:00"
     }
   }
 }
