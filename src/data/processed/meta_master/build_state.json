@@ -1,0 +1,31 @@
+{
+  "build_name": "meta_master",
+  "last_built_at": "2026-04-12T04:10:27.194623+00:00",
+  "source_dir": "data/meta/Data",
+  "output_dir": "src/data/processed/meta_master",
+  "files_found": 2,
+  "files_processed": 2,
+  "processed_files": [
+    "Mar-03-2026.json",
+    "sample.json"
+  ],
+  "output_rows": 20,
+  "file_states": {
+    "Mar-03-2026.json": {
+      "hash": "68e1c915e3abed2803150627cc625e18",
+      "status": "processed",
+      "rows": 20,
+      "aggregated_rows": 20,
+      "date": "Mar-03-2026",
+      "processed_at": "2026-04-12T04:10:27.194507+00:00"
+    },
+    "sample.json": {
+      "hash": "9d7079c466f3f0e80ed86f0758e0f990",
+      "status": "processed",
+      "rows": 1,
+      "aggregated_rows": 0,
+      "date": "sample",
+      "processed_at": "2026-04-12T04:10:27.194593+00:00"
+    }
+  }
+}
