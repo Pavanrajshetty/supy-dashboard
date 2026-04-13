@@ -19,7 +19,7 @@ const DATE_RANGES = [
 ];
 
 const TREND_METRICS = [
-  { key: "spend", label: "Spend", fmt: "aed" },
+  { key: "spend", label: "Spend", fmt: "money" },
   { key: "mql", label: "MQL", fmt: "num" },
   { key: "sql", label: "SQL", fmt: "num" },
   { key: "pipeline", label: "Pipeline", fmt: "usd" },
@@ -38,8 +38,8 @@ function safeNum(v) {
   return Number.isFinite(n) ? n : 0;
 }
 
-function fmtAED(value) {
-  return `AED ${Number(value || 0).toLocaleString(undefined, {
+function fmtMoney(value) {
+  return `$${Number(value || 0).toLocaleString(undefined, {
     maximumFractionDigits: 0,
   })}`;
 }
@@ -57,7 +57,7 @@ function fmtNum(value) {
 }
 
 function fmtValue(value, type = "num") {
-  if (type === "aed") return fmtAED(value);
+  if (type === "money") return fmtMoney(value);
   if (type === "usd") return fmtUSD(value);
   return fmtNum(value);
 }
@@ -234,8 +234,15 @@ function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos) {
     const geo = normalizeMasterCountry(row.country ?? row.geo);
     if (!selectedGeos.includes(geo)) return;
 
-    if (row?.sql === true && isWithinRange(row?.hs_v2_date_entered_salesqualifiedlead, rangeKey)) {
-      const dateKey = toDayKey(row?.hs_v2_date_entered_salesqualifiedlead);
+    const sqlDate =
+      isWithinRange(row?.hs_v2_date_entered_salesqualifiedlead, rangeKey)
+        ? row?.hs_v2_date_entered_salesqualifiedlead
+        : isWithinRange(row?.deal_createdate, rangeKey)
+        ? row?.deal_createdate
+        : null;
+
+    if (row?.sql === true && sqlDate) {
+      const dateKey = toDayKey(sqlDate);
       if (dateKey && byDate[dateKey]) {
         byDate[dateKey].sql += 1;
         byDate[dateKey].pipeline += safeNum(row.sql_amount_usd);
@@ -279,8 +286,8 @@ function getTickValues(maxVal, count = 5) {
 // ── Better chart ─────────────────────────────────────────────
 function LineChart({ data, metricKey, metricFmt }) {
   const W = 1100;
-  const H = 340;
-  const PAD = { top: 24, right: 24, bottom: 56, left: 76 };
+  const H = 360;
+  const PAD = { top: 24, right: 24, bottom: 56, left: 84 };
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
 
@@ -331,7 +338,6 @@ function LineChart({ data, metricKey, metricFmt }) {
       style={{ width: "100%", height: H, overflow: "visible" }}
       aria-label="line chart"
     >
-      {/* grid lines + y labels */}
       {ticks.map((tick, idx) => {
         const y = yOf(tick);
         return (
@@ -345,21 +351,18 @@ function LineChart({ data, metricKey, metricFmt }) {
               strokeWidth="1"
             />
             <text
-              x={PAD.left - 12}
+              x={PAD.left - 14}
               y={y + 4}
               textAnchor="end"
               fontSize="11"
               fill="#8d86a8"
             >
-              {metricFmt === "aed" || metricFmt === "usd"
-                ? fmtNum(tick)
-                : fmtNum(tick)}
+              {fmtNum(tick)}
             </text>
           </g>
         );
       })}
 
-      {/* axes */}
       <line
         x1={PAD.left}
         y1={PAD.top}
@@ -375,10 +378,15 @@ function LineChart({ data, metricKey, metricFmt }) {
         stroke="rgba(124,79,214,0.18)"
       />
 
-      {/* area */}
-      <polygon points={fillPoints} fill="rgba(124,79,214,0.08)" />
+      <defs>
+        <linearGradient id="trendAreaFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="rgba(124,79,214,0.22)" />
+          <stop offset="100%" stopColor="rgba(124,79,214,0.03)" />
+        </linearGradient>
+      </defs>
 
-      {/* line */}
+      <polygon points={fillPoints} fill="url(#trendAreaFill)" />
+
       <polyline
         points={points}
         fill="none"
@@ -388,21 +396,19 @@ function LineChart({ data, metricKey, metricFmt }) {
         strokeLinecap="round"
       />
 
-      {/* dots */}
       {data.map((d, i) => {
         const cx = xOf(i);
         const cy = yOf(d[metricKey]);
         return (
           <g key={`${d.date}-${i}`}>
             <circle cx={cx} cy={cy} r={4.5} fill="#7c4fd6" stroke="#ffffff" strokeWidth={2} />
-            <circle cx={cx} cy={cy} r={12} fill="transparent">
+            <circle cx={cx} cy={cy} r={14} fill="transparent">
               <title>{`${d.date}: ${fmtValue(d[metricKey], metricFmt)}`}</title>
             </circle>
           </g>
         );
       })}
 
-      {/* x labels */}
       {data.map((d, i) => {
         if (i % xLabelStep !== 0 && i !== data.length - 1) return null;
         const x = xOf(i);
@@ -524,7 +530,7 @@ export default function Trends() {
               <tr>
                 <th>Date</th>
                 {TREND_METRICS.map((m) => (
-                  <th key={m.key}>{m.label}</th>
+                  <th key={m.key} className="num-cell">{m.label}</th>
                 ))}
               </tr>
             </thead>
