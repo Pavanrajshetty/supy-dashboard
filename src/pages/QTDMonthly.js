@@ -15,11 +15,11 @@ const QUARTER_MONTHS = {
 const AVAILABLE_QUARTERS = ["Q1", "Q2", "Q3", "Q4"];
 
 const KPI_CARDS = [
-  { key: "spend", label: "SPEND", icon: "💸", fmt: "aed" },
+  { key: "spend", label: "SPEND", icon: "💸", fmt: "money" },
   { key: "mql", label: "MQL", icon: "📥", fmt: "int" },
-  { key: "cpl", label: "CPL", icon: "🧮", fmt: "aed" },
+  { key: "cpl", label: "CPL", icon: "🧮", fmt: "money" },
   { key: "sql", label: "SQL", icon: "🏆", fmt: "int" },
-  { key: "costPerSql", label: "COST / SQL", icon: "↘️", fmt: "aed" },
+  { key: "costPerSql", label: "COST / SQL", icon: "↘️", fmt: "money" },
   { key: "pipeline", label: "PIPELINE", icon: "📊", fmt: "usd" },
 ];
 
@@ -29,8 +29,8 @@ const DISPLAY_NAME_OVERRIDES = {
   "United States": "USA",
 };
 
-function fmtAED(value) {
-  return `AED ${Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+function fmtMoney(value) {
+  return `$${Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 }
 
 function fmtUSD(value) {
@@ -38,7 +38,7 @@ function fmtUSD(value) {
 }
 
 function fmt(value, type) {
-  if (type === "aed") return fmtAED(value);
+  if (type === "money") return fmtMoney(value);
   if (type === "usd") return fmtUSD(value);
   return Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
 }
@@ -186,7 +186,10 @@ function aggregateMaster(masterRows, quarter, month) {
 
     const isSql =
       row?.sql === true &&
-      isInSelection(row?.hs_v2_date_entered_salesqualifiedlead, quarter, month);
+      (
+        isInSelection(row?.hs_v2_date_entered_salesqualifiedlead, quarter, month) ||
+        isInSelection(row?.deal_createdate, quarter, month)
+      );
 
     const isClosedWon =
       row?.closed_won === true &&
@@ -342,23 +345,23 @@ export default function QTDMonthly() {
             <thead>
               <tr>
                 <th>Geo</th>
-                <th>Spend</th>
-                <th>MQL</th>
-                <th>CPL</th>
-                <th>SQL</th>
-                <th>CPSQL</th>
-                <th>Pipeline</th>
+                <th className="num-cell">Spend</th>
+                <th className="num-cell">MQL</th>
+                <th className="num-cell">CPL</th>
+                <th className="num-cell">SQL</th>
+                <th className="num-cell">CPSQL</th>
+                <th className="num-cell">Pipeline</th>
               </tr>
             </thead>
             <tbody>
               {geoRows.map((row) => (
                 <tr key={row.geo}>
                   <td>{row.geo}</td>
-                  <td className="num-cell">{fmtAED(row.spend.achieved)}</td>
-                  <td className="num-cell">{row.mql.achieved}</td>
-                  <td className="num-cell">{fmtAED(row.costPerMql.achieved)}</td>
-                  <td className="num-cell">{row.sql.achieved}</td>
-                  <td className="num-cell">{fmtAED(row.costPerSql.achieved)}</td>
+                  <td className="num-cell">{fmtMoney(row.spend.achieved)}</td>
+                  <td className="num-cell">{row.mql.achieved.toLocaleString()}</td>
+                  <td className="num-cell">{fmtMoney(row.costPerMql.achieved)}</td>
+                  <td className="num-cell">{row.sql.achieved.toLocaleString()}</td>
+                  <td className="num-cell">{fmtMoney(row.costPerSql.achieved)}</td>
                   <td className="num-cell accent">{fmtUSD(row.pipeline.achieved)}</td>
                 </tr>
               ))}
