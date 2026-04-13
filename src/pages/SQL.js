@@ -88,7 +88,11 @@ function getCampaign(row) {
 }
 
 function getSqlDate(row) {
-  return row.hs_v2_date_entered_salesqualifiedlead ?? null;
+  return (
+    row.hs_v2_date_entered_salesqualifiedlead ??
+    row.deal_createdate ??
+    null
+  );
 }
 
 function getCreatedDate(row) {
@@ -114,7 +118,10 @@ function buildSqlRows(rows, quarter, month) {
     .filter(
       (row) =>
         row?.sql === true &&
-        isInSelection(getSqlDate(row), quarter, month)
+        (
+          isInSelection(row?.hs_v2_date_entered_salesqualifiedlead, quarter, month) ||
+          isInSelection(row?.deal_createdate, quarter, month)
+        )
     )
     .map((row, index) => ({
       id: row.deal_id || row.lead_id || `sql-row-${index}`,
@@ -148,6 +155,11 @@ function sortRows(rows, sortKey, sortDir) {
     if (sortKey === "createdDate") {
       aVal = a.createdDateRaw ? a.createdDateRaw.getTime() : 0;
       bVal = b.createdDateRaw ? b.createdDateRaw.getTime() : 0;
+    }
+
+    if (sortKey === "dealValue") {
+      aVal = safeNum(a.dealValue);
+      bVal = safeNum(b.dealValue);
     }
 
     if (typeof aVal === "string") aVal = aVal.toLowerCase();
@@ -214,12 +226,12 @@ export default function SQL() {
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
     } else {
       setSortKey(key);
-      setSortDir("asc");
+      setSortDir(key === "sqlDate" || key === "createdDate" || key === "dealValue" ? "desc" : "asc");
     }
   };
 
-  const SortTh = ({ k, label }) => (
-    <th onClick={() => handleSort(k)} className="sortable-th">
+  const SortTh = ({ k, label, className = "" }) => (
+    <th onClick={() => handleSort(k)} className={`sortable-th ${className}`}>
       {label} {sortKey === k ? (sortDir === "asc" ? "▲" : "▼") : ""}
     </th>
   );
@@ -300,14 +312,14 @@ export default function SQL() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>#</th>
+                <th className="num-cell">#</th>
                 <SortTh k="company" label="Company" />
                 <SortTh k="country" label="Country" />
                 <SortTh k="geo" label="Geo" />
                 <SortTh k="campaign" label="Campaign" />
                 <SortTh k="sqlDate" label="SQL Date" />
                 <SortTh k="createdDate" label="Created" />
-                <SortTh k="dealValue" label="Deal Value" />
+                <SortTh k="dealValue" label="Deal Value" className="num-cell" />
                 <SortTh k="stage" label="Stage" />
                 <SortTh k="owner" label="Owner" />
                 <th>HubSpot</th>
@@ -317,7 +329,7 @@ export default function SQL() {
               {displayRows.length > 0 ? (
                 displayRows.map((row, i) => (
                   <tr key={row.id}>
-                    <td className="dim">{i + 1}</td>
+                    <td className="num-cell dim">{i + 1}</td>
                     <td>{row.company}</td>
                     <td>
                       <span className="geo-tag">{row.country}</span>
