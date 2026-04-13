@@ -20,22 +20,22 @@ const TIME_LABELS = {
 };
 
 const KPI_CARDS = [
-  { key: "spend", label: "Spend", icon: "💸", fmt: "aed" },
+  { key: "spend", label: "Spend", icon: "💸", fmt: "money" },
   { key: "impressions", label: "Impressions", icon: "👁️", fmt: "num" },
-  { key: "cpm", label: "CPM", icon: "📡", fmt: "aed" },
+  { key: "cpm", label: "CPM", icon: "📡", fmt: "money" },
   { key: "reach", label: "Reach", icon: "📶", fmt: "num" },
   { key: "clicks", label: "Clicks", icon: "🖱️", fmt: "num" },
-  { key: "cpc", label: "CPC", icon: "🎯", fmt: "aed" },
+  { key: "cpc", label: "CPC", icon: "🎯", fmt: "money" },
   { key: "leads", label: "Leads", icon: "✅", fmt: "num" },
-  { key: "cpl", label: "CPL", icon: "💡", fmt: "aed" },
+  { key: "cpl", label: "CPL", icon: "💡", fmt: "money" },
   { key: "sql", label: "SQL", icon: "🏆", fmt: "num" },
-  { key: "costPerSql", label: "Cost / SQL", icon: "🧮", fmt: "aed" },
+  { key: "costPerSql", label: "Cost / SQL", icon: "🧮", fmt: "money" },
   { key: "pipeline", label: "Pipeline", icon: "📊", fmt: "usd" },
   { key: "closure", label: "Closure", icon: "🔒", fmt: "usd" },
 ];
 
 const FUNNEL_KEYS = [
-  { key: "spend", label: "Spend", icon: "💸", fmt: "aed" },
+  { key: "spend", label: "Spend", icon: "💸", fmt: "money" },
   { key: "impressions", label: "Impressions", icon: "👁️", fmt: "num" },
   { key: "clicks", label: "Clicks", icon: "🖱️", fmt: "num" },
   { key: "leads", label: "Leads (MQL)", icon: "✅", fmt: "num" },
@@ -53,7 +53,7 @@ function safeNum(v) {
 function fmt(value, type = "num") {
   const n = Number(value || 0);
 
-  if (type === "aed") return `AED ${Math.round(n).toLocaleString()}`;
+  if (type === "money") return `$${Math.round(n).toLocaleString()}`;
   if (type === "usd") return `$${Math.round(n).toLocaleString()}`;
   return Math.round(n).toLocaleString();
 }
@@ -106,7 +106,10 @@ function getFilteredSqlRows(rows, timeRange) {
   return rows.filter(
     (row) =>
       row?.sql === true &&
-      isWithinRange(row?.hs_v2_date_entered_salesqualifiedlead, timeRange)
+      (
+        isWithinRange(row?.hs_v2_date_entered_salesqualifiedlead, timeRange) ||
+        isWithinRange(row?.deal_createdate, timeRange)
+      )
   );
 }
 
@@ -316,7 +319,7 @@ export default function ExecutiveSummary() {
           <div className="ai-block-label">✅ What Went Right</div>
           <ul className="ai-block-list">
             <li>Algeria &amp; Tunisia drove 40%+ of MQLs at under 20% of spend</li>
-            <li>Philippines CPL dropped to AED 62 — lowest geo in portfolio</li>
+            <li>Philippines CPL dropped to $62 — lowest geo in portfolio</li>
             <li>SQL rate improved to 8.4% vs 5.1% prior period</li>
           </ul>
         </div>
