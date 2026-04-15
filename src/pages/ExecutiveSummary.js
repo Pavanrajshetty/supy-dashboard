@@ -114,16 +114,11 @@ function getDisplayLink(row) {
 }
 
 function getDisplayCompany(row) {
-  return row?.company || row?.company_name || row?.deal_name || "—";
+  return row?.company || row?.deal_name || "—";
 }
 
 function getDisplaySize(row) {
-  const branches =
-    row?.number_of_locations ??
-    row?.number_of_branches ??
-    row?.branches ??
-    null;
-
+  const branches = row?.number_of_locations ?? null;
   if (!branches && branches !== 0) return "—";
   return `${branches} ${branches === 1 ? "branch" : "branches"}`;
 }
@@ -184,48 +179,50 @@ export default function ExecutiveSummary() {
         const startIso = start.toISOString();
         const endIso = end.toISOString();
 
+        const leadsCountPromise = supabase
+          .from("master_leads")
+          .select("lead_id", { count: "exact", head: true })
+          .gte("lead_created_date", startIso)
+          .lte("lead_created_date", endIso);
+
+        const sqlRowsPromise = supabase
+          .from("master_leads")
+          .select(`
+            lead_id,
+            deal_id,
+            company,
+            deal_name,
+            country,
+            amount_usd,
+            number_of_locations,
+            deal_link,
+            lead_link,
+            sql_date
+          `)
+          .eq("is_sql", true)
+          .gte("sql_date", startIso)
+          .lte("sql_date", endIso);
+
+        const closedWonRowsPromise = supabase
+          .from("master_leads")
+          .select(`
+            lead_id,
+            deal_id,
+            amount_usd,
+            close_date
+          `)
+          .eq("is_closed_won", true)
+          .gte("close_date", startIso)
+          .lte("close_date", endIso);
+
         const [
           leadsCountResponse,
           sqlRowsResponse,
           closedWonRowsResponse,
         ] = await Promise.all([
-          supabase
-            .from("master_leads")
-            .select("lead_id", { count: "exact", head: true })
-            .gte("lead_created_date", startIso)
-            .lte("lead_created_date", endIso),
-
-          supabase
-            .from("master_leads")
-            .select(`
-              lead_id,
-              deal_id,
-              company,
-              company_name,
-              deal_name,
-              country,
-              amount_usd,
-              number_of_locations,
-              number_of_branches,
-              deal_link,
-              lead_link,
-              sql_date
-            `)
-            .eq("is_sql", true)
-            .gte("sql_date", startIso)
-            .lte("sql_date", endIso),
-
-          supabase
-            .from("master_leads")
-            .select(`
-              lead_id,
-              deal_id,
-              amount_usd,
-              close_date
-            `)
-            .eq("is_closed_won", true)
-            .gte("close_date", startIso)
-            .lte("close_date", endIso),
+          leadsCountPromise,
+          sqlRowsPromise,
+          closedWonRowsPromise,
         ]);
 
         if (leadsCountResponse.error) {
