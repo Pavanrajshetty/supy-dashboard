@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import metaMasterData from "../data/processed/meta_master/meta_master.json";
 import leadsMasterData from "../data/processed/leads_master/master.json";
+import { supabase } from "../lib/supabase";
 
 // ── UI config inside same file ────────────────────────────────
 const RANGE_DAYS = {
@@ -121,12 +122,12 @@ function getFilteredClosedWonRows(rows, timeRange) {
   );
 }
 
-function buildKpi(metaRows, sqlRows, closedWonRows) {
+function buildKpi(metaRows, sqlRows, closedWonRows, leadsCount) {
   const spend = metaRows.reduce((s, r) => s + safeNum(r.spend), 0);
   const impressions = metaRows.reduce((s, r) => s + safeNum(r.impressions), 0);
   const reach = metaRows.reduce((s, r) => s + safeNum(r.reach), 0);
   const clicks = metaRows.reduce((s, r) => s + safeNum(r.clicks), 0);
-  const leads = metaRows.reduce((s, r) => s + safeNum(r.leads), 0);
+  const leads = safeNum(leadsCount);
 
   const sql = sqlRows.length;
   const pipeline = sqlRows.reduce((s, r) => s + safeNum(r.sql_amount_usd), 0);
@@ -172,6 +173,7 @@ function getDisplaySize(row) {
 // ── Component ─────────────────────────────────────────────────
 export default function ExecutiveSummary() {
   const [timeRange, setTimeRange] = useState("30d");
+  const [supabaseLeadsCount, setSupabaseLeadsCount] = useState(0);
 
   const metaRows = Array.isArray(metaMasterData) ? metaMasterData : [];
   const leadRows = Array.isArray(leadsMasterData) ? leadsMasterData : [];
@@ -191,9 +193,41 @@ export default function ExecutiveSummary() {
     [leadRows, timeRange]
   );
 
+  useEffect(() => {
+    async function fetchLeadsCount() {
+      try {
+        const { start, end } = getDateRange(timeRange);
+
+        const { count, error } = await supabase
+          .from("master_leads")
+          .select("lead_id", { count: "exact", head: true })
+          .gte("lead_created_date", start.toISOString())
+          .lte("lead_created_date", end.toISOString());
+
+        if (error) {
+          console.error("Supabase leads count error:", error);
+          setSupabaseLeadsCount(0);
+          return;
+        }
+
+        setSupabaseLeadsCount(count || 0);
+      } catch (err) {
+        console.error("Unexpected leads count error:", err);
+        setSupabaseLeadsCount(0);
+      }
+    }
+
+    fetchLeadsCount();
+  }, [timeRange]);
+
   const kpi = useMemo(
-    () => buildKpi(filteredMetaRows, filteredSqlRows, filteredClosedWonRows),
-    [filteredMetaRows, filteredSqlRows, filteredClosedWonRows]
+    () => buildKpi(
+      filteredMetaRows,
+      filteredSqlRows,
+      filteredClosedWonRows,
+      supabaseLeadsCount
+    ),
+    [filteredMetaRows, filteredSqlRows, filteredClosedWonRows, supabaseLeadsCount]
   );
 
   const topSqlRows = useMemo(
