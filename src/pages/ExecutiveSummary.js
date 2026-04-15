@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import metaMasterData from "../data/processed/meta_master/meta_master.json";
-import leadsMasterData from "../data/processed/leads_master/master.json";
 import { supabase } from "../lib/supabase";
 
 // ── UI config inside same file ────────────────────────────────
@@ -32,6 +31,7 @@ const KPI_CARDS = [
   { key: "sql", label: "SQL", icon: "🏆", fmt: "num" },
   { key: "costPerSql", label: "Cost / SQL", icon: "🧮", fmt: "money" },
   { key: "pipeline", label: "Pipeline", icon: "📊", fmt: "usd" },
+  { key: "closures", label: "Closures", icon: "🔐", fmt: "num" },
   { key: "closure", label: "Closure", icon: "🔒", fmt: "usd" },
 ];
 
@@ -103,26 +103,32 @@ function getFilteredMetaRows(rows, timeRange) {
   return rows.filter((row) => isWithinRange(row.date, timeRange));
 }
 
-function getFilteredSqlRows(rows, timeRange) {
-  return rows.filter(
-    (row) =>
-      row?.sql === true &&
-      (
-        isWithinRange(row?.hs_v2_date_entered_salesqualifiedlead, timeRange) ||
-        isWithinRange(row?.deal_createdate, timeRange)
-      )
-  );
+function getTopSqlRows(rows, limit = 15) {
+  return [...rows]
+    .sort((a, b) => safeNum(b.amount_usd) - safeNum(a.amount_usd))
+    .slice(0, limit);
 }
 
-function getFilteredClosedWonRows(rows, timeRange) {
-  return rows.filter(
-    (row) =>
-      row?.closed_won === true &&
-      isWithinRange(row?.hs_v2_date_entered_51997770, timeRange)
-  );
+function getDisplayLink(row) {
+  return row?.deal_link || row?.lead_link || "#";
 }
 
-function buildKpi(metaRows, sqlRows, closedWonRows, leadsCount) {
+function getDisplayCompany(row) {
+  return row?.company || row?.company_name || row?.deal_name || "—";
+}
+
+function getDisplaySize(row) {
+  const branches =
+    row?.number_of_locations ??
+    row?.number_of_branches ??
+    row?.branches ??
+    null;
+
+  if (!branches && branches !== 0) return "—";
+  return `${branches} ${branches === 1 ? "branch" : "branches"}`;
+}
+
+function buildKpi(metaRows, leadsCount, sqlRows, closedWonRows) {
   const spend = metaRows.reduce((s, r) => s + safeNum(r.spend), 0);
   const impressions = metaRows.reduce((s, r) => s + safeNum(r.impressions), 0);
   const reach = metaRows.reduce((s, r) => s + safeNum(r.reach), 0);
@@ -130,8 +136,10 @@ function buildKpi(metaRows, sqlRows, closedWonRows, leadsCount) {
   const leads = safeNum(leadsCount);
 
   const sql = sqlRows.length;
-  const pipeline = sqlRows.reduce((s, r) => s + safeNum(r.sql_amount_usd), 0);
-  const closure = closedWonRows.reduce((s, r) => s + safeNum(r.deal_amount_usd), 0);
+  const pipeline = sqlRows.reduce((s, r) => s + safeNum(r.amount_usd), 0);
+
+  const closures = closedWonRows.length;
+  const closure = closedWonRows.reduce((s, r) => s + safeNum(r.amount_usd), 0);
 
   const cpm = impressions > 0 ? (spend / impressions) * 1000 : 0;
   const cpc = clicks > 0 ? spend / clicks : 0;
@@ -150,89 +158,121 @@ function buildKpi(metaRows, sqlRows, closedWonRows, leadsCount) {
     sql,
     costPerSql,
     pipeline,
+    closures,
     closure,
   };
-}
-
-function getTopSqlRows(rows, limit = 15) {
-  return [...rows]
-    .sort((a, b) => safeNum(b.sql_amount_usd) - safeNum(a.sql_amount_usd))
-    .slice(0, limit);
-}
-
-function getDisplayLink(row) {
-  return row?.deal_link || row?.lead_link || "#";
-}
-
-function getDisplaySize(row) {
-  const branches = row?.number_of_branches ?? row?.number_of_locations ?? null;
-  if (!branches && branches !== 0) return "—";
-  return `${branches} ${branches === 1 ? "branch" : "branches"}`;
 }
 
 // ── Component ─────────────────────────────────────────────────
 export default function ExecutiveSummary() {
   const [timeRange, setTimeRange] = useState("30d");
   const [supabaseLeadsCount, setSupabaseLeadsCount] = useState(0);
+  const [supabaseSqlRows, setSupabaseSqlRows] = useState([]);
+  const [supabaseClosedWonRows, setSupabaseClosedWonRows] = useState([]);
 
   const metaRows = Array.isArray(metaMasterData) ? metaMasterData : [];
-  const leadRows = Array.isArray(leadsMasterData) ? leadsMasterData : [];
 
   const filteredMetaRows = useMemo(
     () => getFilteredMetaRows(metaRows, timeRange),
     [metaRows, timeRange]
   );
 
-  const filteredSqlRows = useMemo(
-    () => getFilteredSqlRows(leadRows, timeRange),
-    [leadRows, timeRange]
-  );
-
-  const filteredClosedWonRows = useMemo(
-    () => getFilteredClosedWonRows(leadRows, timeRange),
-    [leadRows, timeRange]
-  );
-
   useEffect(() => {
-    async function fetchLeadsCount() {
+    async function fetchExecutiveSummaryData() {
       try {
         const { start, end } = getDateRange(timeRange);
+        const startIso = start.toISOString();
+        const endIso = end.toISOString();
 
-        const { count, error } = await supabase
-          .from("master_leads")
-          .select("lead_id", { count: "exact", head: true })
-          .gte("lead_created_date", start.toISOString())
-          .lte("lead_created_date", end.toISOString());
+        const [
+          leadsCountResponse,
+          sqlRowsResponse,
+          closedWonRowsResponse,
+        ] = await Promise.all([
+          supabase
+            .from("master_leads")
+            .select("lead_id", { count: "exact", head: true })
+            .gte("lead_created_date", startIso)
+            .lte("lead_created_date", endIso),
 
-        if (error) {
-          console.error("Supabase leads count error:", error);
+          supabase
+            .from("master_leads")
+            .select(`
+              lead_id,
+              deal_id,
+              company,
+              company_name,
+              deal_name,
+              country,
+              amount_usd,
+              number_of_locations,
+              number_of_branches,
+              deal_link,
+              lead_link,
+              sql_date
+            `)
+            .eq("is_sql", true)
+            .gte("sql_date", startIso)
+            .lte("sql_date", endIso),
+
+          supabase
+            .from("master_leads")
+            .select(`
+              lead_id,
+              deal_id,
+              amount_usd,
+              close_date
+            `)
+            .eq("is_closed_won", true)
+            .gte("close_date", startIso)
+            .lte("close_date", endIso),
+        ]);
+
+        if (leadsCountResponse.error) {
+          console.error("Leads count error:", leadsCountResponse.error);
           setSupabaseLeadsCount(0);
-          return;
+        } else {
+          setSupabaseLeadsCount(leadsCountResponse.count || 0);
         }
 
-        setSupabaseLeadsCount(count || 0);
+        if (sqlRowsResponse.error) {
+          console.error("SQL rows error:", sqlRowsResponse.error);
+          setSupabaseSqlRows([]);
+        } else {
+          setSupabaseSqlRows(sqlRowsResponse.data || []);
+        }
+
+        if (closedWonRowsResponse.error) {
+          console.error("Closed won rows error:", closedWonRowsResponse.error);
+          setSupabaseClosedWonRows([]);
+        } else {
+          setSupabaseClosedWonRows(closedWonRowsResponse.data || []);
+        }
       } catch (err) {
-        console.error("Unexpected leads count error:", err);
+        console.error("Unexpected executive summary fetch error:", err);
         setSupabaseLeadsCount(0);
+        setSupabaseSqlRows([]);
+        setSupabaseClosedWonRows([]);
       }
     }
 
-    fetchLeadsCount();
+    fetchExecutiveSummaryData();
   }, [timeRange]);
 
   const kpi = useMemo(
-    () => buildKpi(
-      filteredMetaRows,
-      filteredSqlRows,
-      filteredClosedWonRows,
-      supabaseLeadsCount
-    ),
-    [filteredMetaRows, filteredSqlRows, filteredClosedWonRows, supabaseLeadsCount]
+    () =>
+      buildKpi(
+        filteredMetaRows,
+        supabaseLeadsCount,
+        supabaseSqlRows,
+        supabaseClosedWonRows
+      ),
+    [filteredMetaRows, supabaseLeadsCount, supabaseSqlRows, supabaseClosedWonRows]
   );
 
   const topSqlRows = useMemo(
-    () => getTopSqlRows(filteredSqlRows, 15),
-    [filteredSqlRows]
+    () => getTopSqlRows(supabaseSqlRows, 15),
+    [supabaseSqlRows]
   );
 
   const maxFunnel = kpi.spend || 1;
@@ -315,8 +355,8 @@ export default function ExecutiveSummary() {
                 {topSqlRows.length > 0 ? (
                   topSqlRows.map((row, idx) => (
                     <tr key={row.lead_id || row.deal_id || idx}>
-                      <td>{row.company || "—"}</td>
-                      <td className="num-cell">{fmt(safeNum(row.sql_amount_usd), "usd")}</td>
+                      <td>{getDisplayCompany(row)}</td>
+                      <td className="num-cell">{fmt(safeNum(row.amount_usd), "usd")}</td>
                       <td>
                         <span className="size-badge">{getDisplaySize(row)}</span>
                       </td>
