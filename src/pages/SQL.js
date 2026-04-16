@@ -99,8 +99,8 @@ function getCreatedDate(row) {
   return row.lead_created_date ?? null;
 }
 
-function getOwner(row) {
-  return row.owner_name ?? "—";
+function getOwner() {
+  return "—";
 }
 
 function getHsUrl(row) {
@@ -219,7 +219,6 @@ export default function SQL() {
             amount_usd,
             deal_stage,
             deal_name,
-            owner_name,
             deal_link,
             lead_link
           `)
