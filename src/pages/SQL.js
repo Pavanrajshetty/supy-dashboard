@@ -38,28 +38,6 @@ function parseDate(value) {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
-function getMonthLabel(dateValue) {
-  const d = parseDate(dateValue);
-  if (!d) return null;
-  return MONTHS[d.getUTCMonth()];
-}
-
-function getYear(dateValue) {
-  const d = parseDate(dateValue);
-  if (!d) return null;
-  return d.getUTCFullYear();
-}
-
-function isInSelection(dateValue, quarter, month) {
-  const monthLabel = getMonthLabel(dateValue);
-  const year = getYear(dateValue);
-
-  if (!monthLabel || year !== DISPLAY_YEAR) return false;
-
-  if (month) return monthLabel === month;
-  return (QUARTER_MONTHS[quarter] || []).includes(monthLabel);
-}
-
 function getQuarterDateRange(quarter, month) {
   const quarterMonths = QUARTER_MONTHS[quarter] || [];
   const selectedMonths = month ? [month] : quarterMonths;
@@ -104,7 +82,13 @@ function getGeo(row) {
 }
 
 function getCampaign(row) {
-  return row.campaign_name ?? row.utm_campaign ?? row.hs_analytics_source_data_2 ?? row.hs_analytics_source_data_1 ?? "—";
+  return (
+    row.campaign_name ??
+    row.utm_campaign ??
+    row.hs_analytics_source_data_2 ??
+    row.hs_analytics_source_data_1 ??
+    "—"
+  );
 }
 
 function getSqlDate(row) {
@@ -129,25 +113,23 @@ function formatDateForDisplay(value) {
   return d.toISOString().slice(0, 10);
 }
 
-function buildSqlRows(rows, quarter, month) {
-  return (Array.isArray(rows) ? rows : [])
-    .filter((row) => row?.is_sql === true && isInSelection(row?.sql_date, quarter, month))
-    .map((row, index) => ({
-      id: row.deal_id || row.lead_id || `sql-row-${index}`,
-      company: getCompany(row),
-      country: getCountry(row),
-      geo: getGeo(row),
-      campaign: getCampaign(row),
-      sqlDate: formatDateForDisplay(getSqlDate(row)),
-      sqlDateRaw: parseDate(getSqlDate(row)),
-      createdDate: formatDateForDisplay(getCreatedDate(row)),
-      createdDateRaw: parseDate(getCreatedDate(row)),
-      dealValue: safeNum(row.amount_usd),
-      stage: getSqlStage(row),
-      owner: getOwner(row),
-      hsUrl: getHsUrl(row),
-      isClosedWon: row.is_closed_won === true,
-    }));
+function buildSqlRows(rows) {
+  return (Array.isArray(rows) ? rows : []).map((row, index) => ({
+    id: row.deal_id || row.lead_id || `sql-row-${index}`,
+    company: getCompany(row),
+    country: getCountry(row),
+    geo: getGeo(row),
+    campaign: getCampaign(row),
+    sqlDate: formatDateForDisplay(getSqlDate(row)),
+    sqlDateRaw: parseDate(getSqlDate(row)),
+    createdDate: formatDateForDisplay(getCreatedDate(row)),
+    createdDateRaw: parseDate(getCreatedDate(row)),
+    dealValue: safeNum(row.amount_usd),
+    stage: getSqlStage(row),
+    owner: getOwner(row),
+    hsUrl: getHsUrl(row),
+    isClosedWon: row.is_closed_won === true,
+  }));
 }
 
 function sortRows(rows, sortKey, sortDir) {
@@ -184,13 +166,28 @@ function sortRows(rows, sortKey, sortDir) {
 }
 
 export default function SQL() {
-  const [qFilter, setQFilter] = useState(AVAILABLE_QUARTERS[1] || "Q2");
+  const [qFilter, setQFilter] = useState("Q1");
   const [monthFilter, setMonthFilter] = useState(null);
   const [geoFilter, setGeoFilter] = useState(null);
   const [sortKey, setSortKey] = useState("sqlDate");
   const [sortDir, setSortDir] = useState("desc");
   const [supabaseRows, setSupabaseRows] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const monthsInQuarter = useMemo(() => {
+    return QUARTER_MONTHS[qFilter] || [];
+  }, [qFilter]);
+
+  const handleQuarterClick = (q) => {
+    setQFilter(q);
+    setMonthFilter(null);
+    setGeoFilter(null);
+  };
+
+  const handleMonthClick = (m) => {
+    setMonthFilter((prev) => (prev === m ? null : m));
+    setGeoFilter(null);
+  };
 
   useEffect(() => {
     async function fetchSqlRows() {
@@ -248,37 +245,17 @@ export default function SQL() {
   }, [qFilter, monthFilter]);
 
   const sqlRows = useMemo(() => {
-    return buildSqlRows(supabaseRows, qFilter, monthFilter);
-  }, [supabaseRows, qFilter, monthFilter]);
-
-  const monthsInQuarter = useMemo(() => {
-    return QUARTER_MONTHS[qFilter] || [];
-  }, [qFilter]);
-
-  const handleQuarterClick = (q) => {
-    setQFilter(q);
-    setMonthFilter(null);
-    setGeoFilter(null);
-  };
-
-  const handleMonthClick = (m) => {
-    setMonthFilter((prev) => (prev === m ? null : m));
-    setGeoFilter(null);
-  };
-
-  const filtered = useMemo(() => {
-    if (!monthFilter) return sqlRows;
-    return sqlRows.filter((row) => getMonthLabel(row.sqlDate) === monthFilter);
-  }, [sqlRows, monthFilter]);
+    return buildSqlRows(supabaseRows);
+  }, [supabaseRows]);
 
   const availableGeos = useMemo(() => {
-    return [...new Set(filtered.map((r) => r.geo))].filter(Boolean).sort((a, b) => a.localeCompare(b));
-  }, [filtered]);
+    return [...new Set(sqlRows.map((r) => r.geo))].filter(Boolean).sort((a, b) => a.localeCompare(b));
+  }, [sqlRows]);
 
   const displayRows = useMemo(() => {
-    const rows = geoFilter ? filtered.filter((r) => r.geo === geoFilter) : filtered;
+    const rows = geoFilter ? sqlRows.filter((r) => r.geo === geoFilter) : sqlRows;
     return sortRows(rows, sortKey, sortDir);
-  }, [filtered, geoFilter, sortKey, sortDir]);
+  }, [sqlRows, geoFilter, sortKey, sortDir]);
 
   const kpiSql = displayRows.length;
   const kpiPipeline = displayRows.reduce((s, r) => s + safeNum(r.dealValue), 0);
@@ -290,7 +267,11 @@ export default function SQL() {
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
     } else {
       setSortKey(key);
-      setSortDir(key === "sqlDate" || key === "createdDate" || key === "dealValue" ? "desc" : "asc");
+      setSortDir(
+        key === "sqlDate" || key === "createdDate" || key === "dealValue"
+          ? "desc"
+          : "asc"
+      );
     }
   };
 
