@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import metaMasterData from "../data/processed/meta_master/meta_master.json";
-import leadsMasterData from "../data/processed/leads_master/master.json";
 import ISO_CODES from "../data/isocodes.json";
+import { supabase } from "../lib/supabase";
 
 // ── Config ───────────────────────────────────────────────────
 const RANGE_DAYS = {
@@ -181,7 +181,7 @@ function getMetaLeads(row) {
 
 function getAllGeos(metaRows, leadRows) {
   const metaGeos = (metaRows || []).map((row) => normalizeMetaCountry(getMetaCountry(row)));
-  const leadGeos = (leadRows || []).map((row) => normalizeMasterCountry(row.country ?? row.geo));
+  const leadGeos = (leadRows || []).map((row) => normalizeMasterCountry(row.country));
 
   return [...new Set([...metaGeos, ...leadGeos])]
     .filter(Boolean)
@@ -227,32 +227,31 @@ function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos) {
     if (!selectedGeos.includes(geo)) return;
 
     byDate[dateKey].spend += getMetaSpend(row);
-    byDate[dateKey].mql += getMetaLeads(row);
   });
 
   (leadRows || []).forEach((row) => {
-    const geo = normalizeMasterCountry(row.country ?? row.geo);
+    const geo = normalizeMasterCountry(row.country);
     if (!selectedGeos.includes(geo)) return;
 
-    const sqlDate =
-      isWithinRange(row?.hs_v2_date_entered_salesqualifiedlead, rangeKey)
-        ? row?.hs_v2_date_entered_salesqualifiedlead
-        : isWithinRange(row?.deal_createdate, rangeKey)
-        ? row?.deal_createdate
-        : null;
-
-    if (row?.sql === true && sqlDate) {
-      const dateKey = toDayKey(sqlDate);
+    if (isWithinRange(row.lead_created_date, rangeKey)) {
+      const dateKey = toDayKey(row.lead_created_date);
       if (dateKey && byDate[dateKey]) {
-        byDate[dateKey].sql += 1;
-        byDate[dateKey].pipeline += safeNum(row.sql_amount_usd);
+        byDate[dateKey].mql += 1;
       }
     }
 
-    if (row?.closed_won === true && isWithinRange(row?.hs_v2_date_entered_51997770, rangeKey)) {
-      const dateKey = toDayKey(row?.hs_v2_date_entered_51997770);
+    if (row.is_sql === true && isWithinRange(row.sql_date, rangeKey)) {
+      const dateKey = toDayKey(row.sql_date);
       if (dateKey && byDate[dateKey]) {
-        byDate[dateKey].closure += safeNum(row.deal_amount_usd);
+        byDate[dateKey].sql += 1;
+        byDate[dateKey].pipeline += safeNum(row.amount_usd);
+      }
+    }
+
+    if (row.is_closed_won === true && isWithinRange(row.close_date, rangeKey)) {
+      const dateKey = toDayKey(row.close_date);
+      if (dateKey && byDate[dateKey]) {
+        byDate[dateKey].closure += safeNum(row.amount_usd);
       }
     }
   });
@@ -439,16 +438,75 @@ function LineChart({ data, metricKey, metricFmt }) {
 
 // ── Page ─────────────────────────────────────────────────────
 export default function Trends() {
+  const [dateRange, setDateRange] = useState("30d");
+  const [supabaseRows, setSupabaseRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchTrendRows() {
+      try {
+        setLoading(true);
+
+        const { start, end } = getDateRange(dateRange);
+        const startIso = start.toISOString();
+        const endIso = end.toISOString();
+
+        const { data, error } = await supabase
+          .from("master_leads")
+          .select(`
+            lead_id,
+            country,
+            lead_created_date,
+            is_sql,
+            sql_date,
+            is_closed_won,
+            close_date,
+            amount_usd
+          `)
+          .or(
+            [
+              `and(lead_created_date.gte.${startIso},lead_created_date.lte.${endIso})`,
+              `and(is_sql.eq.true,sql_date.gte.${startIso},sql_date.lte.${endIso})`,
+              `and(is_closed_won.eq.true,close_date.gte.${startIso},close_date.lte.${endIso})`,
+            ].join(",")
+          );
+
+        if (error) {
+          console.error("Trends supabase fetch error:", error);
+          setSupabaseRows([]);
+        } else {
+          setSupabaseRows(data || []);
+        }
+      } catch (err) {
+        console.error("Unexpected Trends fetch error:", err);
+        setSupabaseRows([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTrendRows();
+  }, [dateRange]);
+
   const allGeos = useMemo(() => {
     return getAllGeos(
       Array.isArray(metaMasterData) ? metaMasterData : [],
-      Array.isArray(leadsMasterData) ? leadsMasterData : []
+      Array.isArray(supabaseRows) ? supabaseRows : []
     );
-  }, []);
+  }, [supabaseRows]);
 
-  const [dateRange, setDateRange] = useState("30d");
-  const [selectedGeos, setSelectedGeos] = useState(allGeos);
+  const [selectedGeos, setSelectedGeos] = useState([]);
   const [selectedMetric, setSelectedMetric] = useState("mql");
+
+  useEffect(() => {
+    if (!allGeos.length) return;
+
+    setSelectedGeos((prev) => {
+      if (!prev.length) return allGeos;
+      const valid = prev.filter((g) => allGeos.includes(g));
+      return valid.length ? valid : allGeos;
+    });
+  }, [allGeos]);
 
   const toggleGeo = (geo) => {
     setSelectedGeos((prev) => {
@@ -463,11 +521,11 @@ export default function Trends() {
   const trendRows = useMemo(() => {
     return buildTrendRows(
       Array.isArray(metaMasterData) ? metaMasterData : [],
-      Array.isArray(leadsMasterData) ? leadsMasterData : [],
+      Array.isArray(supabaseRows) ? supabaseRows : [],
       dateRange,
       selectedGeos
     );
-  }, [dateRange, selectedGeos]);
+  }, [dateRange, selectedGeos, supabaseRows]);
 
   const metric = TREND_METRICS.find((m) => m.key === selectedMetric) || TREND_METRICS[0];
 
@@ -549,7 +607,7 @@ export default function Trends() {
               ) : (
                 <tr>
                   <td colSpan={1 + TREND_METRICS.length} className="num-cell">
-                    No data found
+                    {loading ? "Loading..." : "No data found"}
                   </td>
                 </tr>
               )}
