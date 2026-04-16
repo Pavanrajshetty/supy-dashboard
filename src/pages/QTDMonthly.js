@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from "react";
-import masterData from "../data/processed/leads_master/master.json";
+import React, { useState, useMemo, useEffect } from "react";
 import metaData from "../data/processed/meta_master/meta_master.json";
 import ISO_CODES from "../data/isocodes.json";
+import { supabase } from "../lib/supabase";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -13,6 +13,7 @@ const QUARTER_MONTHS = {
 };
 
 const AVAILABLE_QUARTERS = ["Q1", "Q2", "Q3", "Q4"];
+const DISPLAY_YEAR = 2026;
 
 const KPI_CARDS = [
   { key: "spend", label: "SPEND", icon: "💸", fmt: "money" },
@@ -21,6 +22,8 @@ const KPI_CARDS = [
   { key: "sql", label: "SQL", icon: "🏆", fmt: "int" },
   { key: "costPerSql", label: "COST / SQL", icon: "↘️", fmt: "money" },
   { key: "pipeline", label: "PIPELINE", icon: "📊", fmt: "usd" },
+  { key: "closures", label: "CLOSURES", icon: "🔐", fmt: "int" },
+  { key: "closure", label: "CLOSURE", icon: "🔒", fmt: "usd" },
 ];
 
 const DISPLAY_NAME_OVERRIDES = {
@@ -61,6 +64,12 @@ function getMonthLabel(dateValue) {
   return MONTHS[d.getUTCMonth()];
 }
 
+function getYear(dateValue) {
+  const d = parseDate(dateValue);
+  if (!d) return null;
+  return d.getUTCFullYear();
+}
+
 function normalizeDisplayCountry(name) {
   if (!name) return "Unknown";
   const clean = String(name).trim();
@@ -92,10 +101,36 @@ function normalizeMetaCountry(raw) {
 
 function isInSelection(dateValue, quarter, month) {
   const monthLabel = getMonthLabel(dateValue);
-  if (!monthLabel) return false;
+  const year = getYear(dateValue);
 
+  if (!monthLabel || year !== DISPLAY_YEAR) return false;
   if (month) return monthLabel === month;
+
   return (QUARTER_MONTHS[quarter] || []).includes(monthLabel);
+}
+
+function getQuarterDateRange(quarter, month) {
+  const quarterMonths = QUARTER_MONTHS[quarter] || [];
+  const selectedMonths = month ? [month] : quarterMonths;
+
+  const monthIndexes = selectedMonths
+    .map((m) => MONTHS.indexOf(m))
+    .filter((idx) => idx >= 0);
+
+  if (monthIndexes.length === 0) {
+    return { startIso: null, endIso: null };
+  }
+
+  const minMonth = Math.min(...monthIndexes);
+  const maxMonth = Math.max(...monthIndexes);
+
+  const start = new Date(Date.UTC(DISPLAY_YEAR, minMonth, 1, 0, 0, 0, 0));
+  const end = new Date(Date.UTC(DISPLAY_YEAR, maxMonth + 1, 0, 23, 59, 59, 999));
+
+  return {
+    startIso: start.toISOString(),
+    endIso: end.toISOString(),
+  };
 }
 
 function getMetaDate(row) {
@@ -151,76 +186,82 @@ function aggregateMeta(metaRows, quarter, month) {
 
     const geo = normalizeMetaCountry(getMetaCountry(row));
     const spend = getMetaSpend(row);
-    const mql = getMetaLeads(row);
+    const metaLeads = getMetaLeads(row);
 
     if (!byGeo[geo]) {
       byGeo[geo] = {
         geo,
         spend: 0,
-        mql: 0,
+        metaMql: 0,
       };
     }
 
     byGeo[geo].spend += spend;
-    byGeo[geo].mql += mql;
+    byGeo[geo].metaMql += metaLeads;
   });
 
   return byGeo;
 }
 
-function aggregateMaster(masterRows, quarter, month) {
+function aggregateSupabase(masterRows, quarter, month) {
   const byGeo = {};
 
   (masterRows || []).forEach((row) => {
-    const geo = normalizeMasterCountry(row.country ?? row.geo);
+    const geo = normalizeMasterCountry(row.country);
 
     if (!byGeo[geo]) {
       byGeo[geo] = {
         geo,
+        mql: 0,
         sql: 0,
         pipeline: 0,
         closures: 0,
-        revenue: 0,
+        closure: 0,
       };
     }
 
-    const isSql =
-      row?.sql === true &&
-      (
-        isInSelection(row?.hs_v2_date_entered_salesqualifiedlead, quarter, month) ||
-        isInSelection(row?.deal_createdate, quarter, month)
-      );
+    const isMql = isInSelection(row.lead_created_date, quarter, month);
+    const isSql = row.is_sql === true && isInSelection(row.sql_date, quarter, month);
+    const isClosedWon = row.is_closed_won === true && isInSelection(row.close_date, quarter, month);
 
-    const isClosedWon =
-      row?.closed_won === true &&
-      isInSelection(row?.hs_v2_date_entered_51997770, quarter, month);
+    if (isMql) {
+      byGeo[geo].mql += 1;
+    }
 
     if (isSql) {
       byGeo[geo].sql += 1;
-      byGeo[geo].pipeline += safeNumber(row.sql_amount_usd);
+      byGeo[geo].pipeline += safeNumber(row.amount_usd);
     }
 
     if (isClosedWon) {
       byGeo[geo].closures += 1;
-      byGeo[geo].revenue += safeNumber(row.deal_amount_usd);
+      byGeo[geo].closure += safeNumber(row.amount_usd);
     }
   });
 
   return byGeo;
 }
 
-function buildGeoRows(metaAgg, masterAgg) {
-  const allGeos = Array.from(new Set([...Object.keys(metaAgg), ...Object.keys(masterAgg)]));
+function buildGeoRows(metaAgg, supabaseAgg) {
+  const allGeos = Array.from(new Set([...Object.keys(metaAgg), ...Object.keys(supabaseAgg)]));
 
   return allGeos
     .map((geo) => {
-      const meta = metaAgg[geo] || { spend: 0, mql: 0 };
-      const master = masterAgg[geo] || { sql: 0, pipeline: 0, closures: 0, revenue: 0 };
+      const meta = metaAgg[geo] || { spend: 0, metaMql: 0 };
+      const supa = supabaseAgg[geo] || {
+        mql: 0,
+        sql: 0,
+        pipeline: 0,
+        closures: 0,
+        closure: 0,
+      };
 
       const spend = safeNumber(meta.spend);
-      const mql = safeNumber(meta.mql);
-      const sql = safeNumber(master.sql);
-      const pipeline = safeNumber(master.pipeline);
+      const mql = safeNumber(supa.mql);
+      const sql = safeNumber(supa.sql);
+      const pipeline = safeNumber(supa.pipeline);
+      const closures = safeNumber(supa.closures);
+      const closure = safeNumber(supa.closure);
 
       return {
         geo,
@@ -230,16 +271,18 @@ function buildGeoRows(metaAgg, masterAgg) {
         sql: { achieved: sql },
         costPerSql: { achieved: sql > 0 ? spend / sql : 0 },
         pipeline: { achieved: pipeline },
-        closures: { achieved: safeNumber(master.closures) },
-        revenue: { achieved: safeNumber(master.revenue) },
+        closures: { achieved: closures },
+        closure: { achieved: closure },
       };
     })
     .sort((a, b) => b.spend.achieved - a.spend.achieved);
 }
 
 export default function QTDMonthly() {
-  const [quarter, setQuarter] = useState(AVAILABLE_QUARTERS[0] || "Q1");
+  const [quarter, setQuarter] = useState(AVAILABLE_QUARTERS[1] || "Q2");
   const [month, setMonth] = useState(null);
+  const [supabaseRows, setSupabaseRows] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const monthsInQuarter = useMemo(() => {
     return QUARTER_MONTHS[quarter] || [];
@@ -250,11 +293,59 @@ export default function QTDMonthly() {
     setMonth(null);
   };
 
+  useEffect(() => {
+    async function fetchQTDData() {
+      try {
+        setLoading(true);
+
+        const { startIso, endIso } = getQuarterDateRange(quarter, month);
+        if (!startIso || !endIso) {
+          setSupabaseRows([]);
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("master_leads")
+          .select(`
+            lead_id,
+            country,
+            lead_created_date,
+            is_sql,
+            sql_date,
+            is_closed_won,
+            close_date,
+            amount_usd
+          `)
+          .or(
+            [
+              `and(lead_created_date.gte.${startIso},lead_created_date.lte.${endIso})`,
+              `and(is_sql.eq.true,sql_date.gte.${startIso},sql_date.lte.${endIso})`,
+              `and(is_closed_won.eq.true,close_date.gte.${startIso},close_date.lte.${endIso})`,
+            ].join(",")
+          );
+
+        if (error) {
+          console.error("QTD supabase fetch error:", error);
+          setSupabaseRows([]);
+        } else {
+          setSupabaseRows(data || []);
+        }
+      } catch (err) {
+        console.error("Unexpected QTD fetch error:", err);
+        setSupabaseRows([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchQTDData();
+  }, [quarter, month]);
+
   const geoRows = useMemo(() => {
     const metaAgg = aggregateMeta(metaData || [], quarter, month);
-    const masterAgg = aggregateMaster(masterData || [], quarter, month);
-    return buildGeoRows(metaAgg, masterAgg);
-  }, [quarter, month]);
+    const supabaseAgg = aggregateSupabase(supabaseRows || [], quarter, month);
+    return buildGeoRows(metaAgg, supabaseAgg);
+  }, [quarter, month, supabaseRows]);
 
   const kpiSnapshot = useMemo(() => {
     return geoRows.reduce(
@@ -264,7 +355,7 @@ export default function QTDMonthly() {
         acc.sql += row.sql.achieved;
         acc.pipeline += row.pipeline.achieved;
         acc.closures += row.closures.achieved;
-        acc.revenue += row.revenue.achieved;
+        acc.closure += row.closure.achieved;
         return acc;
       },
       {
@@ -273,7 +364,7 @@ export default function QTDMonthly() {
         sql: 0,
         pipeline: 0,
         closures: 0,
-        revenue: 0,
+        closure: 0,
       }
     );
   }, [geoRows]);
@@ -286,12 +377,14 @@ export default function QTDMonthly() {
       sql: kpiSnapshot.sql,
       costPerSql: kpiSnapshot.sql > 0 ? kpiSnapshot.spend / kpiSnapshot.sql : 0,
       pipeline: kpiSnapshot.pipeline,
+      closures: kpiSnapshot.closures,
+      closure: kpiSnapshot.closure,
     };
   }, [kpiSnapshot]);
 
   const ctxLabel = month
-    ? `${quarter} · ${month} 2026`
-    : `${quarter} · All months (${monthsInQuarter.join(", ")}) 2026`;
+    ? `${quarter} · ${month} ${DISPLAY_YEAR}`
+    : `${quarter} · All months (${monthsInQuarter.join(", ")}) ${DISPLAY_YEAR}`;
 
   return (
     <div className="page">
@@ -351,6 +444,8 @@ export default function QTDMonthly() {
                 <th className="num-cell">SQL</th>
                 <th className="num-cell">CPSQL</th>
                 <th className="num-cell">Pipeline</th>
+                <th className="num-cell">Closures</th>
+                <th className="num-cell">Closure</th>
               </tr>
             </thead>
             <tbody>
@@ -363,13 +458,15 @@ export default function QTDMonthly() {
                   <td className="num-cell">{row.sql.achieved.toLocaleString()}</td>
                   <td className="num-cell">{fmtMoney(row.costPerSql.achieved)}</td>
                   <td className="num-cell accent">{fmtUSD(row.pipeline.achieved)}</td>
+                  <td className="num-cell">{row.closures.achieved.toLocaleString()}</td>
+                  <td className="num-cell accent">{fmtUSD(row.closure.achieved)}</td>
                 </tr>
               ))}
 
               {geoRows.length === 0 && (
                 <tr>
-                  <td colSpan="7" className="num-cell">
-                    No data found
+                  <td colSpan="9" className="num-cell">
+                    {loading ? "Loading..." : "No data found"}
                   </td>
                 </tr>
               )}
