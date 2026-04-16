@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import leadsMasterData from "../data/processed/leads_master/master.json";
+import React, { useState, useMemo, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -11,12 +11,14 @@ const QUARTER_MONTHS = {
 };
 
 const AVAILABLE_QUARTERS = ["Q1", "Q2", "Q3", "Q4"];
+const DISPLAY_YEAR = 2026;
 
 const STAGE_COLORS = {
   "Closed Won": "won",
   "Sales Qualified": "sql",
   Opportunity: "opp",
   "Closed Lost": "lost",
+  "Closed/Lost": "lost",
 };
 
 function safeNum(v) {
@@ -42,65 +44,79 @@ function getMonthLabel(dateValue) {
   return MONTHS[d.getUTCMonth()];
 }
 
+function getYear(dateValue) {
+  const d = parseDate(dateValue);
+  if (!d) return null;
+  return d.getUTCFullYear();
+}
+
 function isInSelection(dateValue, quarter, month) {
   const monthLabel = getMonthLabel(dateValue);
-  if (!monthLabel) return false;
+  const year = getYear(dateValue);
+
+  if (!monthLabel || year !== DISPLAY_YEAR) return false;
 
   if (month) return monthLabel === month;
   return (QUARTER_MONTHS[quarter] || []).includes(monthLabel);
 }
 
+function getQuarterDateRange(quarter, month) {
+  const quarterMonths = QUARTER_MONTHS[quarter] || [];
+  const selectedMonths = month ? [month] : quarterMonths;
+
+  const monthIndexes = selectedMonths
+    .map((m) => MONTHS.indexOf(m))
+    .filter((idx) => idx >= 0);
+
+  if (monthIndexes.length === 0) {
+    return { startIso: null, endIso: null };
+  }
+
+  const minMonth = Math.min(...monthIndexes);
+  const maxMonth = Math.max(...monthIndexes);
+
+  const start = new Date(Date.UTC(DISPLAY_YEAR, minMonth, 1, 0, 0, 0, 0));
+  const end = new Date(Date.UTC(DISPLAY_YEAR, maxMonth + 1, 0, 23, 59, 59, 999));
+
+  return {
+    startIso: start.toISOString(),
+    endIso: end.toISOString(),
+  };
+}
+
 function getSqlStage(row) {
-  if (row?.closed_won === true) return "Closed Won";
   if (row?.deal_stage) return row.deal_stage;
-  if (row?.sql === true) return "Sales Qualified";
-  return "Sales Qualified";
+  if (row?.is_closed_won === true) return "Closed Won";
+  if (row?.is_sql === true) return "Sales Qualified";
+  return "—";
 }
 
 function getCompany(row) {
-  return (
-    row.company ??
-    row.company_name ??
-    row.deal_name ??
-    row.firstname ??
-    row.first_name ??
-    "—"
-  );
+  return row.company ?? row.deal_name ?? "—";
 }
 
 function getCountry(row) {
-  return row.country ?? row.geo ?? "Unknown";
+  return row.country ?? "Unknown";
 }
 
 function getGeo(row) {
-  return row.country ?? row.geo ?? "Unknown";
+  return row.country ?? "Unknown";
 }
 
 function getCampaign(row) {
-  return (
-    row.campaign_name ??
-    row.campaign ??
-    row.hs_analytics_source_data_2 ??
-    row.hs_analytics_source_data_1 ??
-    row.new_lead_source ??
-    "—"
-  );
+  return row.campaign_name ?? row.utm_campaign ?? row.hs_analytics_source_data_2 ?? row.hs_analytics_source_data_1 ?? "—";
 }
 
 function getSqlDate(row) {
-  return (
-    row.hs_v2_date_entered_salesqualifiedlead ??
-    row.deal_createdate ??
-    null
-  );
+  return row.sql_date ?? null;
 }
 
 function getCreatedDate(row) {
-  return row.createdate ?? row.created_time ?? row.lead_createdate ?? row.deal_createdate ?? null;
+  return row.lead_created_date ?? null;
 }
 
 function getOwner(row) {
-  return row.owner_name ?? row.hubspot_owner ?? row.deal_owner ?? "—";
+  return row.owner_name ?? "—";
 }
 
 function getHsUrl(row) {
@@ -115,14 +131,7 @@ function formatDateForDisplay(value) {
 
 function buildSqlRows(rows, quarter, month) {
   return (Array.isArray(rows) ? rows : [])
-    .filter(
-      (row) =>
-        row?.sql === true &&
-        (
-          isInSelection(row?.hs_v2_date_entered_salesqualifiedlead, quarter, month) ||
-          isInSelection(row?.deal_createdate, quarter, month)
-        )
-    )
+    .filter((row) => row?.is_sql === true && isInSelection(row?.sql_date, quarter, month))
     .map((row, index) => ({
       id: row.deal_id || row.lead_id || `sql-row-${index}`,
       company: getCompany(row),
@@ -133,10 +142,11 @@ function buildSqlRows(rows, quarter, month) {
       sqlDateRaw: parseDate(getSqlDate(row)),
       createdDate: formatDateForDisplay(getCreatedDate(row)),
       createdDateRaw: parseDate(getCreatedDate(row)),
-      dealValue: safeNum(row.sql_amount_usd),
+      dealValue: safeNum(row.amount_usd),
       stage: getSqlStage(row),
       owner: getOwner(row),
       hsUrl: getHsUrl(row),
+      isClosedWon: row.is_closed_won === true,
     }));
 }
 
@@ -174,22 +184,76 @@ function sortRows(rows, sortKey, sortDir) {
 }
 
 export default function SQL() {
-  const [qFilter, setQFilter] = useState(AVAILABLE_QUARTERS[0] || "Q1");
+  const [qFilter, setQFilter] = useState(AVAILABLE_QUARTERS[1] || "Q2");
   const [monthFilter, setMonthFilter] = useState(null);
   const [geoFilter, setGeoFilter] = useState(null);
   const [sortKey, setSortKey] = useState("sqlDate");
   const [sortDir, setSortDir] = useState("desc");
+  const [supabaseRows, setSupabaseRows] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const sqlRows = useMemo(() => {
-    return buildSqlRows(leadsMasterData, qFilter, monthFilter);
+  useEffect(() => {
+    async function fetchSqlRows() {
+      try {
+        setLoading(true);
+
+        const { startIso, endIso } = getQuarterDateRange(qFilter, monthFilter);
+        if (!startIso || !endIso) {
+          setSupabaseRows([]);
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("master_leads")
+          .select(`
+            lead_id,
+            deal_id,
+            company,
+            country,
+            campaign_name,
+            utm_campaign,
+            hs_analytics_source_data_1,
+            hs_analytics_source_data_2,
+            lead_created_date,
+            is_sql,
+            sql_date,
+            is_closed_won,
+            close_date,
+            amount_usd,
+            deal_stage,
+            deal_name,
+            owner_name,
+            deal_link,
+            lead_link
+          `)
+          .eq("is_sql", true)
+          .gte("sql_date", startIso)
+          .lte("sql_date", endIso);
+
+        if (error) {
+          console.error("SQL page fetch error:", error);
+          setSupabaseRows([]);
+        } else {
+          setSupabaseRows(data || []);
+        }
+      } catch (err) {
+        console.error("Unexpected SQL page fetch error:", err);
+        setSupabaseRows([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchSqlRows();
   }, [qFilter, monthFilter]);
 
+  const sqlRows = useMemo(() => {
+    return buildSqlRows(supabaseRows, qFilter, monthFilter);
+  }, [supabaseRows, qFilter, monthFilter]);
+
   const monthsInQuarter = useMemo(() => {
-    const qMonths = QUARTER_MONTHS[qFilter] || [];
-    return qMonths.filter((m) =>
-      sqlRows.some((r) => getMonthLabel(r.sqlDate) === m)
-    );
-  }, [qFilter, sqlRows]);
+    return QUARTER_MONTHS[qFilter] || [];
+  }, [qFilter]);
 
   const handleQuarterClick = (q) => {
     setQFilter(q);
@@ -219,7 +283,7 @@ export default function SQL() {
   const kpiSql = displayRows.length;
   const kpiPipeline = displayRows.reduce((s, r) => s + safeNum(r.dealValue), 0);
   const kpiAvg = kpiSql ? Math.round(kpiPipeline / kpiSql) : 0;
-  const kpiWon = displayRows.filter((r) => r.stage === "Closed Won").length;
+  const kpiWon = displayRows.filter((r) => r.isClosedWon).length;
 
   const handleSort = (key) => {
     if (sortKey === key) {
@@ -357,7 +421,7 @@ export default function SQL() {
               ) : (
                 <tr>
                   <td colSpan="11" className="num-cell">
-                    No SQL data found
+                    {loading ? "Loading..." : "No SQL data found"}
                   </td>
                 </tr>
               )}
