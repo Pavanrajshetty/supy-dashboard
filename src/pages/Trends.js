@@ -20,10 +20,11 @@ const DATE_RANGES = [
 
 const TREND_METRICS = [
   { key: "spend", label: "Spend", fmt: "money" },
-  { key: "mql", label: "MQL", fmt: "num" },
+  { key: "leads", label: "Leads", fmt: "num" },
   { key: "sql", label: "SQL", fmt: "num" },
   { key: "pipeline", label: "Pipeline", fmt: "usd" },
-  { key: "closure", label: "Closure", fmt: "usd" },
+  { key: "closures", label: "Closures", fmt: "num" },
+  { key: "closureValue", label: "Closure $", fmt: "usd" },
 ];
 
 const DISPLAY_NAME_OVERRIDES = {
@@ -163,22 +164,6 @@ function getMetaSpend(row) {
   );
 }
 
-function getMetaLeads(row) {
-  if (row.leads !== undefined && row.leads !== null && row.leads !== "") {
-    return safeNum(row.leads);
-  }
-
-  if (row.mql !== undefined && row.mql !== null && row.mql !== "") {
-    return safeNum(row.mql);
-  }
-
-  if (row.total_leads !== undefined && row.total_leads !== null && row.total_leads !== "") {
-    return safeNum(row.total_leads);
-  }
-
-  return 0;
-}
-
 function getAllGeos(metaRows, leadRows) {
   const metaGeos = (metaRows || []).map((row) => normalizeMetaCountry(getMetaCountry(row)));
   const leadGeos = (leadRows || []).map((row) => normalizeMasterCountry(row.country));
@@ -188,31 +173,81 @@ function getAllGeos(metaRows, leadRows) {
     .sort((a, b) => a.localeCompare(b));
 }
 
-function getRangeDateKeys(rangeKey) {
+function getBucketMode(rangeKey) {
+  return rangeKey === "60d" || rangeKey === "90d" ? "week" : "day";
+}
+
+function startOfUtcWeek(dateValue) {
+  const d = parseDate(dateValue);
+  if (!d) return null;
+
+  const utc = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  const day = utc.getUTCDay();
+  const diff = day === 0 ? -6 : 1 - day; // Monday start
+  utc.setUTCDate(utc.getUTCDate() + diff);
+  utc.setUTCHours(0, 0, 0, 0);
+  return utc;
+}
+
+function getBucketKey(dateValue, mode) {
+  if (mode === "week") {
+    const d = startOfUtcWeek(dateValue);
+    return d ? d.toISOString().slice(0, 10) : null;
+  }
+  return toDayKey(dateValue);
+}
+
+function getBucketLabel(bucketKey, mode) {
+  if (mode === "week") {
+    const d = parseDate(bucketKey);
+    if (!d) return bucketKey;
+    const end = new Date(d);
+    end.setUTCDate(end.getUTCDate() + 6);
+    return `${formatShortDate(d)} - ${formatShortDate(end)}`;
+  }
+  return formatShortDate(bucketKey);
+}
+
+function getBucketKeys(rangeKey) {
   const { start, end } = getDateRange(rangeKey);
+  const mode = getBucketMode(rangeKey);
   const out = [];
-  const d = new Date(start);
+
+  if (mode === "day") {
+    const d = new Date(start);
+    while (d <= end) {
+      out.push(d.toISOString().slice(0, 10));
+      d.setDate(d.getDate() + 1);
+    }
+    return out;
+  }
+
+  const firstWeek = startOfUtcWeek(start);
+  const d = new Date(firstWeek);
 
   while (d <= end) {
     out.push(d.toISOString().slice(0, 10));
-    d.setDate(d.getDate() + 1);
+    d.setUTCDate(d.getUTCDate() + 7);
   }
 
   return out;
 }
 
 function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos) {
-  const allDates = getRangeDateKeys(rangeKey);
-  const byDate = {};
+  const bucketMode = getBucketMode(rangeKey);
+  const bucketKeys = getBucketKeys(rangeKey);
+  const byBucket = {};
 
-  allDates.forEach((dateKey) => {
-    byDate[dateKey] = {
-      date: dateKey,
+  bucketKeys.forEach((bucketKey) => {
+    byBucket[bucketKey] = {
+      bucketKey,
+      label: getBucketLabel(bucketKey, bucketMode),
       spend: 0,
-      mql: 0,
+      leads: 0,
       sql: 0,
       pipeline: 0,
-      closure: 0,
+      closures: 0,
+      closureValue: 0,
     };
   });
 
@@ -220,13 +255,13 @@ function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos) {
     const rowDate = getMetaDate(row);
     if (!isWithinRange(rowDate, rangeKey)) return;
 
-    const dateKey = toDayKey(rowDate);
-    if (!dateKey || !byDate[dateKey]) return;
-
     const geo = normalizeMetaCountry(getMetaCountry(row));
     if (!selectedGeos.includes(geo)) return;
 
-    byDate[dateKey].spend += getMetaSpend(row);
+    const bucketKey = getBucketKey(rowDate, bucketMode);
+    if (!bucketKey || !byBucket[bucketKey]) return;
+
+    byBucket[bucketKey].spend += getMetaSpend(row);
   });
 
   (leadRows || []).forEach((row) => {
@@ -234,29 +269,30 @@ function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos) {
     if (!selectedGeos.includes(geo)) return;
 
     if (isWithinRange(row.lead_created_date, rangeKey)) {
-      const dateKey = toDayKey(row.lead_created_date);
-      if (dateKey && byDate[dateKey]) {
-        byDate[dateKey].mql += 1;
+      const bucketKey = getBucketKey(row.lead_created_date, bucketMode);
+      if (bucketKey && byBucket[bucketKey]) {
+        byBucket[bucketKey].leads += 1;
       }
     }
 
     if (row.is_sql === true && isWithinRange(row.sql_date, rangeKey)) {
-      const dateKey = toDayKey(row.sql_date);
-      if (dateKey && byDate[dateKey]) {
-        byDate[dateKey].sql += 1;
-        byDate[dateKey].pipeline += safeNum(row.amount_usd);
+      const bucketKey = getBucketKey(row.sql_date, bucketMode);
+      if (bucketKey && byBucket[bucketKey]) {
+        byBucket[bucketKey].sql += 1;
+        byBucket[bucketKey].pipeline += safeNum(row.amount_usd);
       }
     }
 
     if (row.is_closed_won === true && isWithinRange(row.close_date, rangeKey)) {
-      const dateKey = toDayKey(row.close_date);
-      if (dateKey && byDate[dateKey]) {
-        byDate[dateKey].closure += safeNum(row.amount_usd);
+      const bucketKey = getBucketKey(row.close_date, bucketMode);
+      if (bucketKey && byBucket[bucketKey]) {
+        byBucket[bucketKey].closures += 1;
+        byBucket[bucketKey].closureValue += safeNum(row.amount_usd);
       }
     }
   });
 
-  return allDates.map((dateKey) => byDate[dateKey]);
+  return bucketKeys.map((bucketKey) => byBucket[bucketKey]);
 }
 
 function getNiceMax(maxVal) {
@@ -282,7 +318,6 @@ function getTickValues(maxVal, count = 5) {
   return ticks;
 }
 
-// ── Better chart ─────────────────────────────────────────────
 function LineChart({ data, metricKey, metricFmt }) {
   const W = 1100;
   const H = 360;
@@ -328,8 +363,8 @@ function LineChart({ data, metricKey, metricFmt }) {
   const xLabelStep =
     data.length <= 10 ? 1 :
     data.length <= 20 ? 2 :
-    data.length <= 35 ? 4 :
-    data.length <= 60 ? 6 : 8;
+    data.length <= 35 ? 3 :
+    data.length <= 60 ? 4 : 5;
 
   return (
     <svg
@@ -399,10 +434,10 @@ function LineChart({ data, metricKey, metricFmt }) {
         const cx = xOf(i);
         const cy = yOf(d[metricKey]);
         return (
-          <g key={`${d.date}-${i}`}>
+          <g key={`${d.bucketKey}-${i}`}>
             <circle cx={cx} cy={cy} r={4.5} fill="#7c4fd6" stroke="#ffffff" strokeWidth={2} />
             <circle cx={cx} cy={cy} r={14} fill="transparent">
-              <title>{`${d.date}: ${fmtValue(d[metricKey], metricFmt)}`}</title>
+              <title>{`${d.label}: ${fmtValue(d[metricKey], metricFmt)}`}</title>
             </circle>
           </g>
         );
@@ -412,7 +447,7 @@ function LineChart({ data, metricKey, metricFmt }) {
         if (i % xLabelStep !== 0 && i !== data.length - 1) return null;
         const x = xOf(i);
         return (
-          <g key={`x-${d.date}-${i}`}>
+          <g key={`x-${d.bucketKey}-${i}`}>
             <line
               x1={x}
               y1={PAD.top + innerH}
@@ -427,7 +462,7 @@ function LineChart({ data, metricKey, metricFmt }) {
               fontSize="11"
               fill="#8d86a8"
             >
-              {formatShortDate(d.date)}
+              {d.label}
             </text>
           </g>
         );
@@ -441,6 +476,8 @@ export default function Trends() {
   const [dateRange, setDateRange] = useState("30d");
   const [supabaseRows, setSupabaseRows] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedGeos, setSelectedGeos] = useState([]);
+  const [selectedMetric, setSelectedMetric] = useState("leads");
 
   useEffect(() => {
     async function fetchTrendRows() {
@@ -494,9 +531,6 @@ export default function Trends() {
       Array.isArray(supabaseRows) ? supabaseRows : []
     );
   }, [supabaseRows]);
-
-  const [selectedGeos, setSelectedGeos] = useState([]);
-  const [selectedMetric, setSelectedMetric] = useState("mql");
 
   useEffect(() => {
     if (!allGeos.length) return;
@@ -586,7 +620,7 @@ export default function Trends() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Date</th>
+                <th>{getBucketMode(dateRange) === "week" ? "Week" : "Date"}</th>
                 {TREND_METRICS.map((m) => (
                   <th key={m.key} className="num-cell">{m.label}</th>
                 ))}
@@ -595,8 +629,8 @@ export default function Trends() {
             <tbody>
               {trendRows.length > 0 ? (
                 trendRows.map((row, i) => (
-                  <tr key={`${row.date}-${i}`}>
-                    <td>{row.date}</td>
+                  <tr key={`${row.bucketKey}-${i}`}>
+                    <td>{row.label}</td>
                     {TREND_METRICS.map((m) => (
                       <td key={m.key} className="num-cell">
                         {fmtValue(row[m.key], m.fmt)}
