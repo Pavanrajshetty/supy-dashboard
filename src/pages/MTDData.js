@@ -1,87 +1,72 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { supabase } from "../lib/supabase";
+
+/* =========================
+   AUTO DATE LOGIC
+   - Current month: Apr 1 → yesterday
+   - Past month: full month
+========================= */
+
+function getDateRange() {
+  const today = new Date();
+  const year = today.getUTCFullYear();
+  const month = today.getUTCMonth(); // 0-indexed
+
+  // Start = 1st of current month
+  const start = new Date(Date.UTC(year, month, 1));
+
+  // End = yesterday (today - 1 day), but cap at last day of month
+  const yesterday = new Date(Date.UTC(year, month, today.getUTCDate() - 1));
+
+  const startIso = start.toISOString().slice(0, 10); // "YYYY-MM-DD"
+  const endIso = yesterday.toISOString().slice(0, 10);
+
+  // Label: "Apr 1 – Apr 16, 2026"
+  const fmt = (d) =>
+    d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+  const label = `${fmt(start)} – ${fmt(yesterday)}, ${year}`;
+
+  // plan_month for plan_monthly table: "YYYY-MM"
+  const planMonth = `${year}-${String(month + 1).padStart(2, "0")}`;
+
+  // Days elapsed (inclusive of yesterday, exclusive of today)
+  const daysElapsed = today.getUTCDate() - 1;
+
+  return { startIso, endIso, label, planMonth, daysElapsed };
+}
 
 /* =========================
    HELPERS
 ========================= */
 
-const FLAG_MAP = {
-  Australia: "🇦🇺",
-  "United Kingdom": "🇬🇧",
-  "New Zealand": "🇳🇿",
-  Malaysia: "🇲🇾",
-  "United Arab Emirates": "🇦🇪",
-  "Hong Kong": "🇭🇰",
-  Singapore: "🇸🇬",
-  Philippines: "🇵🇭",
-  "Saudi Arabia": "🇸🇦",
-  Morocco: "🇲🇦",
-  Thailand: "🇹🇭",
-  Oman: "🇴🇲",
-  Ireland: "🇮🇪",
-  Kuwait: "🇰🇼",
-  Taiwan: "🇹🇼",
-  Mauritius: "🇲🇺",
-  "South Africa": "🇿🇦",
-  "Sri Lanka": "🇱🇰",
-  Italy: "🇮🇹",
-  Bahrain: "🇧🇭",
-};
-
-const ISO_TO_COUNTRY = {
-  AU: "Australia",
-  GB: "United Kingdom",
-  NZ: "New Zealand",
-  MY: "Malaysia",
-  AE: "United Arab Emirates",
-  HK: "Hong Kong",
-  SG: "Singapore",
-  PH: "Philippines",
-  SA: "Saudi Arabia",
-  MA: "Morocco",
-  TH: "Thailand",
-  OM: "Oman",
-  IE: "Ireland",
-  KW: "Kuwait",
-  TW: "Taiwan",
-  MU: "Mauritius",
-  ZA: "South Africa",
-  LK: "Sri Lanka",
-  IT: "Italy",
-  BH: "Bahrain",
-};
-
-function safeNum(v) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : 0;
-}
-
 function fmtAED(value) {
-  return `AED ${Number(value || 0).toLocaleString(undefined, {
-    maximumFractionDigits: 0,
-  })}`;
+  return `AED ${Number(value || 0).toLocaleString()}`;
 }
 
 function fmtUSD(value) {
-  return `$${Number(value || 0).toLocaleString(undefined, {
-    maximumFractionDigits: 0,
-  })}`;
+  return `$${Number(value || 0).toLocaleString()}`;
 }
 
 function fmtNum(value) {
-  return Number(value || 0).toLocaleString(undefined, {
-    maximumFractionDigits: 0,
-  });
+  return Number(value || 0).toLocaleString();
 }
 
 function pctDelta(expected, actual) {
   if (!expected) return 0;
-  return Math.round(((safeNum(actual) - safeNum(expected)) / safeNum(expected)) * 100);
+  return Math.round(((actual - expected) / expected) * 100);
 }
 
 function varianceLabel(expected, actual) {
   const val = pctDelta(expected, actual);
   return `${val > 0 ? "+" : ""}${val}%`;
+}
+
+function getStatusClass(status) {
+  const s = (status || "").toLowerCase();
+  if (s === "scaling") return "pill scaling";
+  if (s === "reduced") return "pill reduced";
+  if (s === "paused") return "pill paused";
+  return "pill stable";
 }
 
 function getDeltaClass(value) {
@@ -90,335 +75,577 @@ function getDeltaClass(value) {
   return "delta-neutral";
 }
 
-function getStatusClass(status) {
-  const s = String(status || "").toLowerCase();
-  if (s === "scaling") return "pill scaling";
-  if (s === "reduced") return "pill reduced";
-  if (s === "paused") return "pill paused";
-  return "pill stable";
-}
-
 function safeDivide(a, b) {
   if (!b) return 0;
-  return safeNum(a) / safeNum(b);
-}
-
-function toISODate(date) {
-  return date.toISOString().slice(0, 10);
-}
-
-function getEndExclusive(date) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + 1);
-  return d;
-}
-
-function getLiveRange() {
-  const now = new Date();
-
-  // always use last completed day
-  const endDate = new Date(now);
-  endDate.setDate(endDate.getDate() - 1);
-
-  // if today is Apr 1, endDate becomes Mar 31 automatically
-  const startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
-
-  return { startDate, endDate };
-}
-
-function monthLabel(date) {
-  return date.toLocaleString("en-US", {
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function getPlanMonth(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  return `${y}-${m}`;
-}
-
-function normalizeGeo(value) {
-  if (!value) return null;
-  return ISO_TO_COUNTRY[value] || value;
-}
-
-function buildSummaryNote(totals) {
-  const spendPct = totals.liveBudget
-    ? Math.round((totals.actualSpend / totals.liveBudget) * 100)
-    : 0;
-  const mqlPct = totals.liveMql
-    ? Math.round((totals.actualMql / totals.liveMql) * 100)
-    : 0;
-  const sqlPct = totals.liveSql
-    ? Math.round((totals.actualSql / totals.liveSql) * 100)
-    : 0;
-
-  return `Spend is at ${spendPct}% of live plan, MQL is at ${mqlPct}% of live plan, and SQL is at ${sqlPct}% of live plan for the selected MTD window.`;
+  return a / b;
 }
 
 /* =========================
    COMPONENT
 ========================= */
 
-export default function MTDData() {
-  const [{ startDate, endDate }] = useState(getLiveRange());
+export default function MTDDataRevamp() {
   const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const startDateStr = useMemo(() => toISODate(startDate), [startDate]);
-  const endDateStr = useMemo(() => toISODate(endDate), [endDate]);
-  const endExclusiveStr = useMemo(() => toISODate(getEndExclusive(endDate)), [endDate]);
-  const selectedMonth = useMemo(() => getPlanMonth(endDate), [endDate]);
-  const selectedMonthLabel = useMemo(() => monthLabel(endDate), [endDate]);
+  const dateRange = useMemo(() => getDateRange(), []);
 
   useEffect(() => {
-    async function fetchLiveMTD() {
+    async function fetchMTD() {
       try {
         setLoading(true);
-        setError("");
+        setError(null);
 
-        const [
-          planMonthlyRes,
-          planDailyRes,
-          spendRes,
-          mqlRes,
-          sqlRes,
-        ] = await Promise.all([
-          supabase
-            .from("plan_monthly")
-            .select("geo, spend_budget_usd, mql_target, sql_target")
-            .eq("plan_month", selectedMonth),
+        const { startIso, endIso, planMonth, daysElapsed } = dateRange;
 
-          supabase
-            .from("plan_daily")
-            .select("geo, plan_date, daily_spend_usd, daily_mql_target, status")
-            .gte("plan_date", startDateStr)
-            .lte("plan_date", endDateStr),
+        // Run all 5 queries in parallel
+        const [planMtdRes, actualSpendRes, actualMqlRes, actualSqlRes, planSqlRes] =
+          await Promise.all([
+            // 1. Plan MTD (daily spend + mql targets)
+            supabase
+              .from("plan_daily")
+              .select("geo, daily_spend_usd, daily_mql_target")
+              .gte("plan_date", startIso)
+              .lte("plan_date", endIso),
 
-          supabase
-            .from("meta_performance")
-            .select("country, country_name, spend_usd, perf_date")
-            .gte("perf_date", startDateStr)
-            .lt("perf_date", endExclusiveStr),
+            // 2. Actual spend from meta_performance
+            supabase
+              .from("meta_performance")
+              .select("country_name, spend_usd")
+              .gte("perf_date", startIso)
+              .lte("perf_date", endIso),
 
-          supabase
-            .from("master_leads")
-            .select("country, lead_created_date")
-            .gte("lead_created_date", startDateStr)
-            .lt("lead_created_date", endExclusiveStr),
+            // 3. Actual MQL from master_leads
+            supabase
+              .from("master_leads")
+              .select("country")
+              .gte("lead_created_date", startIso)
+              .lt("lead_created_date", endIso),
 
-          supabase
-            .from("master_leads")
-            .select("country, sql_date, amount_usd, is_sql")
-            .eq("is_sql", true)
-            .gte("sql_date", startDateStr)
-            .lt("sql_date", endExclusiveStr),
-        ]);
+            // 4. Actual SQL from master_leads
+            supabase
+              .from("master_leads")
+              .select("country")
+              .eq("is_sql", true)
+              .gte("sql_date", startIso)
+              .lt("sql_date", endIso),
 
-        const errors = [
-          planMonthlyRes.error,
-          planDailyRes.error,
-          spendRes.error,
-          mqlRes.error,
-          sqlRes.error,
-        ].filter(Boolean);
+            // 5. Monthly SQL target from plan_monthly
+            supabase
+              .from("plan_monthly")
+              .select("geo, sql_target")
+              .eq("plan_month", planMonth),
+          ]);
 
-        if (errors.length) {
-          throw new Error(errors.map((e) => e.message).join(" | "));
+        // Check errors
+        for (const res of [planMtdRes, actualSpendRes, actualMqlRes, actualSqlRes, planSqlRes]) {
+          if (res.error) throw res.error;
         }
 
-        const planMonthly = planMonthlyRes.data || [];
-        const planDaily = planDailyRes.data || [];
-        const spendRows = spendRes.data || [];
-        const mqlRows = mqlRes.data || [];
-        const sqlRows = sqlRes.data || [];
+        // Aggregate plan_mtd by geo
+        const planMtdByGeo = {};
+        for (const r of planMtdRes.data || []) {
+          if (!planMtdByGeo[r.geo]) planMtdByGeo[r.geo] = { expectedSpend: 0, expectedMql: 0 };
+          planMtdByGeo[r.geo].expectedSpend += Number(r.daily_spend_usd || 0);
+          planMtdByGeo[r.geo].expectedMql += Number(r.daily_mql_target || 0);
+        }
 
-        const daysInMonth = new Date(
-          endDate.getFullYear(),
-          endDate.getMonth() + 1,
-          0
-        ).getDate();
+        // Aggregate actual spend by geo (country_name)
+        const spendByGeo = {};
+        for (const r of actualSpendRes.data || []) {
+          spendByGeo[r.country_name] = (spendByGeo[r.country_name] || 0) + Number(r.spend_usd || 0);
+        }
 
-        const geoMap = new Map();
+        // Aggregate actual MQL by geo
+        const mqlByGeo = {};
+        for (const r of actualMqlRes.data || []) {
+          mqlByGeo[r.country] = (mqlByGeo[r.country] || 0) + 1;
+        }
 
-        // base from monthly plan
-        planMonthly.forEach((row) => {
-          const geo = normalizeGeo(row.geo);
-          geoMap.set(geo, {
+        // Aggregate actual SQL by geo
+        const sqlByGeo = {};
+        for (const r of actualSqlRes.data || []) {
+          sqlByGeo[r.country] = (sqlByGeo[r.country] || 0) + 1;
+        }
+
+        // Build plan SQL by geo (prorated: sql_target / 30 * daysElapsed)
+        const planSqlByGeo = {};
+        for (const r of planSqlRes.data || []) {
+          planSqlByGeo[r.geo] = Math.round((Number(r.sql_target || 0) / 30) * daysElapsed);
+        }
+
+        // Merge all into GEO_DATA — plan_mtd geos drive the rows
+        const merged = Object.keys(planMtdByGeo).map((geo) => {
+          const expectedSpend = Math.round(planMtdByGeo[geo].expectedSpend);
+          const expectedMql = Math.round(planMtdByGeo[geo].expectedMql);
+          const actualSpend = Math.round(spendByGeo[geo] || 0);
+          const actualMql = mqlByGeo[geo] || 0;
+          const actualSql = sqlByGeo[geo] || 0;
+          const expectedSql = planSqlByGeo[geo] || 0;
+          const pipeline = 0; // pipeline comes from deals; not in scope here unless you want it
+
+          return {
             geo,
-            flag: FLAG_MAP[geo] || "",
-            mopBudget: safeNum(row.spend_budget_usd),
-            liveBudget: 0,
-            actualSpend: 0,
-            mopMql: safeNum(row.mql_target),
-            liveMql: 0,
-            actualMql: 0,
-            mopSql: safeNum(row.sql_target),
-            liveSql: 0,
-            actualSql: 0,
-            pipeline: 0,
-            status: "Stable",
-            reason: "",
-            latestDailySpend: 0,
-            latestStatus: "active",
-          });
+            flag: "", // no flag mapping needed unless you add a lookup
+            expectedSpend,
+            actualSpend,
+            expectedMql,
+            actualMql,
+            expectedSql,
+            actualSql,
+            pipeline,
+          };
         });
 
-        // live plan from plan_daily
-        const latestPerGeo = new Map();
+        // Sort by actual spend desc
+        merged.sort((a, b) => b.actualSpend - a.actualSpend);
 
-        planDaily.forEach((row) => {
-          const geo = normalizeGeo(row.geo);
-          if (!geoMap.has(geo)) {
-            geoMap.set(geo, {
-              geo,
-              flag: FLAG_MAP[geo] || "",
-              mopBudget: 0,
-              liveBudget: 0,
-              actualSpend: 0,
-              mopMql: 0,
-              liveMql: 0,
-              actualMql: 0,
-              mopSql: 0,
-              liveSql: 0,
-              actualSql: 0,
-              pipeline: 0,
-              status: "Stable",
-              reason: "",
-              latestDailySpend: 0,
-              latestStatus: "active",
-            });
+        setRows(merged);
+      } catch (err) {
+        console.error("MTD fetch error:", err);
+        setError(err.message || "Failed to load MTD data");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchMTD();
+  }, [dateRange]);
+
+  const computed = useMemo(() => {
+    const totals = rows.reduce(
+      (acc, row) => {
+        acc.expectedSpend += row.expectedSpend;
+        acc.actualSpend += row.actualSpend;
+        acc.expectedMql += row.expectedMql;
+        acc.actualMql += row.actualMql;
+        acc.expectedSql += row.expectedSql;
+        acc.actualSql += row.actualSql;
+        acc.pipeline += row.pipeline;
+        return acc;
+      },
+      {
+        expectedSpend: 0,
+        actualSpend: 0,
+        expectedMql: 0,
+        actualMql: 0,
+        expectedSql: 0,
+        actualSql: 0,
+        pipeline: 0,
+      }
+    );
+
+    const spendVar = pctDelta(totals.expectedSpend, totals.actualSpend);
+    const mqlVar = pctDelta(totals.expectedMql, totals.actualMql);
+    const sqlVar = pctDelta(totals.expectedSql, totals.actualSql);
+
+    const bestGeo = [...rows].sort(
+      (a, b) =>
+        safeDivide(b.actualMql, b.actualSpend) - safeDivide(a.actualMql, a.actualSpend)
+    )[0] || null;
+
+    const riskGeo = [...rows].sort(
+      (a, b) => pctDelta(a.expectedMql, a.actualMql) - pctDelta(b.expectedMql, b.actualMql)
+    )[0] || null;
+
+    return { totals, spendVar, mqlVar, sqlVar, bestGeo, riskGeo };
+  }, [rows]);
+
+  return (
+    <div className="mtd-page">
+      <style>{`
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Inter, Arial, sans-serif; }
+
+        .mtd-page {
+          padding: 24px;
+          background: #f6f8fb;
+          min-height: 100vh;
+          color: #172033;
+        }
+
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 16px;
+          margin-bottom: 20px;
+        }
+
+        .header-left h1 {
+          margin: 0 0 6px;
+          font-size: 28px;
+          line-height: 1.2;
+        }
+
+        .header-left p {
+          margin: 0;
+          color: #5b667a;
+          font-size: 14px;
+        }
+
+        .header-right {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+
+        .tag {
+          padding: 8px 12px;
+          border-radius: 999px;
+          background: white;
+          border: 1px solid #e3e8f2;
+          font-size: 12px;
+          color: #44506a;
+          font-weight: 600;
+        }
+
+        .kpi-grid {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(220px, 1fr));
+          gap: 16px;
+          margin-bottom: 20px;
+        }
+
+        .card {
+          background: white;
+          border: 1px solid #e7ebf3;
+          border-radius: 18px;
+          padding: 18px;
+          box-shadow: 0 4px 14px rgba(18, 38, 63, 0.04);
+        }
+
+        .kpi-label {
+          font-size: 13px;
+          color: #69758c;
+          margin-bottom: 8px;
+          font-weight: 600;
+        }
+
+        .kpi-value {
+          font-size: 28px;
+          font-weight: 800;
+          margin-bottom: 8px;
+        }
+
+        .kpi-sub {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          font-size: 13px;
+          color: #536079;
+        }
+
+        .badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 4px 10px;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .delta-pos { color: #0f8a43; background: #e9f8ef; }
+        .delta-neg { color: #c23535; background: #fdecec; }
+        .delta-neutral { color: #6b7280; background: #f3f4f6; }
+
+        .section-grid {
+          display: grid;
+          grid-template-columns: 2fr 1fr;
+          gap: 16px;
+          margin-bottom: 20px;
+        }
+
+        .section-title {
+          margin: 0 0 14px;
+          font-size: 18px;
+          font-weight: 800;
+        }
+
+        .table-wrap { overflow-x: auto; }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 980px;
+        }
+
+        th {
+          text-align: left;
+          font-size: 12px;
+          color: #6b7280;
+          font-weight: 700;
+          padding: 12px 10px;
+          border-bottom: 1px solid #edf1f7;
+          white-space: nowrap;
+          background: #fafbfd;
+        }
+
+        td {
+          padding: 14px 10px;
+          border-bottom: 1px solid #f1f4f9;
+          font-size: 14px;
+          vertical-align: middle;
+        }
+
+        tr:hover td { background: #fafcff; }
+
+        .geo-cell { font-weight: 700; white-space: nowrap; }
+        .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .muted { color: #738099; }
+        .strong { font-weight: 800; }
+
+        .pill {
+          display: inline-flex;
+          align-items: center;
+          padding: 6px 10px;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .pill.scaling { background: #e9f8ef; color: #0f8a43; }
+        .pill.reduced { background: #fff4e5; color: #b96b00; }
+        .pill.paused  { background: #fdecec; color: #c23535; }
+        .pill.stable  { background: #edf3ff; color: #2457c5; }
+
+        .side-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .insight-item {
+          border: 1px solid #eef2f7;
+          border-radius: 14px;
+          padding: 14px;
+          background: #fbfcfe;
+        }
+
+        .insight-item h4 { margin: 0 0 6px; font-size: 14px; }
+        .insight-item p  { margin: 0; font-size: 13px; line-height: 1.5; color: #5b667a; }
+
+        .changes-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 16px;
+        }
+
+        .mini-card-title { margin: 0 0 12px; font-size: 15px; font-weight: 800; }
+        .mini-list { display: flex; flex-direction: column; gap: 10px; }
+
+        .mini-row {
+          display: flex;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 10px 0;
+          border-bottom: 1px solid #f0f3f8;
+          font-size: 14px;
+        }
+
+        .mini-row:last-child { border-bottom: 0; }
+        .reason { color: #6a768d; font-size: 12px; margin-top: 4px; }
+
+        .loading-state {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 200px;
+          color: #69758c;
+          font-size: 15px;
+        }
+
+        .error-state {
+          padding: 16px;
+          background: #fdecec;
+          color: #c23535;
+          border-radius: 12px;
+          margin-bottom: 16px;
+          font-size: 14px;
+        }
+
+        @media (max-width: 1200px) {
+          .kpi-grid, .changes-grid, .section-grid {
+            grid-template-columns: 1fr;
           }
+        }
+      `}</style>
 
-          const entry = geoMap.get(geo);
-          entry.liveBudget += safeNum(row.daily_spend_usd);
-          entry.liveMql += safeNum(row.daily_mql_target);
+      <div className="header">
+        <div className="header-left">
+          <h1>MTD Performance Dashboard</h1>
+          <p>{dateRange.label} — Plan vs Actual</p>
+        </div>
+        <div className="header-right">
+          <div className="tag">Period: {dateRange.label}</div>
+          <div className="tag">Days Elapsed: {dateRange.daysElapsed}</div>
+        </div>
+      </div>
 
-          const currentLatest = latestPerGeo.get(geo);
-          if (!currentLatest || row.plan_date > currentLatest.plan_date) {
-            latestPerGeo.set(geo, row);
-          }
-        });
+      {error && <div className="error-state">⚠️ {error}</div>}
 
-        // derive live SQL + status
-        geoMap.forEach((entry, geo) => {
-          entry.liveSql = Number(
-            ((safeNum(entry.mopSql) / daysInMonth) * endDate.getDate()).toFixed(2)
-          );
+      {loading ? (
+        <div className="loading-state">Loading MTD data...</div>
+      ) : (
+        <>
+          {/* KPI CARDS */}
+          <div className="kpi-grid">
+            <div className="card">
+              <div className="kpi-label">Spend (USD)</div>
+              <div className="kpi-value">{fmtUSD(computed.totals.actualSpend)}</div>
+              <div className="kpi-sub">
+                <span>Expected: {fmtUSD(computed.totals.expectedSpend)}</span>
+                <span className={`badge ${getDeltaClass(computed.spendVar)}`}>
+                  {varianceLabel(computed.totals.expectedSpend, computed.totals.actualSpend)} vs Plan
+                </span>
+              </div>
+            </div>
 
-          const latest = latestPerGeo.get(geo);
-          const baseDaily = daysInMonth ? safeNum(entry.mopBudget) / daysInMonth : 0;
-          const latestDaily = latest ? safeNum(latest.daily_spend_usd) : 0;
-          const latestStatus = latest ? String(latest.status || "active").toLowerCase() : "active";
+            <div className="card">
+              <div className="kpi-label">MQL</div>
+              <div className="kpi-value">{fmtNum(computed.totals.actualMql)}</div>
+              <div className="kpi-sub">
+                <span>Expected: {fmtNum(computed.totals.expectedMql)}</span>
+                <span className={`badge ${getDeltaClass(computed.mqlVar)}`}>
+                  {varianceLabel(computed.totals.expectedMql, computed.totals.actualMql)} vs Plan
+                </span>
+              </div>
+            </div>
 
-          entry.latestDailySpend = latestDaily;
-          entry.latestStatus = latestStatus;
+            <div className="card">
+              <div className="kpi-label">SQL</div>
+              <div className="kpi-value">{fmtNum(computed.totals.actualSql)}</div>
+              <div className="kpi-sub">
+                <span>Expected: {fmtNum(computed.totals.expectedSql)}</span>
+                <span className={`badge ${getDeltaClass(computed.sqlVar)}`}>
+                  {varianceLabel(computed.totals.expectedSql, computed.totals.actualSql)} vs Plan
+                </span>
+              </div>
+            </div>
 
-          if (latestStatus === "paused") {
-            entry.status = "Paused";
-            entry.reason = "Paused in live plan";
-          } else if (latestDaily > baseDaily * 1.02) {
-            entry.status = "Scaling";
-            entry.reason = "Daily budget increased vs MOP";
-          } else if (latestDaily < baseDaily * 0.98) {
-            entry.status = "Reduced";
-            entry.reason = "Daily budget reduced vs MOP";
-          } else {
-            entry.status = "Stable";
-            entry.reason = "Tracking near original plan";
-          }
-        });
+            <div className="card">
+              <div className="kpi-label">Pipeline</div>
+              <div className="kpi-value">{fmtUSD(computed.totals.pipeline)}</div>
+              <div className="kpi-sub">
+                <span>Actual only</span>
+                <span className="badge delta-neutral">Live decision view</span>
+              </div>
+            </div>
+          </div>
 
-        // actual spend from meta_performance
-        spendRows.forEach((row) => {
-          const geo = normalizeGeo(row.country_name || row.country);
-          if (!geoMap.has(geo)) {
-            geoMap.set(geo, {
-              geo,
-              flag: FLAG_MAP[geo] || "",
-              mopBudget: 0,
-              liveBudget: 0,
-              actualSpend: 0,
-              mopMql: 0,
-              liveMql: 0,
-              actualMql: 0,
-              mopSql: 0,
-              liveSql: 0,
-              actualSql: 0,
-              pipeline: 0,
-              status: "Stable",
-              reason: "",
-              latestDailySpend: 0,
-              latestStatus: "active",
-            });
-          }
-          geoMap.get(geo).actualSpend += safeNum(row.spend_usd);
-        });
+          {/* MAIN TABLE + INSIGHTS */}
+          <div className="section-grid">
+            <div className="card">
+              <h3 className="section-title">Geo Performance Overview</h3>
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Geo</th>
+                      <th className="num">Expected Spend</th>
+                      <th className="num">Actual Spend</th>
+                      <th className="num">Spend Var</th>
+                      <th className="num">Expected MQL</th>
+                      <th className="num">Actual MQL</th>
+                      <th className="num">MQL Var</th>
+                      <th className="num">Expected SQL</th>
+                      <th className="num">Actual SQL</th>
+                      <th className="num">SQL Var</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((row) => {
+                      const spendVar = pctDelta(row.expectedSpend, row.actualSpend);
+                      const mqlVar   = pctDelta(row.expectedMql, row.actualMql);
+                      const sqlVar   = pctDelta(row.expectedSql, row.actualSql);
+                      return (
+                        <tr key={row.geo}>
+                          <td className="geo-cell">{row.geo}</td>
+                          <td className="num muted">{fmtUSD(row.expectedSpend)}</td>
+                          <td className="num">{fmtUSD(row.actualSpend)}</td>
+                          <td className="num">
+                            <span className={`badge ${getDeltaClass(spendVar)}`}>
+                              {varianceLabel(row.expectedSpend, row.actualSpend)}
+                            </span>
+                          </td>
+                          <td className="num muted">{fmtNum(row.expectedMql)}</td>
+                          <td className="num">{fmtNum(row.actualMql)}</td>
+                          <td className="num">
+                            <span className={`badge ${getDeltaClass(mqlVar)}`}>
+                              {varianceLabel(row.expectedMql, row.actualMql)}
+                            </span>
+                          </td>
+                          <td className="num muted">{fmtNum(row.expectedSql)}</td>
+                          <td className="num">{fmtNum(row.actualSql)}</td>
+                          <td className="num">
+                            <span className={`badge ${getDeltaClass(sqlVar)}`}>
+                              {varianceLabel(row.expectedSql, row.actualSql)}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td className="geo-cell strong">Total</td>
+                      <td className="num muted strong">{fmtUSD(computed.totals.expectedSpend)}</td>
+                      <td className="num strong">{fmtUSD(computed.totals.actualSpend)}</td>
+                      <td className="num">
+                        <span className={`badge ${getDeltaClass(computed.spendVar)}`}>
+                          {varianceLabel(computed.totals.expectedSpend, computed.totals.actualSpend)}
+                        </span>
+                      </td>
+                      <td className="num muted strong">{fmtNum(computed.totals.expectedMql)}</td>
+                      <td className="num strong">{fmtNum(computed.totals.actualMql)}</td>
+                      <td className="num">
+                        <span className={`badge ${getDeltaClass(computed.mqlVar)}`}>
+                          {varianceLabel(computed.totals.expectedMql, computed.totals.actualMql)}
+                        </span>
+                      </td>
+                      <td className="num muted strong">{fmtNum(computed.totals.expectedSql)}</td>
+                      <td className="num strong">{fmtNum(computed.totals.actualSql)}</td>
+                      <td className="num">
+                        <span className={`badge ${getDeltaClass(computed.sqlVar)}`}>
+                          {varianceLabel(computed.totals.expectedSql, computed.totals.actualSql)}
+                        </span>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
 
-        // actual MQL from master_leads lead_created_date
-        mqlRows.forEach((row) => {
-          const geo = normalizeGeo(row.country);
-          if (!geoMap.has(geo)) {
-            geoMap.set(geo, {
-              geo,
-              flag: FLAG_MAP[geo] || "",
-              mopBudget: 0,
-              liveBudget: 0,
-              actualSpend: 0,
-              mopMql: 0,
-              liveMql: 0,
-              actualMql: 0,
-              mopSql: 0,
-              liveSql: 0,
-              actualSql: 0,
-              pipeline: 0,
-              status: "Stable",
-              reason: "",
-              latestDailySpend: 0,
-              latestStatus: "active",
-            });
-          }
-          geoMap.get(geo).actualMql += 1;
-        });
-
-        // actual SQL + pipeline from master_leads sql_date
-        sqlRows.forEach((row) => {
-          const geo = normalizeGeo(row.country);
-          if (!geoMap.has(geo)) {
-            geoMap.set(geo, {
-              geo,
-              flag: FLAG_MAP[geo] || "",
-              mopBudget: 0,
-              liveBudget: 0,
-              actualSpend: 0,
-              mopMql: 0,
-              liveMql: 0,
-              actualMql: 0,
-              mopSql: 0,
-              liveSql: 0,
-              actualSql: 0,
-              pipeline: 0,
-              status: "Stable",
-              reason: "",
-              latestDailySpend: 0,
-              latestStatus: "active",
-            });
-          }
-          const entry = geoMap.get(geo);
-          entry.actualSql += 1;
-          entry.pipeline += safeNum(row.amount_usd);
-        });
-
-        const finalRows = Array.from(geoMap.values())
-          .map((row) => ({
-            ...row,
-            liveBudget: Number(row.liveBudget.toFixed(2)),
-            actualSpend: Number(row.actualSpend.toFixed(2)),
-            liveMql: Number(row.liveMql.toFixed(2)),
-            liveSql: Number(row.liveSql.toFixed(2)),
-            pipeline: Number(row.pipeline.toFixed(2)),
-          }))
-          .sort((a
+            <div className="card">
+              <h3 className="section-title">Live Insights</h3>
+              <div className="side-list">
+                {computed.bestGeo && (
+                  <div className="insight-item">
+                    <h4>Best Efficiency Geo</h4>
+                    <p>
+                      <strong>{computed.bestGeo.geo}</strong> has the strongest MQL-per-spend
+                      efficiency so far this month.
+                    </p>
+                  </div>
+                )}
+                {computed.riskGeo && (
+                  <div className="insight-item">
+                    <h4>Biggest Risk</h4>
+                    <p>
+                      <strong>{computed.riskGeo.geo}</strong> is the biggest under-delivery risk
+                      vs MQL plan right now.
+                    </p>
+                  </div>
+                )}
+                <div className="insight-item">
+                  <h4>Period</h4>
+                  <p>
+                    Showing {dateRange.daysElapsed} days of data ({dateRange.label}).
+                    Updates automatically each day.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
