@@ -284,6 +284,24 @@ function aggregateClosedByGeo(rows) {
   return byGeo;
 }
 
+function sortRows(rows, sortKey, sortDir) {
+  const arr = [...rows];
+
+  arr.sort((a, b) => {
+    let aVal = sortKey === "geo" ? a.geo : a[sortKey]?.achieved || 0;
+    let bVal = sortKey === "geo" ? b.geo : b[sortKey]?.achieved || 0;
+
+    if (typeof aVal === "string") aVal = aVal.toLowerCase();
+    if (typeof bVal === "string") bVal = bVal.toLowerCase();
+
+    if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
+    if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  return arr;
+}
+
 export default function QTDMonthly() {
   const [quarter, setQuarter] = useState("Q1");
   const [month, setMonth] = useState(null);
@@ -293,6 +311,8 @@ export default function QTDMonthly() {
   const [supabaseMqlRows, setSupabaseMqlRows] = useState([]);
   const [supabaseSqlRows, setSupabaseSqlRows] = useState([]);
   const [supabaseClosedWonRows, setSupabaseClosedWonRows] = useState([]);
+  const [sortKey, setSortKey] = useState("spend");
+  const [sortDir, setSortDir] = useState("desc");
 
   const monthsInQuarter = useMemo(() => QUARTER_MONTHS[quarter] || [], [quarter]);
 
@@ -304,6 +324,21 @@ export default function QTDMonthly() {
     setQuarter(q);
     setMonth(null);
   };
+
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir(key === "geo" ? "asc" : "desc");
+    }
+  };
+
+  const SortTh = ({ k, label, className = "" }) => (
+    <th onClick={() => handleSort(k)} className={`sortable-th ${className}`}>
+      {label} {sortKey === k ? (sortDir === "asc" ? "▲" : "▼") : ""}
+    </th>
+  );
 
   useEffect(() => {
     async function fetchQTDData() {
@@ -430,8 +465,12 @@ export default function QTDMonthly() {
     const sqlAgg = aggregateSqlByGeo(supabaseSqlRows || []);
     const closedAgg = aggregateClosedByGeo(supabaseClosedWonRows || []);
 
-    return buildGeoRows(metaAgg, mqlAgg, sqlAgg, closedAgg);
-  }, [quarter, month, supabaseMqlRows, supabaseSqlRows, supabaseClosedWonRows]);
+    return sortRows(
+      buildGeoRows(metaAgg, mqlAgg, sqlAgg, closedAgg),
+      sortKey,
+      sortDir
+    );
+  }, [quarter, month, supabaseMqlRows, supabaseSqlRows, supabaseClosedWonRows, sortKey, sortDir]);
 
   const ctxLabel = month
     ? `${quarter} · ${month} ${DISPLAY_YEAR}`
@@ -488,15 +527,15 @@ export default function QTDMonthly() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Geo</th>
-                <th className="num-cell">Spend</th>
-                <th className="num-cell">MQL</th>
-                <th className="num-cell">CPL</th>
-                <th className="num-cell">SQL</th>
-                <th className="num-cell">CPSQL</th>
-                <th className="num-cell">Pipeline</th>
-                <th className="num-cell">Closures</th>
-                <th className="num-cell">Closure</th>
+                <SortTh k="geo" label="Geo" />
+                <SortTh k="spend" label="Spend" className="num-cell" />
+                <SortTh k="mql" label="MQL" className="num-cell" />
+                <SortTh k="costPerMql" label="CPL" className="num-cell" />
+                <SortTh k="sql" label="SQL" className="num-cell" />
+                <SortTh k="costPerSql" label="CPSQL" className="num-cell" />
+                <SortTh k="pipeline" label="Pipeline" className="num-cell" />
+                <SortTh k="closures" label="Closures" className="num-cell" />
+                <SortTh k="closure" label="Closure" className="num-cell" />
               </tr>
             </thead>
             <tbody>
