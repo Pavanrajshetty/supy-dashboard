@@ -19,7 +19,8 @@ function getDateRange() {
   const yesterday = new Date(Date.UTC(year, month, today.getUTCDate() - 1));
 
   const startIso = start.toISOString().slice(0, 10); // "YYYY-MM-DD"
-  const endIso = yesterday.toISOString().slice(0, 10);
+  // Use end-of-day timestamp so .lte catches all records on that day (including timestamps)
+  const endIso = `${yesterday.toISOString().slice(0, 10)}T23:59:59.999Z`;
 
   // Label: "Apr 1 – Apr 16, 2026"
   const fmt = (d) =>
