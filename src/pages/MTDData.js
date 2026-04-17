@@ -121,7 +121,7 @@ export default function MTDDataRevamp() {
               .from("master_leads")
               .select("country")
               .gte("lead_created_date", startIso)
-              .lt("lead_created_date", endIso),
+              .lte("lead_created_date", endIso),
 
             // 4. Actual SQL from master_leads
             supabase
@@ -129,7 +129,7 @@ export default function MTDDataRevamp() {
               .select("country")
               .eq("is_sql", true)
               .gte("sql_date", startIso)
-              .lt("sql_date", endIso),
+              .lte("sql_date", endIso),
 
             // 5. Monthly SQL target from plan_monthly
             supabase
