@@ -58,14 +58,15 @@ function fmt(value, type = "num") {
   return Math.round(n).toLocaleString();
 }
 
+function formatDateOnly(d) {
+  return d.toISOString().split("T")[0];
+}
+
 function getDateRange(timeRange) {
   const now = new Date();
 
   const todayStart = new Date(now);
   todayStart.setHours(0, 0, 0, 0);
-
-  const todayEnd = new Date(now);
-  todayEnd.setHours(23, 59, 59, 999);
 
   if (timeRange === "1d") {
     const yesterdayStart = new Date(todayStart);
@@ -79,9 +80,12 @@ function getDateRange(timeRange) {
 
   const days = RANGE_DAYS[timeRange] ?? 30;
   const start = new Date(todayStart);
-  start.setDate(start.getDate() - (days - 1));
+  start.setDate(start.getDate() - days + 1);
 
-  return { start, end: todayEnd };
+  const end = new Date(now);
+  end.setHours(23, 59, 59, 999);
+
+  return { start, end };
 }
 
 function getTopSqlRows(rows, limit = 15) {
@@ -148,13 +152,15 @@ export default function ExecutiveSummary() {
   const [supabaseClosedWonRows, setSupabaseClosedWonRows] = useState([]);
 
   useEffect(() => {
+    let isActive = true;
+
     async function fetchExecutiveSummaryData() {
       try {
         const { start, end } = getDateRange(timeRange);
         const startIso = start.toISOString();
         const endIso = end.toISOString();
-        const startDate = startIso.slice(0, 10);
-        const endDate = endIso.slice(0, 10);
+        const startDate = formatDateOnly(start);
+        const endDate = formatDateOnly(end);
 
         const metaPromise = supabase
           .from("meta_performance")
@@ -220,6 +226,8 @@ export default function ExecutiveSummary() {
           closedWonRowsPromise,
         ]);
 
+        if (!isActive) return;
+
         if (metaResponse.error) {
           console.error("Meta performance error:", metaResponse.error);
           setMetaRows([]);
@@ -248,6 +256,7 @@ export default function ExecutiveSummary() {
           setSupabaseClosedWonRows(closedWonRowsResponse.data || []);
         }
       } catch (err) {
+        if (!isActive) return;
         console.error("Unexpected executive summary fetch error:", err);
         setMetaRows([]);
         setSupabaseLeadsCount(0);
@@ -257,6 +266,10 @@ export default function ExecutiveSummary() {
     }
 
     fetchExecutiveSummaryData();
+
+    return () => {
+      isActive = false;
+    };
   }, [timeRange]);
 
   const kpi = useMemo(
