@@ -40,10 +40,6 @@ function getDateRange() {
    HELPERS
 ========================= */
 
-function fmtAED(value) {
-  return `AED ${Number(value || 0).toLocaleString()}`;
-}
-
 function fmtUSD(value) {
   return `$${Number(value || 0).toLocaleString()}`;
 }
@@ -62,14 +58,6 @@ function varianceLabel(expected, actual) {
   return `${val > 0 ? "+" : ""}${val}%`;
 }
 
-function getStatusClass(status) {
-  const s = (status || "").toLowerCase();
-  if (s === "scaling") return "pill scaling";
-  if (s === "reduced") return "pill reduced";
-  if (s === "paused") return "pill paused";
-  return "pill stable";
-}
-
 function getDeltaClass(value) {
   if (value > 0) return "delta-pos";
   if (value < 0) return "delta-neg";
@@ -81,12 +69,86 @@ function safeDivide(a, b) {
   return a / b;
 }
 
+function safeNum(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function parseDate(value) {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function formatDateForDisplay(value) {
+  const d = parseDate(value);
+  if (!d) return "—";
+  return d.toISOString().slice(0, 10);
+}
+
+function getSqlStage(row) {
+  if (row?.deal_stage) return row.deal_stage;
+  if (row?.is_closed_won === true) return "Closed Won";
+  if (row?.is_sql === true) return "Sales Qualified";
+  return "—";
+}
+
+function getCompany(row) {
+  return row.company ?? row.deal_name ?? "—";
+}
+
+function getCountry(row) {
+  return row.country ?? "Unknown";
+}
+
+function getGeo(row) {
+  return row.country ?? "Unknown";
+}
+
+function getCampaign(row) {
+  return (
+    row.campaign_name ??
+    row.utm_campaign ??
+    row.hs_analytics_source_data_2 ??
+    row.hs_analytics_source_data_1 ??
+    "—"
+  );
+}
+
+function getSqlDate(row) {
+  return row.sql_date ?? null;
+}
+
+function getCreatedDate(row) {
+  return row.lead_created_date ?? null;
+}
+
+function getHsUrl(row) {
+  return row.deal_link || row.lead_link || "#";
+}
+
+function buildSqlRows(rows) {
+  return (Array.isArray(rows) ? rows : []).map((row, index) => ({
+    id: row.deal_id || row.lead_id || `sql-row-${index}`,
+    company: getCompany(row),
+    country: getCountry(row),
+    geo: getGeo(row),
+    campaign: getCampaign(row),
+    sqlDate: formatDateForDisplay(getSqlDate(row)),
+    createdDate: formatDateForDisplay(getCreatedDate(row)),
+    dealValue: safeNum(row.amount_usd),
+    stage: getSqlStage(row),
+    hsUrl: getHsUrl(row),
+  }));
+}
+
 /* =========================
    COMPONENT
 ========================= */
 
 export default function MTDDataRevamp() {
   const [rows, setRows] = useState([]);
+  const [sqlDetailRows, setSqlDetailRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -100,47 +162,88 @@ export default function MTDDataRevamp() {
 
         const { startIso, endIso, planMonth, daysElapsed } = dateRange;
 
-        // Run all 5 queries in parallel
-        const [planMtdRes, actualSpendRes, actualMqlRes, actualSqlRes, planSqlRes] =
-          await Promise.all([
-            // 1. Plan MTD (daily spend + mql targets)
-            supabase
-              .from("plan_daily")
-              .select("geo, daily_spend_usd, daily_mql_target")
-              .gte("plan_date", startIso)
-              .lte("plan_date", endIso),
+        // Run all queries in parallel
+        const [
+          planMtdRes,
+          actualSpendRes,
+          actualMqlRes,
+          actualSqlRes,
+          planSqlRes,
+          sqlDetailRes,
+        ] = await Promise.all([
+          // 1. Plan MTD (daily spend + mql targets)
+          supabase
+            .from("plan_daily")
+            .select("geo, daily_spend_usd, daily_mql_target")
+            .gte("plan_date", startIso)
+            .lte("plan_date", endIso),
 
-            // 2. Actual spend from meta_performance
-            supabase
-              .from("meta_performance")
-              .select("country_name, spend_usd")
-              .gte("perf_date", startIso)
-              .lte("perf_date", endIso),
+          // 2. Actual spend from meta_performance
+          supabase
+            .from("meta_performance")
+            .select("country_name, spend_usd")
+            .gte("perf_date", startIso)
+            .lte("perf_date", endIso),
 
-            // 3. Actual MQL from master_leads
-            supabase
-              .from("master_leads")
-              .select("country")
-              .gte("lead_created_date", startIso)
-              .lte("lead_created_date", endIso),
+          // 3. Actual MQL from master_leads
+          supabase
+            .from("master_leads")
+            .select("country")
+            .gte("lead_created_date", startIso)
+            .lte("lead_created_date", endIso),
 
-            // 4. Actual SQL from master_leads
-            supabase
-              .from("master_leads")
-              .select("country")
-              .eq("is_sql", true)
-              .gte("sql_date", startIso)
-              .lte("sql_date", endIso),
+          // 4. Actual SQL from master_leads
+          supabase
+            .from("master_leads")
+            .select("country")
+            .eq("is_sql", true)
+            .gte("sql_date", startIso)
+            .lte("sql_date", endIso),
 
-            // 5. Monthly SQL target from plan_monthly
-            supabase
-              .from("plan_monthly")
-              .select("geo, sql_target")
-              .eq("plan_month", planMonth),
-          ]);
+          // 5. Monthly SQL target from plan_monthly
+          supabase
+            .from("plan_monthly")
+            .select("geo, sql_target")
+            .eq("plan_month", planMonth),
+
+          // 6. SQL detail rows for MTD SQL table
+          supabase
+            .from("master_leads")
+            .select(`
+              lead_id,
+              deal_id,
+              company,
+              country,
+              campaign_name,
+              utm_campaign,
+              hs_analytics_source_data_1,
+              hs_analytics_source_data_2,
+              lead_created_date,
+              is_sql,
+              sql_date,
+              is_closed_won,
+              close_date,
+              amount_usd,
+              deal_stage,
+              deal_name,
+              deal_link,
+              lead_link
+            `)
+            .eq("is_sql", true)
+            .gte("sql_date", startIso)
+            .lte("sql_date", endIso)
+            .order("sql_date", { ascending: false }),
+        ]);
 
         // Check errors
-        for (const res of [planMtdRes, actualSpendRes, actualMqlRes, actualSqlRes, planSqlRes]) {
+        for (const res of [
+          planMtdRes,
+          actualSpendRes,
+          actualMqlRes,
+          actualSqlRes,
+          planSqlRes,
+          sqlDetailRes,
+        ]) {
           if (res.error) throw res.error;
         }
 
@@ -184,11 +287,11 @@ export default function MTDDataRevamp() {
           const actualMql = mqlByGeo[geo] || 0;
           const actualSql = sqlByGeo[geo] || 0;
           const expectedSql = planSqlByGeo[geo] || 0;
-          const pipeline = 0; // pipeline comes from deals; not in scope here unless you want it
+          const pipeline = 0;
 
           return {
             geo,
-            flag: "", // no flag mapping needed unless you add a lookup
+            flag: "",
             expectedSpend,
             actualSpend,
             expectedMql,
@@ -203,6 +306,7 @@ export default function MTDDataRevamp() {
         merged.sort((a, b) => b.actualSpend - a.actualSpend);
 
         setRows(merged);
+        setSqlDetailRows(buildSqlRows(sqlDetailRes.data || []));
       } catch (err) {
         console.error("MTD fetch error:", err);
         setError(err.message || "Failed to load MTD data");
@@ -423,27 +527,6 @@ export default function MTDDataRevamp() {
         .insight-item h4 { margin: 0 0 6px; font-size: 14px; }
         .insight-item p  { margin: 0; font-size: 13px; line-height: 1.5; color: #5b667a; }
 
-        .changes-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 16px;
-        }
-
-        .mini-card-title { margin: 0 0 12px; font-size: 15px; font-weight: 800; }
-        .mini-list { display: flex; flex-direction: column; gap: 10px; }
-
-        .mini-row {
-          display: flex;
-          justify-content: space-between;
-          gap: 12px;
-          padding: 10px 0;
-          border-bottom: 1px solid #f0f3f8;
-          font-size: 14px;
-        }
-
-        .mini-row:last-child { border-bottom: 0; }
-        .reason { color: #6a768d; font-size: 12px; margin-top: 4px; }
-
         .loading-state {
           display: flex;
           align-items: center;
@@ -462,8 +545,38 @@ export default function MTDDataRevamp() {
           font-size: 14px;
         }
 
+        .sql-link {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 6px 10px;
+          border-radius: 999px;
+          border: 1px solid #d9dff0;
+          background: #fff;
+          color: #6b46c1;
+          text-decoration: none;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .sql-link:hover {
+          background: #f7f4ff;
+        }
+
+        .sql-stage {
+          display: inline-flex;
+          align-items: center;
+          padding: 6px 10px;
+          border-radius: 999px;
+          background: #f3f0ff;
+          color: #6b46c1;
+          font-size: 12px;
+          font-weight: 700;
+          white-space: nowrap;
+        }
+
         @media (max-width: 1200px) {
-          .kpi-grid, .changes-grid, .section-grid {
+          .kpi-grid, .section-grid {
             grid-template-columns: 1fr;
           }
         }
@@ -486,7 +599,6 @@ export default function MTDDataRevamp() {
         <div className="loading-state">Loading MTD data...</div>
       ) : (
         <>
-          {/* KPI CARDS */}
           <div className="kpi-grid">
             <div className="card">
               <div className="kpi-label">Spend (USD)</div>
@@ -531,7 +643,6 @@ export default function MTDDataRevamp() {
             </div>
           </div>
 
-          {/* MAIN TABLE + INSIGHTS */}
           <div className="section-grid">
             <div className="card">
               <h3 className="section-title">Geo Performance Overview</h3>
@@ -554,8 +665,8 @@ export default function MTDDataRevamp() {
                   <tbody>
                     {rows.map((row) => {
                       const spendVar = pctDelta(row.expectedSpend, row.actualSpend);
-                      const mqlVar   = pctDelta(row.expectedMql, row.actualMql);
-                      const sqlVar   = pctDelta(row.expectedSql, row.actualSql);
+                      const mqlVar = pctDelta(row.expectedMql, row.actualMql);
+                      const sqlVar = pctDelta(row.expectedSql, row.actualSql);
                       return (
                         <tr key={row.geo}>
                           <td className="geo-cell">{row.geo}</td>
@@ -643,6 +754,61 @@ export default function MTDDataRevamp() {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3 className="section-title">MTD SQL Details</h3>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Company</th>
+                    <th>Country</th>
+                    <th>Geo</th>
+                    <th>Campaign</th>
+                    <th>SQL Date</th>
+                    <th>Created</th>
+                    <th className="num">Deal Value</th>
+                    <th>Stage</th>
+                    <th>HubSpot</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sqlDetailRows.length > 0 ? (
+                    sqlDetailRows.map((row) => (
+                      <tr key={row.id}>
+                        <td>{row.company}</td>
+                        <td>{row.country}</td>
+                        <td>{row.geo}</td>
+                        <td className="muted">{row.campaign}</td>
+                        <td>{row.sqlDate}</td>
+                        <td className="muted">{row.createdDate}</td>
+                        <td className="num">{fmtUSD(row.dealValue)}</td>
+                        <td>
+                          <span className="sql-stage">{row.stage}</span>
+                        </td>
+                        <td>
+                          <a
+                            className="sql-link"
+                            href={row.hsUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            ↗ View
+                          </a>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="9" style={{ textAlign: "center", color: "#738099" }}>
+                        No MTD SQL rows found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </>
