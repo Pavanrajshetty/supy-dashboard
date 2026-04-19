@@ -1,6 +1,4 @@
 import React, { useState, useMemo, useEffect } from "react";
-import metaData from "../data/processed/meta_master/meta_master.json";
-import ISO_CODES from "../data/isocodes.json";
 import { supabase } from "../lib/supabase";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -58,18 +56,6 @@ function parseDate(value) {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
-function getMonthLabel(dateValue) {
-  const d = parseDate(dateValue);
-  if (!d) return null;
-  return MONTHS[d.getUTCMonth()];
-}
-
-function getYear(dateValue) {
-  const d = parseDate(dateValue);
-  if (!d) return null;
-  return d.getUTCFullYear();
-}
-
 function normalizeDisplayCountry(name) {
   if (!name) return "Unknown";
   const clean = String(name).trim();
@@ -81,34 +67,6 @@ function normalizeMasterCountry(raw) {
   return normalizeDisplayCountry(String(raw).trim());
 }
 
-function normalizeMetaCountry(raw) {
-  if (!raw) return "Unknown";
-
-  const isoMap = ISO_CODES?.meta_country_iso2_mapping || {};
-  const code = String(raw).trim().toLowerCase();
-  const mappedCountry = isoMap[code];
-
-  if (typeof mappedCountry === "string" && mappedCountry.trim()) {
-    return normalizeDisplayCountry(mappedCountry.trim());
-  }
-
-  if (mappedCountry && typeof mappedCountry === "object") {
-    return normalizeDisplayCountry(mappedCountry.display || mappedCountry.name || raw);
-  }
-
-  return normalizeMasterCountry(raw);
-}
-
-function isInSelection(dateValue, quarter, month) {
-  const monthLabel = getMonthLabel(dateValue);
-  const year = getYear(dateValue);
-
-  if (!monthLabel || year !== DISPLAY_YEAR) return false;
-  if (month) return monthLabel === month;
-
-  return (QUARTER_MONTHS[quarter] || []).includes(monthLabel);
-}
-
 function getQuarterDateRange(quarter, month) {
   const quarterMonths = QUARTER_MONTHS[quarter] || [];
   const selectedMonths = month ? [month] : quarterMonths;
@@ -118,7 +76,7 @@ function getQuarterDateRange(quarter, month) {
     .filter((idx) => idx >= 0);
 
   if (monthIndexes.length === 0) {
-    return { startIso: null, endIso: null };
+    return { startIso: null, endIso: null, startDate: null, endDate: null };
   }
 
   const minMonth = Math.min(...monthIndexes);
@@ -127,49 +85,21 @@ function getQuarterDateRange(quarter, month) {
   const start = new Date(Date.UTC(DISPLAY_YEAR, minMonth, 1, 0, 0, 0, 0));
   const end = new Date(Date.UTC(DISPLAY_YEAR, maxMonth + 1, 0, 23, 59, 59, 999));
 
+  // date-only strings for perf_date comparison (same as ExecutiveSummary pattern)
+  const startDate = start.toISOString().slice(0, 10);
+  const endDate = end.toISOString().slice(0, 10);
+
   return {
     startIso: start.toISOString(),
     endIso: end.toISOString(),
+    startDate,
+    endDate,
   };
 }
 
-function getMetaDate(row) {
-  return (
-    row.date ??
-    row.created_time ??
-    row.createdate ??
-    row.created_date ??
-    row.day ??
-    row.report_date ??
-    null
-  );
-}
-
-function getMetaCountry(row) {
-  return row.country ?? row.country_code ?? row.geo ?? row.region ?? null;
-}
-
-function getMetaSpend(row) {
-  return safeNumber(
-    row.spend_aed ??
-      row.spendAED ??
-      row.spend ??
-      row.amount_spent_aed ??
-      row.amount_spent ??
-      row.cost ??
-      0
-  );
-}
-
-function getFilteredMetaRows(rows, quarter, month) {
-  return (rows || []).filter((row) => {
-    const rowDate = getMetaDate(row);
-    return isInSelection(rowDate, quarter, month);
-  });
-}
-
 function buildKpi(metaRows, leadsCount, sqlRows, closedWonRows) {
-  const spend = (metaRows || []).reduce((sum, row) => sum + getMetaSpend(row), 0);
+  // spend from supabase meta_performance rows (spend_usd field)
+  const spend = (metaRows || []).reduce((sum, row) => sum + safeNumber(row.spend_usd), 0);
   const mql = safeNumber(leadsCount);
   const sql = (sqlRows || []).length;
   const pipeline = (sqlRows || []).reduce((sum, row) => sum + safeNumber(row.amount_usd), 0);
@@ -222,19 +152,16 @@ function buildGeoRows(metaAgg, mqlAgg, sqlAgg, closedAgg) {
     .sort((a, b) => b.spend.achieved - a.spend.achieved);
 }
 
-function aggregateMetaByGeo(rows, quarter, month) {
+// Uses country_name from meta_performance (already a full name, no ISO mapping needed)
+function aggregateMetaByGeo(rows) {
   const byGeo = {};
 
   (rows || []).forEach((row) => {
-    const rowDate = getMetaDate(row);
-    if (!isInSelection(rowDate, quarter, month)) return;
-
-    const geo = normalizeMetaCountry(getMetaCountry(row));
+    const geo = normalizeMasterCountry(row.country_name);
     if (!byGeo[geo]) {
       byGeo[geo] = { spend: 0 };
     }
-
-    byGeo[geo].spend += getMetaSpend(row);
+    byGeo[geo].spend += safeNumber(row.spend_usd);
   });
 
   return byGeo;
@@ -302,23 +229,39 @@ function sortRows(rows, sortKey, sortDir) {
   return arr;
 }
 
+async function fetchAllRows(buildQuery, pageSize = 1000) {
+  let allRows = [];
+  let from = 0;
+
+  while (true) {
+    const to = from + pageSize - 1;
+    const { data, error } = await buildQuery().range(from, to);
+    if (error) throw error;
+    const rows = data || [];
+    allRows = allRows.concat(rows);
+    if (rows.length < pageSize) break;
+    from += pageSize;
+  }
+
+  return allRows;
+}
+
 export default function QTDMonthly() {
   const [quarter, setQuarter] = useState("Q1");
   const [month, setMonth] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // ── All data now from Supabase ────────────────────────────
+  const [supabaseMetaRows, setSupabaseMetaRows] = useState([]);
   const [supabaseLeadsCount, setSupabaseLeadsCount] = useState(0);
   const [supabaseMqlRows, setSupabaseMqlRows] = useState([]);
   const [supabaseSqlRows, setSupabaseSqlRows] = useState([]);
   const [supabaseClosedWonRows, setSupabaseClosedWonRows] = useState([]);
+
   const [sortKey, setSortKey] = useState("spend");
   const [sortDir, setSortDir] = useState("desc");
 
   const monthsInQuarter = useMemo(() => QUARTER_MONTHS[quarter] || [], [quarter]);
-
-  const filteredMetaRows = useMemo(() => {
-    return getFilteredMetaRows(metaData || [], quarter, month);
-  }, [quarter, month]);
 
   const handleQuarterClick = (q) => {
     setQuarter(q);
@@ -345,9 +288,10 @@ export default function QTDMonthly() {
       try {
         setLoading(true);
 
-        const { startIso, endIso } = getQuarterDateRange(quarter, month);
+        const { startIso, endIso, startDate, endDate } = getQuarterDateRange(quarter, month);
 
         if (!startIso || !endIso) {
+          setSupabaseMetaRows([]);
           setSupabaseLeadsCount(0);
           setSupabaseMqlRows([]);
           setSupabaseSqlRows([]);
@@ -355,59 +299,55 @@ export default function QTDMonthly() {
           return;
         }
 
-        const leadsCountPromise = supabase
-          .from("master_leads")
-          .select("lead_id", { count: "exact", head: true })
-          .gte("lead_created_date", startIso)
-          .lte("lead_created_date", endIso);
-
-        const mqlRowsPromise = supabase
-          .from("master_leads")
-          .select(`
-            lead_id,
-            country,
-            lead_created_date
-          `)
-          .gte("lead_created_date", startIso)
-          .lte("lead_created_date", endIso);
-
-        const sqlRowsPromise = supabase
-          .from("master_leads")
-          .select(`
-            lead_id,
-            deal_id,
-            country,
-            amount_usd,
-            sql_date
-          `)
-          .eq("is_sql", true)
-          .gte("sql_date", startIso)
-          .lte("sql_date", endIso);
-
-        const closedWonRowsPromise = supabase
-          .from("master_leads")
-          .select(`
-            lead_id,
-            deal_id,
-            country,
-            amount_usd,
-            close_date
-          `)
-          .eq("is_closed_won", true)
-          .gte("close_date", startIso)
-          .lte("close_date", endIso);
-
         const [
+          metaRows,
           leadsCountResponse,
           mqlRowsResponse,
           sqlRowsResponse,
           closedWonRowsResponse,
         ] = await Promise.all([
-          leadsCountPromise,
-          mqlRowsPromise,
-          sqlRowsPromise,
-          closedWonRowsPromise,
+          // ── REPLACED: was meta_master.json, now live from Supabase ──
+          fetchAllRows(() =>
+            supabase
+              .from("meta_performance")
+              .select("perf_date, spend_usd, country_name")
+              .eq("level", "ad")
+              .gte("perf_date", startDate)
+              .lte("perf_date", endDate)
+          ),
+
+          // MQL count
+          supabase
+            .from("master_leads")
+            .select("lead_id", { count: "exact", head: true })
+            .gte("lead_created_date", startIso)
+            .lte("lead_created_date", endIso),
+
+          // MQL rows for geo breakdown
+          supabase
+            .from("master_leads")
+            .select("lead_id, country, lead_created_date")
+            .gte("lead_created_date", startIso)
+            .lte("lead_created_date", endIso),
+
+          // SQL rows
+          supabase
+            .from("master_leads")
+            .select("lead_id, deal_id, country, amount_usd, sql_date")
+            .eq("is_sql", true)
+            .gte("sql_date", startIso)
+            .lte("sql_date", endIso),
+
+          // Closed Won rows
+          supabase
+            .from("master_leads")
+            .select("lead_id, deal_id, country, amount_usd, close_date")
+            .eq("is_closed_won", true)
+            .gte("close_date", startIso)
+            .lte("close_date", endIso),
         ]);
+
+        setSupabaseMetaRows(metaRows || []);
 
         if (leadsCountResponse.error) {
           console.error("QTD leads count error:", leadsCountResponse.error);
@@ -438,6 +378,7 @@ export default function QTDMonthly() {
         }
       } catch (err) {
         console.error("Unexpected QTD fetch error:", err);
+        setSupabaseMetaRows([]);
         setSupabaseLeadsCount(0);
         setSupabaseMqlRows([]);
         setSupabaseSqlRows([]);
@@ -452,15 +393,15 @@ export default function QTDMonthly() {
 
   const finalKpis = useMemo(() => {
     return buildKpi(
-      filteredMetaRows,
+      supabaseMetaRows,
       supabaseLeadsCount,
       supabaseSqlRows,
       supabaseClosedWonRows
     );
-  }, [filteredMetaRows, supabaseLeadsCount, supabaseSqlRows, supabaseClosedWonRows]);
+  }, [supabaseMetaRows, supabaseLeadsCount, supabaseSqlRows, supabaseClosedWonRows]);
 
   const geoRows = useMemo(() => {
-    const metaAgg = aggregateMetaByGeo(metaData || [], quarter, month);
+    const metaAgg = aggregateMetaByGeo(supabaseMetaRows);
     const mqlAgg = aggregateMqlByGeo(supabaseMqlRows || []);
     const sqlAgg = aggregateSqlByGeo(supabaseSqlRows || []);
     const closedAgg = aggregateClosedByGeo(supabaseClosedWonRows || []);
@@ -470,7 +411,7 @@ export default function QTDMonthly() {
       sortKey,
       sortDir
     );
-  }, [quarter, month, supabaseMqlRows, supabaseSqlRows, supabaseClosedWonRows, sortKey, sortDir]);
+  }, [supabaseMetaRows, supabaseMqlRows, supabaseSqlRows, supabaseClosedWonRows, sortKey, sortDir]);
 
   const ctxLabel = month
     ? `${quarter} · ${month} ${DISPLAY_YEAR}`
