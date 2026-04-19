@@ -58,8 +58,31 @@ function fmt(value, type = "num") {
   return Math.round(n).toLocaleString();
 }
 
-function formatDateOnly(d) {
-  return d.toISOString().split("T")[0];
+function formatDateOnlyLocal(d) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatDateTimeLocal(d, endOfDay = false) {
+  const date = new Date(d);
+
+  if (endOfDay) {
+    date.setHours(23, 59, 59, 999);
+  } else {
+    date.setHours(0, 0, 0, 0);
+  }
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const mins = String(date.getMinutes()).padStart(2, "0");
+  const secs = String(date.getSeconds()).padStart(2, "0");
+  const ms = String(date.getMilliseconds()).padStart(3, "0");
+
+  return `${year}-${month}-${day}T${hours}:${mins}:${secs}.${ms}`;
 }
 
 function getDateRange(timeRange) {
@@ -86,6 +109,26 @@ function getDateRange(timeRange) {
   end.setHours(23, 59, 59, 999);
 
   return { start, end };
+}
+
+async function fetchAllRows(buildQuery, pageSize = 1000) {
+  let allRows = [];
+  let from = 0;
+
+  while (true) {
+    const to = from + pageSize - 1;
+    const { data, error } = await buildQuery().range(from, to);
+
+    if (error) throw error;
+
+    const rows = data || [];
+    allRows = allRows.concat(rows);
+
+    if (rows.length < pageSize) break;
+    from += pageSize;
+  }
+
+  return allRows;
 }
 
 function getTopSqlRows(rows, limit = 15) {
@@ -157,83 +200,81 @@ export default function ExecutiveSummary() {
     async function fetchExecutiveSummaryData() {
       try {
         const { start, end } = getDateRange(timeRange);
-        const startIso = start.toISOString();
-        const endIso = end.toISOString();
-        const startDate = formatDateOnly(start);
-        const endDate = formatDateOnly(end);
 
-        const metaPromise = supabase
-          .from("meta_performance")
-          .select(`
-            perf_date,
-            level,
-            impressions,
-            clicks,
-            reach,
-            leads,
-            spend_usd,
-            country_name
-          `)
-          .eq("level", "ad")
-          .gte("perf_date", startDate)
-          .lte("perf_date", endDate);
+        const startIso = formatDateTimeLocal(start, false);
+        const endIso = formatDateTimeLocal(end, true);
 
-        const leadsCountPromise = supabase
-          .from("master_leads")
-          .select("lead_id", { count: "exact", head: true })
-          .gte("lead_created_date", startIso)
-          .lte("lead_created_date", endIso);
-
-        const sqlRowsPromise = supabase
-          .from("master_leads")
-          .select(`
-            lead_id,
-            deal_id,
-            company,
-            deal_name,
-            country,
-            amount_usd,
-            number_of_locations,
-            deal_link,
-            lead_link,
-            sql_date
-          `)
-          .eq("is_sql", true)
-          .gte("sql_date", startIso)
-          .lte("sql_date", endIso);
-
-        const closedWonRowsPromise = supabase
-          .from("master_leads")
-          .select(`
-            lead_id,
-            deal_id,
-            amount_usd,
-            close_date
-          `)
-          .eq("is_closed_won", true)
-          .gte("close_date", startIso)
-          .lte("close_date", endIso);
+        const startDate = formatDateOnlyLocal(start);
+        const endDate = formatDateOnlyLocal(end);
 
         const [
-          metaResponse,
+          metaData,
           leadsCountResponse,
-          sqlRowsResponse,
-          closedWonRowsResponse,
+          sqlData,
+          closedWonData,
         ] = await Promise.all([
-          metaPromise,
-          leadsCountPromise,
-          sqlRowsPromise,
-          closedWonRowsPromise,
+          fetchAllRows(() =>
+            supabase
+              .from("meta_performance")
+              .select(`
+                perf_date,
+                level,
+                impressions,
+                clicks,
+                reach,
+                leads,
+                spend_usd,
+                country_name
+              `)
+              .eq("level", "ad")
+              .gte("perf_date", startDate)
+              .lte("perf_date", endDate)
+              .order("perf_date", { ascending: true })
+          ),
+          supabase
+            .from("master_leads")
+            .select("lead_id", { count: "exact", head: true })
+            .gte("lead_created_date", startIso)
+            .lte("lead_created_date", endIso),
+          fetchAllRows(() =>
+            supabase
+              .from("master_leads")
+              .select(`
+                lead_id,
+                deal_id,
+                company,
+                deal_name,
+                country,
+                amount_usd,
+                number_of_locations,
+                deal_link,
+                lead_link,
+                sql_date
+              `)
+              .eq("is_sql", true)
+              .gte("sql_date", startIso)
+              .lte("sql_date", endIso)
+              .order("sql_date", { ascending: false })
+          ),
+          fetchAllRows(() =>
+            supabase
+              .from("master_leads")
+              .select(`
+                lead_id,
+                deal_id,
+                amount_usd,
+                close_date
+              `)
+              .eq("is_closed_won", true)
+              .gte("close_date", startIso)
+              .lte("close_date", endIso)
+              .order("close_date", { ascending: false })
+          ),
         ]);
 
         if (!isActive) return;
 
-        if (metaResponse.error) {
-          console.error("Meta performance error:", metaResponse.error);
-          setMetaRows([]);
-        } else {
-          setMetaRows(metaResponse.data || []);
-        }
+        setMetaRows(metaData || []);
 
         if (leadsCountResponse.error) {
           console.error("Leads count error:", leadsCountResponse.error);
@@ -242,19 +283,8 @@ export default function ExecutiveSummary() {
           setSupabaseLeadsCount(leadsCountResponse.count || 0);
         }
 
-        if (sqlRowsResponse.error) {
-          console.error("SQL rows error:", sqlRowsResponse.error);
-          setSupabaseSqlRows([]);
-        } else {
-          setSupabaseSqlRows(sqlRowsResponse.data || []);
-        }
-
-        if (closedWonRowsResponse.error) {
-          console.error("Closed won rows error:", closedWonRowsResponse.error);
-          setSupabaseClosedWonRows([]);
-        } else {
-          setSupabaseClosedWonRows(closedWonRowsResponse.data || []);
-        }
+        setSupabaseSqlRows(sqlData || []);
+        setSupabaseClosedWonRows(closedWonData || []);
       } catch (err) {
         if (!isActive) return;
         console.error("Unexpected executive summary fetch error:", err);
