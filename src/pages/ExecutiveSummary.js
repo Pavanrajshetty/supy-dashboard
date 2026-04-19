@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import metaMasterData from "../data/processed/meta_master/meta_master.json";
 import { supabase } from "../lib/supabase";
 
 // ── UI config inside same file ────────────────────────────────
@@ -91,18 +90,6 @@ function getDateRange(timeRange) {
   return { start, end: todayEnd };
 }
 
-function isWithinRange(dateValue, timeRange) {
-  const d = parseDate(dateValue);
-  if (!d) return false;
-
-  const { start, end } = getDateRange(timeRange);
-  return d >= start && d <= end;
-}
-
-function getFilteredMetaRows(rows, timeRange) {
-  return rows.filter((row) => isWithinRange(row.date, timeRange));
-}
-
 function getTopSqlRows(rows, limit = 15) {
   return [...rows]
     .sort((a, b) => safeNum(b.amount_usd) - safeNum(a.amount_usd))
@@ -124,7 +111,7 @@ function getDisplaySize(row) {
 }
 
 function buildKpi(metaRows, leadsCount, sqlRows, closedWonRows) {
-  const spend = metaRows.reduce((s, r) => s + safeNum(r.spend), 0);
+  const spend = metaRows.reduce((s, r) => s + safeNum(r.spend_usd), 0);
   const impressions = metaRows.reduce((s, r) => s + safeNum(r.impressions), 0);
   const reach = metaRows.reduce((s, r) => s + safeNum(r.reach), 0);
   const clicks = metaRows.reduce((s, r) => s + safeNum(r.clicks), 0);
@@ -161,16 +148,10 @@ function buildKpi(metaRows, leadsCount, sqlRows, closedWonRows) {
 // ── Component ─────────────────────────────────────────────────
 export default function ExecutiveSummary() {
   const [timeRange, setTimeRange] = useState("30d");
+  const [metaRows, setMetaRows] = useState([]);
   const [supabaseLeadsCount, setSupabaseLeadsCount] = useState(0);
   const [supabaseSqlRows, setSupabaseSqlRows] = useState([]);
   const [supabaseClosedWonRows, setSupabaseClosedWonRows] = useState([]);
-
-  const metaRows = Array.isArray(metaMasterData) ? metaMasterData : [];
-
-  const filteredMetaRows = useMemo(
-    () => getFilteredMetaRows(metaRows, timeRange),
-    [metaRows, timeRange]
-  );
 
   useEffect(() => {
     async function fetchExecutiveSummaryData() {
@@ -178,6 +159,22 @@ export default function ExecutiveSummary() {
         const { start, end } = getDateRange(timeRange);
         const startIso = start.toISOString();
         const endIso = end.toISOString();
+
+        const metaPromise = supabase
+          .from("meta_performance")
+          .select(`
+            perf_date,
+            level,
+            impressions,
+            clicks,
+            reach,
+            leads,
+            spend_usd,
+            country_name
+          `)
+          .eq("level", "campaign")
+          .gte("perf_date", startIso)
+          .lte("perf_date", endIso);
 
         const leadsCountPromise = supabase
           .from("master_leads")
@@ -216,14 +213,23 @@ export default function ExecutiveSummary() {
           .lte("close_date", endIso);
 
         const [
+          metaResponse,
           leadsCountResponse,
           sqlRowsResponse,
           closedWonRowsResponse,
         ] = await Promise.all([
+          metaPromise,
           leadsCountPromise,
           sqlRowsPromise,
           closedWonRowsPromise,
         ]);
+
+        if (metaResponse.error) {
+          console.error("Meta performance error:", metaResponse.error);
+          setMetaRows([]);
+        } else {
+          setMetaRows(metaResponse.data || []);
+        }
 
         if (leadsCountResponse.error) {
           console.error("Leads count error:", leadsCountResponse.error);
@@ -247,6 +253,7 @@ export default function ExecutiveSummary() {
         }
       } catch (err) {
         console.error("Unexpected executive summary fetch error:", err);
+        setMetaRows([]);
         setSupabaseLeadsCount(0);
         setSupabaseSqlRows([]);
         setSupabaseClosedWonRows([]);
@@ -259,12 +266,12 @@ export default function ExecutiveSummary() {
   const kpi = useMemo(
     () =>
       buildKpi(
-        filteredMetaRows,
+        metaRows,
         supabaseLeadsCount,
         supabaseSqlRows,
         supabaseClosedWonRows
       ),
-    [filteredMetaRows, supabaseLeadsCount, supabaseSqlRows, supabaseClosedWonRows]
+    [metaRows, supabaseLeadsCount, supabaseSqlRows, supabaseClosedWonRows]
   );
 
   const topSqlRows = useMemo(
