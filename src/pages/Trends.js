@@ -1,6 +1,4 @@
 import React, { useState, useMemo, useEffect } from "react";
-import metaMasterData from "../data/processed/meta_master/meta_master.json";
-import ISO_CODES from "../data/isocodes.json";
 import { supabase } from "../lib/supabase";
 
 // ── Config ───────────────────────────────────────────────────
@@ -83,26 +81,24 @@ function formatShortDate(value) {
   return `${day}/${month}`;
 }
 
+// ── FIXED: same pattern as ExecutiveSummary ──────────────────
 function getDateRange(rangeKey) {
   const now = new Date();
-
-  const todayStart = new Date(now);
-  todayStart.setHours(0, 0, 0, 0);
-
-  const todayEnd = new Date(now);
-  todayEnd.setHours(23, 59, 59, 999);
-
   const days = RANGE_DAYS[rangeKey] ?? 30;
-  const start = new Date(todayStart);
-  start.setDate(start.getDate() - (days - 1));
 
-  return { start, end: todayEnd };
+  const start = new Date(now);
+  start.setDate(start.getDate() - days);
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(now);
+  end.setHours(23, 59, 59, 999);
+
+  return { start, end };
 }
 
 function isWithinRange(dateValue, rangeKey) {
   const d = parseDate(dateValue);
   if (!d) return false;
-
   const { start, end } = getDateRange(rangeKey);
   return d >= start && d <= end;
 }
@@ -118,54 +114,14 @@ function normalizeMasterCountry(raw) {
   return normalizeDisplayCountry(String(raw).trim());
 }
 
+// country_name from meta_performance is already a full name — no ISO mapping needed
 function normalizeMetaCountry(raw) {
-  if (!raw) return "Unknown";
-
-  const isoMap = ISO_CODES?.meta_country_iso2_mapping || {};
-  const code = String(raw).trim().toLowerCase();
-  const mappedCountry = isoMap[code];
-
-  if (typeof mappedCountry === "string" && mappedCountry.trim()) {
-    return normalizeDisplayCountry(mappedCountry.trim());
-  }
-
-  if (mappedCountry && typeof mappedCountry === "object") {
-    return normalizeDisplayCountry(mappedCountry.display || mappedCountry.name || raw);
-  }
-
   return normalizeMasterCountry(raw);
 }
 
-function getMetaDate(row) {
-  return (
-    row.date ??
-    row.created_time ??
-    row.createdate ??
-    row.created_date ??
-    row.day ??
-    row.report_date ??
-    null
-  );
-}
-
-function getMetaCountry(row) {
-  return row.country ?? row.country_code ?? row.geo ?? row.region ?? null;
-}
-
-function getMetaSpend(row) {
-  return safeNum(
-    row.spend_aed ??
-      row.spendAED ??
-      row.spend ??
-      row.amount_spent_aed ??
-      row.amount_spent ??
-      row.cost ??
-      0
-  );
-}
-
 function getAllGeos(metaRows, leadRows) {
-  const metaGeos = (metaRows || []).map((row) => normalizeMetaCountry(getMetaCountry(row)));
+  // metaRows now from Supabase: use country_name field
+  const metaGeos = (metaRows || []).map((row) => normalizeMetaCountry(row.country_name));
   const leadGeos = (leadRows || []).map((row) => normalizeMasterCountry(row.country));
 
   return [...new Set([...metaGeos, ...leadGeos])]
@@ -251,17 +207,15 @@ function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos) {
     };
   });
 
+  // ── REPLACED: was reading from JSON, now reads Supabase meta_performance rows ──
   (metaRows || []).forEach((row) => {
-    const rowDate = getMetaDate(row);
-    if (!isWithinRange(rowDate, rangeKey)) return;
-
-    const geo = normalizeMetaCountry(getMetaCountry(row));
+    const geo = normalizeMetaCountry(row.country_name);
     if (!selectedGeos.includes(geo)) return;
 
-    const bucketKey = getBucketKey(rowDate, bucketMode);
+    const bucketKey = getBucketKey(row.perf_date, bucketMode);
     if (!bucketKey || !byBucket[bucketKey]) return;
 
-    byBucket[bucketKey].spend += getMetaSpend(row);
+    byBucket[bucketKey].spend += safeNum(row.spend_usd);
   });
 
   (leadRows || []).forEach((row) => {
@@ -474,63 +428,99 @@ function LineChart({ data, metricKey, metricFmt }) {
 // ── Page ─────────────────────────────────────────────────────
 export default function Trends() {
   const [dateRange, setDateRange] = useState("30d");
-  const [supabaseRows, setSupabaseRows] = useState([]);
+  const [supabaseMetaRows, setSupabaseMetaRows] = useState([]);
+  const [supabaseLeadRows, setSupabaseLeadRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedGeos, setSelectedGeos] = useState([]);
   const [selectedMetric, setSelectedMetric] = useState("leads");
 
   useEffect(() => {
-    async function fetchTrendRows() {
+    async function fetchTrendData() {
       try {
         setLoading(true);
 
         const { start, end } = getDateRange(dateRange);
+        const startDate = start.toISOString().slice(0, 10);
+        const endDate = end.toISOString().slice(0, 10);
         const startIso = start.toISOString();
         const endIso = end.toISOString();
 
-        const { data, error } = await supabase
-          .from("master_leads")
-          .select(`
-            lead_id,
-            country,
-            lead_created_date,
-            is_sql,
-            sql_date,
-            is_closed_won,
-            close_date,
-            amount_usd
-          `)
-          .or(
-            [
-              `and(lead_created_date.gte.${startIso},lead_created_date.lte.${endIso})`,
-              `and(is_sql.eq.true,sql_date.gte.${startIso},sql_date.lte.${endIso})`,
-              `and(is_closed_won.eq.true,close_date.gte.${startIso},close_date.lte.${endIso})`,
-            ].join(",")
-          );
+        const [metaRows, leadData] = await Promise.all([
+          // ── REPLACED: was meta_master.json, now live from Supabase ──
+          (async () => {
+            let allRows = [];
+            let from = 0;
+            const pageSize = 1000;
+            while (true) {
+              const { data, error } = await supabase
+                .from("meta_performance")
+                .select("perf_date, spend_usd, country_name")
+                .eq("level", "ad")
+                .gte("perf_date", startDate)
+                .lte("perf_date", endDate)
+                .range(from, from + pageSize - 1);
+              if (error) throw error;
+              const rows = data || [];
+              allRows = allRows.concat(rows);
+              if (rows.length < pageSize) break;
+              from += pageSize;
+            }
+            return allRows;
+          })(),
 
-        if (error) {
-          console.error("Trends supabase fetch error:", error);
-          setSupabaseRows([]);
-        } else {
-          setSupabaseRows(data || []);
-        }
+          // leads: fetch all rows that touch the date range
+          (async () => {
+            let allRows = [];
+            let from = 0;
+            const pageSize = 1000;
+            while (true) {
+              const { data, error } = await supabase
+                .from("master_leads")
+                .select(`
+                  lead_id,
+                  country,
+                  lead_created_date,
+                  is_sql,
+                  sql_date,
+                  is_closed_won,
+                  close_date,
+                  amount_usd
+                `)
+                .or(
+                  [
+                    `and(lead_created_date.gte.${startIso},lead_created_date.lte.${endIso})`,
+                    `and(is_sql.eq.true,sql_date.gte.${startIso},sql_date.lte.${endIso})`,
+                    `and(is_closed_won.eq.true,close_date.gte.${startIso},close_date.lte.${endIso})`,
+                  ].join(",")
+                )
+                .range(from, from + pageSize - 1);
+              if (error) throw error;
+              const rows = data || [];
+              allRows = allRows.concat(rows);
+              if (rows.length < pageSize) break;
+              from += pageSize;
+            }
+            return allRows;
+          })(),
+        ]);
+
+        setSupabaseMetaRows(metaRows);
+        setSupabaseLeadRows(leadData);
       } catch (err) {
         console.error("Unexpected Trends fetch error:", err);
-        setSupabaseRows([]);
+        setSupabaseMetaRows([]);
+        setSupabaseLeadRows([]);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchTrendRows();
+    fetchTrendData();
   }, [dateRange]);
 
   const allGeos = useMemo(() => {
-    return getAllGeos(
-      Array.isArray(metaMasterData) ? metaMasterData : [],
-      Array.isArray(supabaseRows) ? supabaseRows : []
-    );
-  }, [supabaseRows]);
+    return getAllGeos(supabaseMetaRows, supabaseLeadRows);
+  }, [supabaseMetaRows, supabaseLeadRows]);
 
   useEffect(() => {
     if (!allGeos.length) return;
@@ -554,12 +544,12 @@ export default function Trends() {
 
   const trendRows = useMemo(() => {
     return buildTrendRows(
-      Array.isArray(metaMasterData) ? metaMasterData : [],
-      Array.isArray(supabaseRows) ? supabaseRows : [],
+      supabaseMetaRows,
+      supabaseLeadRows,
       dateRange,
       selectedGeos
     );
-  }, [dateRange, selectedGeos, supabaseRows]);
+  }, [dateRange, selectedGeos, supabaseMetaRows, supabaseLeadRows]);
 
   const metric = TREND_METRICS.find((m) => m.key === selectedMetric) || TREND_METRICS[0];
 
