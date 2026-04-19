@@ -219,7 +219,7 @@ export default function MTDDataRevamp() {
 
           supabase
             .from("master_leads")
-            .select("country")
+            .select("country, amount_usd")
             .eq("is_sql", true)
             .gte("sql_date", startIso)
             .lte("sql_date", endIso),
@@ -270,14 +270,17 @@ export default function MTDDataRevamp() {
 
         const planMtdByGeo = {};
         for (const r of planMtdRes.data || []) {
-          if (!planMtdByGeo[r.geo]) planMtdByGeo[r.geo] = { expectedSpend: 0, expectedMql: 0 };
+          if (!planMtdByGeo[r.geo]) {
+            planMtdByGeo[r.geo] = { expectedSpend: 0, expectedMql: 0 };
+          }
           planMtdByGeo[r.geo].expectedSpend += Number(r.daily_spend_usd || 0);
           planMtdByGeo[r.geo].expectedMql += Number(r.daily_mql_target || 0);
         }
 
         const spendByGeo = {};
         for (const r of actualSpendRes.data || []) {
-          spendByGeo[r.country_name] = (spendByGeo[r.country_name] || 0) + Number(r.spend_usd || 0);
+          spendByGeo[r.country_name] =
+            (spendByGeo[r.country_name] || 0) + Number(r.spend_usd || 0);
         }
 
         const mqlByGeo = {};
@@ -286,8 +289,13 @@ export default function MTDDataRevamp() {
         }
 
         const sqlByGeo = {};
+        const pipelineByGeo = {};
         for (const r of actualSqlRes.data || []) {
-          sqlByGeo[r.country] = (sqlByGeo[r.country] || 0) + 1;
+          const geo = r.country;
+          const value = Number(r.amount_usd || 0);
+
+          sqlByGeo[geo] = (sqlByGeo[geo] || 0) + 1;
+          pipelineByGeo[geo] = (pipelineByGeo[geo] || 0) + value;
         }
 
         const planSqlByGeo = {};
@@ -311,7 +319,7 @@ export default function MTDDataRevamp() {
           const actualMql = mqlByGeo[geo] || 0;
           const actualSql = sqlByGeo[geo] || 0;
           const expectedSql = planSqlByGeo[geo] || 0;
-          const pipeline = 0;
+          const pipeline = pipelineByGeo[geo] || 0;
 
           return {
             geo,
@@ -368,13 +376,15 @@ export default function MTDDataRevamp() {
     const mqlVar = pctDelta(totals.expectedMql, totals.actualMql);
     const sqlVar = pctDelta(totals.expectedSql, totals.actualSql);
 
-    const bestGeo = [...rows].sort(
-      (a, b) => safeDivide(b.actualMql, b.actualSpend) - safeDivide(a.actualMql, a.actualSpend)
-    )[0] || null;
+    const bestGeo =
+      [...rows].sort(
+        (a, b) => safeDivide(b.actualMql, b.actualSpend) - safeDivide(a.actualMql, a.actualSpend)
+      )[0] || null;
 
-    const riskGeo = [...rows].sort(
-      (a, b) => pctDelta(a.expectedMql, a.actualMql) - pctDelta(b.expectedMql, b.actualMql)
-    )[0] || null;
+    const riskGeo =
+      [...rows].sort(
+        (a, b) => pctDelta(a.expectedMql, a.actualMql) - pctDelta(b.expectedMql, b.actualMql)
+      )[0] || null;
 
     return { totals, spendVar, mqlVar, sqlVar, bestGeo, riskGeo };
   }, [rows]);
