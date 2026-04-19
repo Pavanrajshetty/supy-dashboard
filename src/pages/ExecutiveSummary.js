@@ -58,12 +58,6 @@ function fmt(value, type = "num") {
   return Math.round(n).toLocaleString();
 }
 
-function parseDate(value) {
-  if (!value) return null;
-  const d = new Date(value);
-  return Number.isNaN(d.getTime()) ? null : d;
-}
-
 function getDateRange(timeRange) {
   const now = new Date();
 
@@ -159,6 +153,8 @@ export default function ExecutiveSummary() {
         const { start, end } = getDateRange(timeRange);
         const startIso = start.toISOString();
         const endIso = end.toISOString();
+        const startDate = startIso.slice(0, 10);
+        const endDate = endIso.slice(0, 10);
 
         const metaPromise = supabase
           .from("meta_performance")
@@ -172,9 +168,9 @@ export default function ExecutiveSummary() {
             spend_usd,
             country_name
           `)
-          .eq("level", "campaign")
-          .gte("perf_date", startIso)
-          .lte("perf_date", endIso);
+          .eq("level", "ad")
+          .gte("perf_date", startDate)
+          .lte("perf_date", endDate);
 
         const leadsCountPromise = supabase
           .from("master_leads")
