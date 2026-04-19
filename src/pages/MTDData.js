@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabase";
 
 /* =========================
    AUTO DATE LOGIC
-   - Current month: Apr 1 → yesterday
+   - Current month: 1st → yesterday
 ========================= */
 
 function getDateRange() {
@@ -18,7 +18,11 @@ function getDateRange() {
   const endIso = `${yesterday.toISOString().slice(0, 10)}T23:59:59.999Z`;
 
   const fmt = (d) =>
-    d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+    d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      timeZone: "UTC",
+    });
 
   const label = `${fmt(start)} – ${fmt(yesterday)}, ${year}`;
   const planMonth = `${year}-${String(month + 1).padStart(2, "0")}`;
@@ -39,6 +43,16 @@ function fmtNum(value) {
   return Number(value || 0).toLocaleString();
 }
 
+function safeNum(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function safeDivide(a, b) {
+  if (!b) return 0;
+  return a / b;
+}
+
 function pctDelta(expected, actual) {
   if (!expected) return 0;
   return Math.round(((actual - expected) / expected) * 100);
@@ -53,16 +67,6 @@ function getDeltaClass(value) {
   if (value > 0) return "delta-pos";
   if (value < 0) return "delta-neg";
   return "delta-neutral";
-}
-
-function safeDivide(a, b) {
-  if (!b) return 0;
-  return a / b;
-}
-
-function safeNum(v) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : 0;
 }
 
 function parseDate(value) {
@@ -199,24 +203,28 @@ export default function MTDDataRevamp() {
           planSqlRes,
           sqlDetailRes,
         ] = await Promise.all([
+          // Plan
           supabase
             .from("plan_daily")
             .select("geo, daily_spend_usd, daily_mql_target")
             .gte("plan_date", startIso)
             .lte("plan_date", endIso),
 
+          // Actual spend etc from meta_performance
           supabase
             .from("meta_performance")
-            .select("country_name, spend_usd")
+            .select("country_name, spend_usd, impressions, clicks, reach, leads")
             .gte("perf_date", startIso)
             .lte("perf_date", endIso),
 
+          // Actual MQL from master_leads
           supabase
             .from("master_leads")
             .select("country")
             .gte("lead_created_date", startIso)
             .lte("lead_created_date", endIso),
 
+          // Actual SQL + pipeline from master_leads
           supabase
             .from("master_leads")
             .select("country, amount_usd")
@@ -224,11 +232,13 @@ export default function MTDDataRevamp() {
             .gte("sql_date", startIso)
             .lte("sql_date", endIso),
 
+          // Monthly SQL target
           supabase
             .from("plan_monthly")
             .select("geo, sql_target")
             .eq("plan_month", planMonth),
 
+          // MTD SQL detail table
           supabase
             .from("master_leads")
             .select(`
@@ -268,6 +278,7 @@ export default function MTDDataRevamp() {
           if (res.error) throw res.error;
         }
 
+        // Plan by geo
         const planMtdByGeo = {};
         for (const r of planMtdRes.data || []) {
           if (!planMtdByGeo[r.geo]) {
@@ -277,32 +288,38 @@ export default function MTDDataRevamp() {
           planMtdByGeo[r.geo].expectedMql += Number(r.daily_mql_target || 0);
         }
 
+        // Actual spend from meta_performance
         const spendByGeo = {};
         for (const r of actualSpendRes.data || []) {
-          spendByGeo[r.country_name] =
-            (spendByGeo[r.country_name] || 0) + Number(r.spend_usd || 0);
+          const geo = r.country_name || "Unknown";
+          spendByGeo[geo] = (spendByGeo[geo] || 0) + Number(r.spend_usd || 0);
         }
 
+        // Actual MQL by geo
         const mqlByGeo = {};
         for (const r of actualMqlRes.data || []) {
-          mqlByGeo[r.country] = (mqlByGeo[r.country] || 0) + 1;
+          const geo = r.country || "Unknown";
+          mqlByGeo[geo] = (mqlByGeo[geo] || 0) + 1;
         }
 
+        // Actual SQL + Pipeline by geo
         const sqlByGeo = {};
         const pipelineByGeo = {};
         for (const r of actualSqlRes.data || []) {
-          const geo = r.country;
+          const geo = r.country || "Unknown";
           const value = Number(r.amount_usd || 0);
 
           sqlByGeo[geo] = (sqlByGeo[geo] || 0) + 1;
           pipelineByGeo[geo] = (pipelineByGeo[geo] || 0) + value;
         }
 
+        // Expected SQL by geo
         const planSqlByGeo = {};
         for (const r of planSqlRes.data || []) {
           planSqlByGeo[r.geo] = Math.round((Number(r.sql_target || 0) / 30) * daysElapsed);
         }
 
+        // Include all geos, not only plan geos
         const allGeos = Array.from(
           new Set([
             ...Object.keys(planMtdByGeo),
@@ -317,13 +334,12 @@ export default function MTDDataRevamp() {
           const expectedMql = Math.round(planMtdByGeo[geo]?.expectedMql || 0);
           const actualSpend = Math.round(spendByGeo[geo] || 0);
           const actualMql = mqlByGeo[geo] || 0;
-          const actualSql = sqlByGeo[geo] || 0;
           const expectedSql = planSqlByGeo[geo] || 0;
+          const actualSql = sqlByGeo[geo] || 0;
           const pipeline = pipelineByGeo[geo] || 0;
 
           return {
             geo,
-            flag: "",
             expectedSpend,
             actualSpend,
             expectedMql,
@@ -715,6 +731,7 @@ export default function MTDDataRevamp() {
                       const spendVar = pctDelta(row.expectedSpend, row.actualSpend);
                       const mqlVar = pctDelta(row.expectedMql, row.actualMql);
                       const sqlVar = pctDelta(row.expectedSql, row.actualSql);
+
                       return (
                         <tr key={row.geo}>
                           <td className="geo-cell">{row.geo}</td>
