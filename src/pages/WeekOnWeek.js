@@ -1,162 +1,413 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
-const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const QUARTER_MONTHS = {
-  Q1: ["Jan","Feb","Mar"],
-  Q2: ["Apr","May","Jun"],
-  Q3: ["Jul","Aug","Sep"],
-  Q4: ["Oct","Nov","Dec"],
+  Q1: ["Jan", "Feb", "Mar"],
+  Q2: ["Apr", "May", "Jun"],
+  Q3: ["Jul", "Aug", "Sep"],
+  Q4: ["Oct", "Nov", "Dec"],
 };
 
-const AVAILABLE_QUARTERS = ["Q1","Q2","Q3","Q4"];
+const AVAILABLE_QUARTERS = ["Q1", "Q2", "Q3", "Q4"];
 const DISPLAY_YEAR = 2026;
 
-function safeNum(v){ return Number(v)||0 }
-function fmtUSD(v){ return `$${Math.round(v||0).toLocaleString()}` }
+const STAGE_COLORS = {
+  "Closed Won": "won",
+  "Sales Qualified": "sql",
+  Opportunity: "opp",
+  "Closed Lost": "lost",
+  "Closed/Lost": "lost",
+};
 
-function getQuarterDateRange(q,m){
-  const months = m ? [m] : QUARTER_MONTHS[q];
-  const idx = months.map(x=>MONTHS.indexOf(x));
-  const start = new Date(Date.UTC(DISPLAY_YEAR, Math.min(...idx),1));
-  const end = new Date(Date.UTC(DISPLAY_YEAR, Math.max(...idx)+1,0,23,59,59));
-  return { startIso:start.toISOString(), endIso:end.toISOString() }
+function safeNum(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
 }
 
-function parseDate(v){ return v?new Date(v):null }
-
-function buildRows(rows){
-  return (rows||[]).map((r,i)=>({
-    id:r.deal_id||r.lead_id||i,
-    company:r.company||r.deal_name||"-",
-    country:r.country||"-",
-    geo:r.country||"-",
-    campaign:r.campaign_name||r.utm_campaign||"-",
-    closeDate:r.close_date?.slice(0,10),
-    closeRaw:parseDate(r.close_date),
-    created:r.lead_created_date?.slice(0,10),
-    createdRaw:parseDate(r.lead_created_date),
-    value:safeNum(r.amount_usd),
-    stage:r.deal_stage||"Closed Won",
-    hs:r.deal_link||"#"
-  }))
+function fmtUSD(value) {
+  return `$${Number(value || 0).toLocaleString(undefined, {
+    maximumFractionDigits: 0,
+  })}`;
 }
 
-function sortRows(rows,key,dir){
-  return [...rows].sort((a,b)=>{
-    let x=a[key], y=b[key];
-    if(key==="closeDate") x=a.closeRaw?.getTime()||0, y=b.closeRaw?.getTime()||0;
-    if(key==="created") x=a.createdRaw?.getTime()||0, y=b.createdRaw?.getTime()||0;
-    if(key==="value") x=a.value, y=b.value;
-    if(typeof x==="string") x=x.toLowerCase(), y=y.toLowerCase();
-    return dir==="asc" ? (x>y?1:-1) : (x<y?1:-1);
-  })
+function parseDate(value) {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
 }
 
-export default function ClosurePage(){
+function getQuarterDateRange(quarter, month) {
+  const quarterMonths = QUARTER_MONTHS[quarter] || [];
+  const selectedMonths = month ? [month] : quarterMonths;
 
-  const [q,setQ]=useState("Q2")
-  const [m,setM]=useState(null)
-  const [rows,setRows]=useState([])
-  const [sortKey,setSortKey]=useState("closeDate")
-  const [sortDir,setSortDir]=useState("desc")
+  const monthIndexes = selectedMonths
+    .map((m) => MONTHS.indexOf(m))
+    .filter((idx) => idx >= 0);
 
-  useEffect(()=>{
-    async function fetchData(){
-      const {startIso,endIso}=getQuarterDateRange(q,m)
-
-      const {data}=await supabase
-        .from("master_leads")
-        .select(`
-          lead_id,deal_id,company,country,
-          campaign_name,utm_campaign,
-          lead_created_date,
-          is_closed_won,close_date,
-          amount_usd,deal_stage,
-          deal_name,deal_link
-        `)
-        .eq("is_closed_won",true)
-        .gte("close_date",startIso)
-        .lte("close_date",endIso)
-
-      setRows(buildRows(data))
-    }
-    fetchData()
-  },[q,m])
-
-  const displayRows = useMemo(()=>sortRows(rows,sortKey,sortDir),[rows,sortKey,sortDir])
-
-  const total = displayRows.length
-  const value = displayRows.reduce((s,r)=>s+r.value,0)
-  const avg = total?value/total:0
-
-  const handleSort=(k)=>{
-    if(sortKey===k) setSortDir(d=>d==="asc"?"desc":"asc")
-    else { setSortKey(k); setSortDir(k==="value"?"desc":"asc") }
+  if (monthIndexes.length === 0) {
+    return { startIso: null, endIso: null };
   }
 
-  const SortTh=({k,label})=>(
-    <th onClick={()=>handleSort(k)}>
-      {label} {sortKey===k?(sortDir==="asc"?"▲":"▼"):""}
+  const minMonth = Math.min(...monthIndexes);
+  const maxMonth = Math.max(...monthIndexes);
+
+  const start = new Date(Date.UTC(DISPLAY_YEAR, minMonth, 1, 0, 0, 0, 0));
+  const end = new Date(Date.UTC(DISPLAY_YEAR, maxMonth + 1, 0, 23, 59, 59, 999));
+
+  return {
+    startIso: start.toISOString(),
+    endIso: end.toISOString(),
+  };
+}
+
+function getStage(row) {
+  if (row?.deal_stage) return row.deal_stage;
+  if (row?.is_closed_won === true) return "Closed Won";
+  return "—";
+}
+
+function getCompany(row) {
+  return row.company ?? row.deal_name ?? "—";
+}
+
+function getCountry(row) {
+  return row.country ?? "Unknown";
+}
+
+function getGeo(row) {
+  return row.country ?? "Unknown";
+}
+
+function getCampaign(row) {
+  return (
+    row.campaign_name ??
+    row.utm_campaign ??
+    row.hs_analytics_source_data_2 ??
+    row.hs_analytics_source_data_1 ??
+    "—"
+  );
+}
+
+function getCloseDate(row) {
+  return row.close_date ?? null;
+}
+
+function getCreatedDate(row) {
+  return row.lead_created_date ?? null;
+}
+
+function getOwner() {
+  return "—";
+}
+
+function getHsUrl(row) {
+  return row.deal_link || row.lead_link || "#";
+}
+
+function formatDateForDisplay(value) {
+  const d = parseDate(value);
+  if (!d) return "—";
+  return d.toISOString().slice(0, 10);
+}
+
+function buildRows(rows) {
+  return (Array.isArray(rows) ? rows : []).map((row, index) => ({
+    id: row.deal_id || row.lead_id || `closure-row-${index}`,
+    company: getCompany(row),
+    country: getCountry(row),
+    geo: getGeo(row),
+    campaign: getCampaign(row),
+    closeDate: formatDateForDisplay(getCloseDate(row)),
+    closeDateRaw: parseDate(getCloseDate(row)),
+    createdDate: formatDateForDisplay(getCreatedDate(row)),
+    createdDateRaw: parseDate(getCreatedDate(row)),
+    dealValue: safeNum(row.amount_usd),
+    stage: getStage(row),
+    owner: getOwner(row),
+    hsUrl: getHsUrl(row),
+    isClosedWon: row.is_closed_won === true,
+  }));
+}
+
+function sortRows(rows, sortKey, sortDir) {
+  const arr = [...rows];
+
+  arr.sort((a, b) => {
+    let aVal = a[sortKey];
+    let bVal = b[sortKey];
+
+    if (sortKey === "closeDate") {
+      aVal = a.closeDateRaw ? a.closeDateRaw.getTime() : 0;
+      bVal = b.closeDateRaw ? b.closeDateRaw.getTime() : 0;
+    }
+
+    if (sortKey === "createdDate") {
+      aVal = a.createdDateRaw ? a.createdDateRaw.getTime() : 0;
+      bVal = b.createdDateRaw ? b.createdDateRaw.getTime() : 0;
+    }
+
+    if (sortKey === "dealValue") {
+      aVal = safeNum(a.dealValue);
+      bVal = safeNum(b.dealValue);
+    }
+
+    if (typeof aVal === "string") aVal = aVal.toLowerCase();
+    if (typeof bVal === "string") bVal = bVal.toLowerCase();
+
+    if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
+    if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  return arr;
+}
+
+export default function ClosureData() {
+  const [qFilter, setQFilter] = useState("Q1");
+  const [monthFilter, setMonthFilter] = useState(null);
+  const [geoFilter, setGeoFilter] = useState(null);
+  const [sortKey, setSortKey] = useState("closeDate");
+  const [sortDir, setSortDir] = useState("desc");
+  const [supabaseRows, setSupabaseRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const monthsInQuarter = useMemo(() => {
+    return QUARTER_MONTHS[qFilter] || [];
+  }, [qFilter]);
+
+  const handleQuarterClick = (q) => {
+    setQFilter(q);
+    setMonthFilter(null);
+    setGeoFilter(null);
+  };
+
+  const handleMonthClick = (m) => {
+    setMonthFilter((prev) => (prev === m ? null : m));
+    setGeoFilter(null);
+  };
+
+  useEffect(() => {
+    async function fetchClosureRows() {
+      try {
+        setLoading(true);
+
+        const { startIso, endIso } = getQuarterDateRange(qFilter, monthFilter);
+        if (!startIso || !endIso) {
+          setSupabaseRows([]);
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("master_leads")
+          .select(`
+            lead_id,
+            deal_id,
+            company,
+            country,
+            campaign_name,
+            utm_campaign,
+            hs_analytics_source_data_1,
+            hs_analytics_source_data_2,
+            lead_created_date,
+            is_sql,
+            sql_date,
+            is_closed_won,
+            close_date,
+            amount_usd,
+            deal_stage,
+            deal_name,
+            deal_link,
+            lead_link
+          `)
+          .eq("is_closed_won", true)
+          .gte("close_date", startIso)
+          .lte("close_date", endIso);
+
+        if (error) {
+          console.error("Closure page fetch error:", error);
+          setSupabaseRows([]);
+        } else {
+          setSupabaseRows(data || []);
+        }
+      } catch (err) {
+        console.error("Unexpected Closure page fetch error:", err);
+        setSupabaseRows([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchClosureRows();
+  }, [qFilter, monthFilter]);
+
+  const closureRows = useMemo(() => {
+    return buildRows(supabaseRows);
+  }, [supabaseRows]);
+
+  const availableGeos = useMemo(() => {
+    return [...new Set(closureRows.map((r) => r.geo))].filter(Boolean).sort((a, b) => a.localeCompare(b));
+  }, [closureRows]);
+
+  const displayRows = useMemo(() => {
+    const rows = geoFilter ? closureRows.filter((r) => r.geo === geoFilter) : closureRows;
+    return sortRows(rows, sortKey, sortDir);
+  }, [closureRows, geoFilter, sortKey, sortDir]);
+
+  const kpiClosures = displayRows.length;
+  const kpiValue = displayRows.reduce((s, r) => s + safeNum(r.dealValue), 0);
+  const kpiAvg = kpiClosures ? Math.round(kpiValue / kpiClosures) : 0;
+  const kpiWon = displayRows.filter((r) => r.isClosedWon).length;
+
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir(
+        key === "closeDate" || key === "createdDate" || key === "dealValue"
+          ? "desc"
+          : "asc"
+      );
+    }
+  };
+
+  const SortTh = ({ k, label, className = "" }) => (
+    <th onClick={() => handleSort(k)} className={`sortable-th ${className}`}>
+      {label} {sortKey === k ? (sortDir === "asc" ? "▲" : "▼") : ""}
     </th>
-  )
+  );
 
   return (
     <div className="page">
+      <div className="page-header-row">
+        <h2 className="page-title">Closure Data</h2>
+      </div>
 
-      <h2>Closure Data</h2>
-
-      {/* Filters */}
-      <div>
-        {AVAILABLE_QUARTERS.map(x=>(
-          <button onClick={()=>{setQ(x);setM(null)}}>{x}</button>
+      <div className="filter-bar">
+        {AVAILABLE_QUARTERS.map((q) => (
+          <button
+            key={q}
+            className={`filter-pill ${qFilter === q && !monthFilter ? "active" : ""}`}
+            onClick={() => handleQuarterClick(q)}
+          >
+            {q}
+          </button>
         ))}
-        {QUARTER_MONTHS[q].map(x=>(
-          <button onClick={()=>setM(m===x?null:x)}>{x}</button>
+
+        {monthsInQuarter.length > 0 && <div className="filter-sep" />}
+
+        {monthsInQuarter.map((m) => (
+          <button
+            key={m}
+            className={`filter-pill ${monthFilter === m ? "active" : ""}`}
+            onClick={() => handleMonthClick(m)}
+          >
+            {m}
+          </button>
         ))}
       </div>
 
-      {/* KPI */}
-      <div className="kpi-grid">
-        <div>🔒 Closures: {total}</div>
-        <div>💰 Value: {fmtUSD(value)}</div>
-        <div>📊 Avg Deal: {fmtUSD(avg)}</div>
-      </div>
-
-      {/* Table */}
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <SortTh k="company" label="Company"/>
-            <SortTh k="country" label="Country"/>
-            <SortTh k="campaign" label="Campaign"/>
-            <SortTh k="closeDate" label="Close Date"/>
-            <SortTh k="created" label="Created"/>
-            <SortTh k="value" label="Deal Value"/>
-            <th>Stage</th>
-            <th>HubSpot</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {displayRows.map((r,i)=>(
-            <tr key={r.id}>
-              <td>{i+1}</td>
-              <td>{r.company}</td>
-              <td>{r.country}</td>
-              <td>{r.campaign}</td>
-              <td>{r.closeDate}</td>
-              <td>{r.created}</td>
-              <td>{fmtUSD(r.value)}</td>
-              <td>{r.stage}</td>
-              <td><a href={r.hs}>↗</a></td>
-            </tr>
+      {availableGeos.length > 0 && (
+        <div className="filter-bar" style={{ marginTop: 8 }}>
+          <span className="filter-label">Geo:</span>
+          {availableGeos.map((g) => (
+            <button
+              key={g}
+              className={`filter-pill ${geoFilter === g ? "active" : ""}`}
+              onClick={() => setGeoFilter((prev) => (prev === g ? null : g))}
+            >
+              {g}
+            </button>
           ))}
-        </tbody>
-      </table>
+        </div>
+      )}
 
+      <div className="kpi-grid kpi-grid-4">
+        <div className="kpi-card">
+          <span className="kpi-icon">🔒</span>
+          <div className="kpi-label">Closures</div>
+          <div className="kpi-value">{kpiClosures}</div>
+        </div>
+
+        <div className="kpi-card">
+          <span className="kpi-icon">💰</span>
+          <div className="kpi-label">Closure Value</div>
+          <div className="kpi-value">{fmtUSD(kpiValue)}</div>
+        </div>
+
+        <div className="kpi-card">
+          <span className="kpi-icon">💡</span>
+          <div className="kpi-label">Avg Deal</div>
+          <div className="kpi-value">{fmtUSD(kpiAvg)}</div>
+        </div>
+
+        <div className="kpi-card">
+          <span className="kpi-icon">✅</span>
+          <div className="kpi-label">Closed Won</div>
+          <div className="kpi-value">{kpiWon}</div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th className="num-cell">#</th>
+                <SortTh k="company" label="Company" />
+                <SortTh k="country" label="Country" />
+                <SortTh k="geo" label="Geo" />
+                <SortTh k="campaign" label="Campaign" />
+                <SortTh k="closeDate" label="Close Date" />
+                <SortTh k="createdDate" label="Created" />
+                <SortTh k="dealValue" label="Deal Value" className="num-cell" />
+                <SortTh k="stage" label="Stage" />
+                <SortTh k="owner" label="Owner" />
+                <th>HubSpot</th>
+              </tr>
+            </thead>
+            <tbody>
+              {displayRows.length > 0 ? (
+                displayRows.map((row, i) => (
+                  <tr key={row.id}>
+                    <td className="num-cell dim">{i + 1}</td>
+                    <td>{row.company}</td>
+                    <td>
+                      <span className="geo-tag">{row.country}</span>
+                    </td>
+                    <td>
+                      <span className="geo-tag secondary">{row.geo}</span>
+                    </td>
+                    <td className="dim">{row.campaign}</td>
+                    <td>{row.closeDate}</td>
+                    <td className="dim">{row.createdDate}</td>
+                    <td className="num-cell accent">{fmtUSD(row.dealValue)}</td>
+                    <td>
+                      <span className={`stage-badge ${STAGE_COLORS[row.stage] || ""}`}>
+                        {row.stage}
+                      </span>
+                    </td>
+                    <td>{row.owner}</td>
+                    <td>
+                      <a className="hs-link" href={row.hsUrl} target="_blank" rel="noreferrer">
+                        ↗ View
+                      </a>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="11" className="num-cell">
+                    {loading ? "Loading..." : "No Closure data found"}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-  )
+  );
 }
