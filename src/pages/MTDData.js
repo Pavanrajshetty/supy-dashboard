@@ -4,33 +4,24 @@ import { supabase } from "../lib/supabase";
 /* =========================
    AUTO DATE LOGIC
    - Current month: Apr 1 → yesterday
-   - Past month: full month
 ========================= */
 
 function getDateRange() {
   const today = new Date();
   const year = today.getUTCFullYear();
-  const month = today.getUTCMonth(); // 0-indexed
+  const month = today.getUTCMonth();
 
-  // Start = 1st of current month
   const start = new Date(Date.UTC(year, month, 1));
-
-  // End = yesterday (today - 1 day), but cap at last day of month
   const yesterday = new Date(Date.UTC(year, month, today.getUTCDate() - 1));
 
-  const startIso = start.toISOString().slice(0, 10); // "YYYY-MM-DD"
-  // Use end-of-day timestamp so .lte catches all records on that day (including timestamps)
+  const startIso = start.toISOString().slice(0, 10);
   const endIso = `${yesterday.toISOString().slice(0, 10)}T23:59:59.999Z`;
 
-  // Label: "Apr 1 – Apr 16, 2026"
   const fmt = (d) =>
     d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+
   const label = `${fmt(start)} – ${fmt(yesterday)}, ${year}`;
-
-  // plan_month for plan_monthly table: "YYYY-MM"
   const planMonth = `${year}-${String(month + 1).padStart(2, "0")}`;
-
-  // Days elapsed (inclusive of yesterday, exclusive of today)
   const daysElapsed = today.getUTCDate() - 1;
 
   return { startIso, endIso, label, planMonth, daysElapsed };
@@ -135,11 +126,46 @@ function buildSqlRows(rows) {
     geo: getGeo(row),
     campaign: getCampaign(row),
     sqlDate: formatDateForDisplay(getSqlDate(row)),
+    sqlDateRaw: parseDate(getSqlDate(row)),
     createdDate: formatDateForDisplay(getCreatedDate(row)),
+    createdDateRaw: parseDate(getCreatedDate(row)),
     dealValue: safeNum(row.amount_usd),
     stage: getSqlStage(row),
     hsUrl: getHsUrl(row),
   }));
+}
+
+function sortSqlRows(rows, sortKey, sortDir) {
+  const arr = [...rows];
+
+  arr.sort((a, b) => {
+    let aVal = a[sortKey];
+    let bVal = b[sortKey];
+
+    if (sortKey === "sqlDate") {
+      aVal = a.sqlDateRaw ? a.sqlDateRaw.getTime() : 0;
+      bVal = b.sqlDateRaw ? b.sqlDateRaw.getTime() : 0;
+    }
+
+    if (sortKey === "createdDate") {
+      aVal = a.createdDateRaw ? a.createdDateRaw.getTime() : 0;
+      bVal = b.createdDateRaw ? b.createdDateRaw.getTime() : 0;
+    }
+
+    if (sortKey === "dealValue") {
+      aVal = safeNum(a.dealValue);
+      bVal = safeNum(b.dealValue);
+    }
+
+    if (typeof aVal === "string") aVal = aVal.toLowerCase();
+    if (typeof bVal === "string") bVal = bVal.toLowerCase();
+
+    if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
+    if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  return arr;
 }
 
 /* =========================
@@ -152,6 +178,9 @@ export default function MTDDataRevamp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [sqlSortKey, setSqlSortKey] = useState("sqlDate");
+  const [sqlSortDir, setSqlSortDir] = useState("desc");
+
   const dateRange = useMemo(() => getDateRange(), []);
 
   useEffect(() => {
@@ -162,7 +191,6 @@ export default function MTDDataRevamp() {
 
         const { startIso, endIso, planMonth, daysElapsed } = dateRange;
 
-        // Run all queries in parallel
         const [
           planMtdRes,
           actualSpendRes,
@@ -171,28 +199,24 @@ export default function MTDDataRevamp() {
           planSqlRes,
           sqlDetailRes,
         ] = await Promise.all([
-          // 1. Plan MTD (daily spend + mql targets)
           supabase
             .from("plan_daily")
             .select("geo, daily_spend_usd, daily_mql_target")
             .gte("plan_date", startIso)
             .lte("plan_date", endIso),
 
-          // 2. Actual spend from meta_performance
           supabase
             .from("meta_performance")
             .select("country_name, spend_usd")
             .gte("perf_date", startIso)
             .lte("perf_date", endIso),
 
-          // 3. Actual MQL from master_leads
           supabase
             .from("master_leads")
             .select("country")
             .gte("lead_created_date", startIso)
             .lte("lead_created_date", endIso),
 
-          // 4. Actual SQL from master_leads
           supabase
             .from("master_leads")
             .select("country")
@@ -200,13 +224,11 @@ export default function MTDDataRevamp() {
             .gte("sql_date", startIso)
             .lte("sql_date", endIso),
 
-          // 5. Monthly SQL target from plan_monthly
           supabase
             .from("plan_monthly")
             .select("geo, sql_target")
             .eq("plan_month", planMonth),
 
-          // 6. SQL detail rows for MTD SQL table
           supabase
             .from("master_leads")
             .select(`
@@ -235,7 +257,6 @@ export default function MTDDataRevamp() {
             .order("sql_date", { ascending: false }),
         ]);
 
-        // Check errors
         for (const res of [
           planMtdRes,
           actualSpendRes,
@@ -247,7 +268,6 @@ export default function MTDDataRevamp() {
           if (res.error) throw res.error;
         }
 
-        // Aggregate plan_mtd by geo
         const planMtdByGeo = {};
         for (const r of planMtdRes.data || []) {
           if (!planMtdByGeo[r.geo]) planMtdByGeo[r.geo] = { expectedSpend: 0, expectedMql: 0 };
@@ -255,34 +275,38 @@ export default function MTDDataRevamp() {
           planMtdByGeo[r.geo].expectedMql += Number(r.daily_mql_target || 0);
         }
 
-        // Aggregate actual spend by geo (country_name)
         const spendByGeo = {};
         for (const r of actualSpendRes.data || []) {
           spendByGeo[r.country_name] = (spendByGeo[r.country_name] || 0) + Number(r.spend_usd || 0);
         }
 
-        // Aggregate actual MQL by geo
         const mqlByGeo = {};
         for (const r of actualMqlRes.data || []) {
           mqlByGeo[r.country] = (mqlByGeo[r.country] || 0) + 1;
         }
 
-        // Aggregate actual SQL by geo
         const sqlByGeo = {};
         for (const r of actualSqlRes.data || []) {
           sqlByGeo[r.country] = (sqlByGeo[r.country] || 0) + 1;
         }
 
-        // Build plan SQL by geo (prorated: sql_target / 30 * daysElapsed)
         const planSqlByGeo = {};
         for (const r of planSqlRes.data || []) {
           planSqlByGeo[r.geo] = Math.round((Number(r.sql_target || 0) / 30) * daysElapsed);
         }
 
-        // Merge all into GEO_DATA — plan_mtd geos drive the rows
-        const merged = Object.keys(planMtdByGeo).map((geo) => {
-          const expectedSpend = Math.round(planMtdByGeo[geo].expectedSpend);
-          const expectedMql = Math.round(planMtdByGeo[geo].expectedMql);
+        const allGeos = Array.from(
+          new Set([
+            ...Object.keys(planMtdByGeo),
+            ...Object.keys(spendByGeo),
+            ...Object.keys(mqlByGeo),
+            ...Object.keys(sqlByGeo),
+          ])
+        );
+
+        const merged = allGeos.map((geo) => {
+          const expectedSpend = Math.round(planMtdByGeo[geo]?.expectedSpend || 0);
+          const expectedMql = Math.round(planMtdByGeo[geo]?.expectedMql || 0);
           const actualSpend = Math.round(spendByGeo[geo] || 0);
           const actualMql = mqlByGeo[geo] || 0;
           const actualSql = sqlByGeo[geo] || 0;
@@ -302,7 +326,6 @@ export default function MTDDataRevamp() {
           };
         });
 
-        // Sort by actual spend desc
         merged.sort((a, b) => b.actualSpend - a.actualSpend);
 
         setRows(merged);
@@ -346,8 +369,7 @@ export default function MTDDataRevamp() {
     const sqlVar = pctDelta(totals.expectedSql, totals.actualSql);
 
     const bestGeo = [...rows].sort(
-      (a, b) =>
-        safeDivide(b.actualMql, b.actualSpend) - safeDivide(a.actualMql, a.actualSpend)
+      (a, b) => safeDivide(b.actualMql, b.actualSpend) - safeDivide(a.actualMql, a.actualSpend)
     )[0] || null;
 
     const riskGeo = [...rows].sort(
@@ -356,6 +378,27 @@ export default function MTDDataRevamp() {
 
     return { totals, spendVar, mqlVar, sqlVar, bestGeo, riskGeo };
   }, [rows]);
+
+  const sortedSqlDetailRows = useMemo(() => {
+    return sortSqlRows(sqlDetailRows, sqlSortKey, sqlSortDir);
+  }, [sqlDetailRows, sqlSortKey, sqlSortDir]);
+
+  const handleSqlSort = (key) => {
+    if (sqlSortKey === key) {
+      setSqlSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSqlSortKey(key);
+      setSqlSortDir(
+        key === "sqlDate" || key === "createdDate" || key === "dealValue" ? "desc" : "asc"
+      );
+    }
+  };
+
+  const SqlSortTh = ({ k, label, className = "" }) => (
+    <th onClick={() => handleSqlSort(k)} className={`sortable-th ${className}`}>
+      {label} {sqlSortKey === k ? (sqlSortDir === "asc" ? "▲" : "▼") : ""}
+    </th>
+  );
 
   return (
     <div className="mtd-page">
@@ -501,20 +544,6 @@ export default function MTDDataRevamp() {
         .muted { color: #738099; }
         .strong { font-weight: 800; }
 
-        .pill {
-          display: inline-flex;
-          align-items: center;
-          padding: 6px 10px;
-          border-radius: 999px;
-          font-size: 12px;
-          font-weight: 700;
-        }
-
-        .pill.scaling { background: #e9f8ef; color: #0f8a43; }
-        .pill.reduced { background: #fff4e5; color: #b96b00; }
-        .pill.paused  { background: #fdecec; color: #c23535; }
-        .pill.stable  { background: #edf3ff; color: #2457c5; }
-
         .side-list { display: flex; flex-direction: column; gap: 12px; }
 
         .insight-item {
@@ -573,6 +602,15 @@ export default function MTDDataRevamp() {
           font-size: 12px;
           font-weight: 700;
           white-space: nowrap;
+        }
+
+        .sortable-th {
+          cursor: pointer;
+          user-select: none;
+        }
+
+        .sortable-th:hover {
+          color: #374151;
         }
 
         @media (max-width: 1200px) {
@@ -758,25 +796,25 @@ export default function MTDDataRevamp() {
           </div>
 
           <div className="card">
-            <h3 className="section-title">MTD SQL Details</h3>
+            <h3 className="section-title">MTD SQL Details ({sortedSqlDetailRows.length})</h3>
             <div className="table-wrap">
               <table>
                 <thead>
                   <tr>
-                    <th>Company</th>
-                    <th>Country</th>
-                    <th>Geo</th>
-                    <th>Campaign</th>
-                    <th>SQL Date</th>
-                    <th>Created</th>
-                    <th className="num">Deal Value</th>
-                    <th>Stage</th>
+                    <SqlSortTh k="company" label="Company" />
+                    <SqlSortTh k="country" label="Country" />
+                    <SqlSortTh k="geo" label="Geo" />
+                    <SqlSortTh k="campaign" label="Campaign" />
+                    <SqlSortTh k="sqlDate" label="SQL Date" />
+                    <SqlSortTh k="createdDate" label="Created" />
+                    <SqlSortTh k="dealValue" label="Deal Value" className="num" />
+                    <SqlSortTh k="stage" label="Stage" />
                     <th>HubSpot</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {sqlDetailRows.length > 0 ? (
-                    sqlDetailRows.map((row) => (
+                  {sortedSqlDetailRows.length > 0 ? (
+                    sortedSqlDetailRows.map((row) => (
                       <tr key={row.id}>
                         <td>{row.company}</td>
                         <td>{row.country}</td>
