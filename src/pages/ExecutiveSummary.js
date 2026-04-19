@@ -52,7 +52,6 @@ function safeNum(v) {
 
 function fmt(value, type = "num") {
   const n = Number(value || 0);
-
   if (type === "money") return `$${Math.round(n).toLocaleString()}`;
   if (type === "usd") return `$${Math.round(n).toLocaleString()}`;
   return Math.round(n).toLocaleString();
@@ -67,13 +66,11 @@ function formatDateOnlyLocal(d) {
 
 function formatDateTimeLocal(d, endOfDay = false) {
   const date = new Date(d);
-
   if (endOfDay) {
     date.setHours(23, 59, 59, 999);
   } else {
     date.setHours(0, 0, 0, 0);
   }
-
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
@@ -81,19 +78,17 @@ function formatDateTimeLocal(d, endOfDay = false) {
   const mins = String(date.getMinutes()).padStart(2, "0");
   const secs = String(date.getSeconds()).padStart(2, "0");
   const ms = String(date.getMilliseconds()).padStart(3, "0");
-
   return `${year}-${month}-${day}T${hours}:${mins}:${secs}.${ms}`;
 }
 
+// ── FIXED getDateRange ────────────────────────────────────────
 function getDateRange(timeRange) {
   const now = new Date();
 
-  const todayStart = new Date(now);
-  todayStart.setHours(0, 0, 0, 0);
-
   if (timeRange === "1d") {
-    const yesterdayStart = new Date(todayStart);
+    const yesterdayStart = new Date(now);
     yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+    yesterdayStart.setHours(0, 0, 0, 0);
 
     const yesterdayEnd = new Date(yesterdayStart);
     yesterdayEnd.setHours(23, 59, 59, 999);
@@ -102,9 +97,13 @@ function getDateRange(timeRange) {
   }
 
   const days = RANGE_DAYS[timeRange] ?? 30;
-  const start = new Date(todayStart);
-  start.setDate(start.getDate() - days + 1);
 
+  // Start = exactly `days` days ago at midnight
+  const start = new Date(now);
+  start.setDate(start.getDate() - days);
+  start.setHours(0, 0, 0, 0);
+
+  // End = today at end of day
   const end = new Date(now);
   end.setHours(23, 59, 59, 999);
 
@@ -118,12 +117,9 @@ async function fetchAllRows(buildQuery, pageSize = 1000) {
   while (true) {
     const to = from + pageSize - 1;
     const { data, error } = await buildQuery().range(from, to);
-
     if (error) throw error;
-
     const rows = data || [];
     allRows = allRows.concat(rows);
-
     if (rows.length < pageSize) break;
     from += pageSize;
   }
@@ -206,6 +202,9 @@ export default function ExecutiveSummary() {
 
         const startDate = formatDateOnlyLocal(start);
         const endDate = formatDateOnlyLocal(end);
+
+        // Debug log — remove once confirmed working
+        console.log(`[${timeRange}] startDate: ${startDate} → endDate: ${endDate}`);
 
         const [
           metaData,
