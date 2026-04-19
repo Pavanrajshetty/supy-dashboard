@@ -5,7 +5,7 @@ const TABS = [
   { id: "mtd",       label: "MTD Data"          },
   { id: "qtd",       label: "QTD / Monthly"     },
   { id: "trends",    label: "Trends"            },
-  { id: "wow",       label: "Week on Week"      },
+  { id: "wow",       label: "Closure MOM"       },
   { id: "sql",       label: "SQL"               },
   { id: "meetings",  label: "Meetings Booked"   },
 ];
