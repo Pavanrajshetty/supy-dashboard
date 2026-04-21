@@ -2,19 +2,17 @@ import React, { useState, useEffect, useMemo } from "react";
 import { supabase } from "../lib/supabase";
 
 const OUTCOME_STYLE = {
-  COMPLETED:   { bg: "#e8faf0", color: "#1a8a5c", label: "✓ Completed" },
-  NO_SHOW:     { bg: "#fff1f0", color: "#cf1322", label: "✗ No Show" },
-  CANCELED:    { bg: "#fff7e6", color: "#d46b08", label: "⊘ Cancelled" },
-  CANCELLED:   { bg: "#fff7e6", color: "#d46b08", label: "⊘ Cancelled" },
+  COMPLETED: { bg: "#e8faf0", color: "#1a8a5c", label: "✓ Completed" },
+  NO_SHOW: { bg: "#fff1f0", color: "#cf1322", label: "✗ No Show" },
+  CANCELED: { bg: "#fff7e6", color: "#d46b08", label: "⊘ Cancelled" },
+  CANCELLED: { bg: "#fff7e6", color: "#d46b08", label: "⊘ Cancelled" },
   RESCHEDULED: { bg: "#e6f4ff", color: "#096dd9", label: "↺ Rescheduled" },
-  SCHEDULED:   { bg: "#f0f5ff", color: "#2f54eb", label: "● Scheduled" },
-  NONE:        { bg: "#f5f5f5", color: "#8c8c8c", label: "— Pending" },
+  SCHEDULED: { bg: "#f0f5ff", color: "#2f54eb", label: "● Scheduled" },
+  NONE: { bg: "#f5f5f5", color: "#8c8c8c", label: "— Pending" },
 };
 
 function OutcomeBadge({ outcome }) {
-  const key = (outcome || "NONE").toUpperCase();
-  const s = OUTCOME_STYLE[key] || OUTCOME_STYLE.NONE;
-
+  const s = OUTCOME_STYLE[(outcome || "NONE").toUpperCase()] || OUTCOME_STYLE.NONE;
   return (
     <span
       style={{
@@ -56,7 +54,6 @@ function formatTime(value) {
   });
 }
 
-// Local day start to avoid timezone shifting bug
 function startOfLocalDay(dateInput = new Date()) {
   const d = new Date(dateInput);
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -72,29 +69,22 @@ function getMeetingDate(meeting) {
   );
 }
 
-function getContactId(meeting) {
-  return (
-    meeting.contact_id ||
-    meeting.lead_id ||
-    meeting.hs_contact_id ||
-    meeting.contactId ||
-    null
-  );
+function getMeetingId(meeting) {
+  return meeting.meeting_id || meeting.id || null;
 }
 
-function getMeetingId(meeting) {
-  return (
-    meeting.meeting_id ||
-    meeting.id ||
-    meeting.hs_meeting_id ||
-    `${getContactId(meeting) || "no-contact"}-${getMeetingDate(meeting) || Math.random()}`
-  );
+function getContactId(meeting) {
+  return meeting.contact_id || meeting.lead_id || meeting.contactId || null;
+}
+
+function isCancelled(outcome) {
+  const value = (outcome || "").toUpperCase();
+  return value === "CANCELED" || value === "CANCELLED";
 }
 
 function MeetingCard({ meeting, section }) {
   const isPast = section === "past";
   const meetingDate = getMeetingDate(meeting);
-  const meetingId = getMeetingId(meeting);
 
   return (
     <div
@@ -109,13 +99,7 @@ function MeetingCard({ meeting, section }) {
         boxShadow: "0 2px 8px rgba(80,51,144,0.06)",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-        }}
-      >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
           <div style={{ fontWeight: 800, fontSize: 15, color: "#321e57" }}>
             {`${meeting.firstname || ""} ${meeting.lastname || ""}`.trim() || "Unknown Contact"}
@@ -128,7 +112,7 @@ function MeetingCard({ meeting, section }) {
       </div>
 
       <div style={{ fontSize: 13, color: "#503390", fontWeight: 600 }}>
-        📋 {meeting.title || meeting.meeting_title || "—"}
+        📋 {meeting.title || "—"}
       </div>
 
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
@@ -138,7 +122,7 @@ function MeetingCard({ meeting, section }) {
         </div>
         <div style={{ fontSize: 12, color: "#6b7280" }}>
           <span style={{ fontWeight: 600, color: "#374151" }}>Meeting: </span>
-          {formatDate(meetingDate)}{meetingDate ? ` · ${formatTime(meetingDate)}` : ""}
+          {formatDate(meetingDate)} {meetingDate ? `· ${formatTime(meetingDate)}` : ""}
         </div>
       </div>
 
@@ -155,9 +139,9 @@ function MeetingCard({ meeting, section }) {
           🌏 {meeting.country || "—"}
         </span>
 
-        {meetingId ? (
+        {meeting.lead_link ? (
           <a
-            href={`https://app.hubspot.com/contacts/9423176/record/0-47/${meetingId}`}
+            href={meeting.lead_link}
             target="_blank"
             rel="noreferrer"
             style={{
@@ -189,60 +173,52 @@ export default function MeetingsBooked() {
       setErrorMsg("");
 
       try {
-        const { data, error } = await supabase
+        const { data: meetingsData, error: meetingsError } = await supabase
           .from("hubspot_meetings")
-          .select("*")
+          .select("meeting_id, contact_id, meeting_for, title, outcome, booked_on, created_at")
           .order("meeting_for", { ascending: true });
 
-        if (error) throw error;
+        if (meetingsError) throw meetingsError;
 
-        const meetings = Array.isArray(data) ? data : [];
-
-        const contactIds = [
-          ...new Set(
-            meetings
-              .map((m) => getContactId(m))
-              .filter(Boolean)
-              .map((v) => String(v))
-          ),
-        ];
+        const meetings = Array.isArray(meetingsData) ? meetingsData : [];
 
         let leadsMap = {};
+        const contactIds = [
+          ...new Set(meetings.map((m) => String(getContactId(m) || "")).filter(Boolean)),
+        ];
 
         if (contactIds.length > 0) {
-          const { data: leads, error: leadsError } = await supabase
+          const { data: leadsData, error: leadsError } = await supabase
             .from("master_leads")
-            .select("lead_id, firstname, lastname, company, country")
+            .select("lead_id, firstname, lastname, company, country, lead_link")
             .in("lead_id", contactIds);
 
           if (leadsError) {
             console.error("Error fetching master_leads:", leadsError);
+          } else {
+            (leadsData || []).forEach((lead) => {
+              leadsMap[String(lead.lead_id)] = lead;
+            });
           }
-
-          (leads || []).forEach((lead) => {
-            leadsMap[String(lead.lead_id)] = lead;
-          });
         }
 
         const merged = meetings.map((meeting) => {
           const contactId = String(getContactId(meeting) || "");
-          const lead = leadsMap[contactId] || {};
+          const lead = leadsMap[contactId];
 
           return {
             ...meeting,
-            firstname: meeting.firstname || lead.firstname || "",
-            lastname: meeting.lastname || lead.lastname || "",
-            company: meeting.company || lead.company || "",
-            country: meeting.country || lead.country || "",
+            firstname: lead?.firstname || "",
+            lastname: lead?.lastname || "",
+            company: lead?.company || "",
+            country: lead?.country || "",
+            lead_link: lead?.lead_link || "",
           };
         });
 
-        console.log("RAW meetings:", meetings);
-        console.log("MERGED meetings:", merged);
-
         setAllMeetings(merged);
       } catch (err) {
-        console.error("Error fetching meetings:", err);
+        console.error("Error fetching meetings page:", err);
         setErrorMsg(err?.message || "Failed to load meetings");
         setAllMeetings([]);
       } finally {
@@ -280,28 +256,26 @@ export default function MeetingsBooked() {
 
   const yesterdayMeetings = useMemo(() => {
     return allMeetings.filter((meeting) => {
-      const meetingDate = safeDate(getMeetingDate(meeting));
-      if (!meetingDate) return false;
-      return meetingDate >= yesterdayStart && meetingDate < todayStart;
+      const d = safeDate(getMeetingDate(meeting));
+      return d && d >= yesterdayStart && d < todayStart;
     });
   }, [allMeetings, yesterdayStart, todayStart]);
 
   const upcomingMeetings = useMemo(() => {
     let future = allMeetings.filter((meeting) => {
-      const meetingDate = safeDate(getMeetingDate(meeting));
-      if (!meetingDate) return false;
-      return meetingDate >= todayStart;
+      const d = safeDate(getMeetingDate(meeting));
+      return d && d >= todayStart && !isCancelled(meeting.outcome);
     });
 
     if (filter === "Tomorrow") {
       future = future.filter((meeting) => {
-        const meetingDate = safeDate(getMeetingDate(meeting));
-        return meetingDate && meetingDate >= tomorrowStart && meetingDate < dayAfterTomorrowStart;
+        const d = safeDate(getMeetingDate(meeting));
+        return d && d >= tomorrowStart && d < dayAfterTomorrowStart;
       });
     } else if (filter === "This Week") {
       future = future.filter((meeting) => {
-        const meetingDate = safeDate(getMeetingDate(meeting));
-        return meetingDate && meetingDate >= todayStart && meetingDate < nextWeekStart;
+        const d = safeDate(getMeetingDate(meeting));
+        return d && d >= todayStart && d < nextWeekStart;
       });
     }
 
@@ -315,24 +289,15 @@ export default function MeetingsBooked() {
     const deduped = [];
 
     for (const meeting of future) {
-      const contactId = String(getContactId(meeting) || "");
-      const dedupeKey = contactId || String(getMeetingId(meeting));
-
-      if (!seen.has(dedupeKey)) {
-        seen.add(dedupeKey);
+      const key = String(getContactId(meeting) || getMeetingId(meeting));
+      if (!seen.has(key)) {
+        seen.add(key);
         deduped.push(meeting);
       }
     }
 
     return deduped;
-  }, [
-    allMeetings,
-    filter,
-    todayStart,
-    tomorrowStart,
-    dayAfterTomorrowStart,
-    nextWeekStart,
-  ]);
+  }, [allMeetings, filter, todayStart, tomorrowStart, dayAfterTomorrowStart, nextWeekStart]);
 
   if (loading) {
     return (
@@ -346,7 +311,7 @@ export default function MeetingsBooked() {
 
   return (
     <div className="page">
-      {errorMsg ? (
+      {errorMsg && (
         <div
           style={{
             background: "#fff1f0",
@@ -354,14 +319,14 @@ export default function MeetingsBooked() {
             color: "#cf1322",
             padding: "12px 16px",
             borderRadius: 12,
-            marginBottom: 20,
-            fontSize: 13,
-            fontWeight: 600,
+            marginBottom: 16,
+            fontSize: 12,
+            lineHeight: 1.5,
           }}
         >
-          Failed to load meetings: {errorMsg}
+          {errorMsg}
         </div>
-      ) : null}
+      )}
 
       <div style={{ marginBottom: 48 }}>
         <div className="page-header-row" style={{ marginBottom: 16 }}>
@@ -391,7 +356,7 @@ export default function MeetingsBooked() {
           <div className="meetings-grid">
             {yesterdayMeetings.map((meeting) => (
               <MeetingCard
-                key={getMeetingId(meeting)}
+                key={getMeetingId(meeting) || `${getContactId(meeting)}-${getMeetingDate(meeting)}`}
                 meeting={meeting}
                 section="past"
               />
@@ -440,7 +405,7 @@ export default function MeetingsBooked() {
           <div className="meetings-grid">
             {upcomingMeetings.map((meeting) => (
               <MeetingCard
-                key={getMeetingId(meeting)}
+                key={getMeetingId(meeting) || `${getContactId(meeting)}-${getMeetingDate(meeting)}`}
                 meeting={meeting}
                 section="upcoming"
               />
