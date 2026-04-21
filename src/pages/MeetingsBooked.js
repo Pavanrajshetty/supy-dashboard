@@ -33,6 +33,12 @@ function formatTime(iso) {
   return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 }
 
+// Compare dates in UTC to avoid timezone issues
+function toUTCDay(iso) {
+  const d = new Date(iso);
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+}
+
 function MeetingCard({ meeting, section }) {
   const isPast = section === "past";
   return (
@@ -110,8 +116,8 @@ export default function MeetingsBooked() {
 
         if (error) throw error;
 
-        // Fetch master_leads for company/name info
-        const contactIds = [...new Set((data || []).map(m => m.contact_id).filter(Boolean))];
+        // Fetch master_leads separately to avoid type mismatch
+        const contactIds = [...new Set((data || []).map(m => String(m.contact_id)).filter(Boolean))];
 
         let leadsMap = {};
         if (contactIds.length > 0) {
@@ -125,7 +131,7 @@ export default function MeetingsBooked() {
           });
         }
 
-        // Merge meetings with lead info
+        // Merge
         const merged = (data || []).map(m => ({
           ...m,
           firstname: leadsMap[String(m.contact_id)]?.firstname || "",
@@ -144,50 +150,39 @@ export default function MeetingsBooked() {
     fetchData();
   }, []);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
+  // UTC-based day boundaries
+  const now          = new Date();
+  const todayUTC     = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const yesterdayUTC = todayUTC - 86400000;
 
   // Section 1 — Yesterday's meetings
   const yesterdayMeetings = useMemo(() => {
     return allMeetings.filter(m => {
       if (!m.meeting_for) return false;
-      const d = new Date(m.meeting_for);
-      d.setHours(0, 0, 0, 0);
-      return d.getTime() === yesterday.getTime();
+      return toUTCDay(m.meeting_for) === yesterdayUTC;
     });
   }, [allMeetings]);
 
-  // Section 2 — Upcoming meetings (today onwards), one per lead
+  // Section 2 — Upcoming (today onwards), one per lead
   const upcomingMeetings = useMemo(() => {
-    const future = allMeetings.filter(m => {
+    let future = allMeetings.filter(m => {
       if (!m.meeting_for) return false;
-      return new Date(m.meeting_for) >= today;
+      return toUTCDay(m.meeting_for) >= todayUTC;
     });
 
     // Apply filter
-    let filtered = future;
     if (filter === "Tomorrow") {
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const tomorrowEnd = new Date(tomorrow);
-      tomorrowEnd.setHours(23, 59, 59);
-      filtered = future.filter(m => {
-        const d = new Date(m.meeting_for);
-        return d >= tomorrow && d <= tomorrowEnd;
-      });
+      const tomorrowUTC = todayUTC + 86400000;
+      future = future.filter(m => toUTCDay(m.meeting_for) === tomorrowUTC);
     } else if (filter === "This Week") {
-      const weekEnd = new Date(today);
-      weekEnd.setDate(weekEnd.getDate() + 7);
-      filtered = future.filter(m => new Date(m.meeting_for) <= weekEnd);
+      const weekEndUTC = todayUTC + 7 * 86400000;
+      future = future.filter(m => toUTCDay(m.meeting_for) <= weekEndUTC);
     }
 
-    // One per lead — keep only next upcoming meeting per contact
-    const seen = new Set();
+    // One per lead — keep only next upcoming per contact
+    const seen    = new Set();
     const deduped = [];
-    for (const m of filtered) {
+    for (const m of future) {
       if (!seen.has(m.contact_id)) {
         seen.add(m.contact_id);
         deduped.push(m);
@@ -215,7 +210,7 @@ export default function MeetingsBooked() {
           <div>
             <h2 className="page-title">Yesterday's Meetings</h2>
             <p style={{ fontSize: 13, color: "#6b7280", margin: 0 }}>
-              {formatDate(yesterday)} — what happened
+              {formatDate(new Date(yesterdayUTC))} — what happened
             </p>
           </div>
           <span className="page-sub">{yesterdayMeetings.length} meetings</span>
