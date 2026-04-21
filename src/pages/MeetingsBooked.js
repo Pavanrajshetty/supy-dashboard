@@ -2,99 +2,176 @@ import React, { useState, useEffect, useMemo } from "react";
 import { supabase } from "../lib/supabase";
 
 const OUTCOME_STYLE = {
-  COMPLETED:   { bg: "#e8faf0", color: "#1a8a5c", label: "✓ Completed"   },
-  NO_SHOW:     { bg: "#fff1f0", color: "#cf1322", label: "✗ No Show"     },
-  CANCELED:    { bg: "#fff7e6", color: "#d46b08", label: "⊘ Cancelled"   },
+  COMPLETED:   { bg: "#e8faf0", color: "#1a8a5c", label: "✓ Completed" },
+  NO_SHOW:     { bg: "#fff1f0", color: "#cf1322", label: "✗ No Show" },
+  CANCELED:    { bg: "#fff7e6", color: "#d46b08", label: "⊘ Cancelled" },
+  CANCELLED:   { bg: "#fff7e6", color: "#d46b08", label: "⊘ Cancelled" },
   RESCHEDULED: { bg: "#e6f4ff", color: "#096dd9", label: "↺ Rescheduled" },
-  SCHEDULED:   { bg: "#f0f5ff", color: "#2f54eb", label: "● Scheduled"   },
-  NONE:        { bg: "#f5f5f5", color: "#8c8c8c", label: "— Pending"     },
+  SCHEDULED:   { bg: "#f0f5ff", color: "#2f54eb", label: "● Scheduled" },
+  NONE:        { bg: "#f5f5f5", color: "#8c8c8c", label: "— Pending" },
 };
 
 function OutcomeBadge({ outcome }) {
-  const s = OUTCOME_STYLE[outcome] || OUTCOME_STYLE.NONE;
+  const key = (outcome || "NONE").toUpperCase();
+  const s = OUTCOME_STYLE[key] || OUTCOME_STYLE.NONE;
+
   return (
-    <span style={{
-      background: s.bg, color: s.color,
-      padding: "3px 10px", borderRadius: 20,
-      fontSize: 11, fontWeight: 700
-    }}>{s.label}</span>
+    <span
+      style={{
+        background: s.bg,
+        color: s.color,
+        padding: "3px 10px",
+        borderRadius: 20,
+        fontSize: 11,
+        fontWeight: 700,
+      }}
+    >
+      {s.label}
+    </span>
   );
 }
 
-function formatDate(iso) {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+function safeDate(value) {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
 }
 
-function formatTime(iso) {
-  if (!iso) return "";
-  const d = new Date(iso);
-  return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+function formatDate(value) {
+  const d = safeDate(value);
+  if (!d) return "—";
+  return d.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
-// Compare dates in UTC to avoid timezone issues
-function toUTCDay(iso) {
-  const d = new Date(iso);
-  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+function formatTime(value) {
+  const d = safeDate(value);
+  if (!d) return "";
+  return d.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+// Local day start to avoid timezone shifting bug
+function startOfLocalDay(dateInput = new Date()) {
+  const d = new Date(dateInput);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function getMeetingDate(meeting) {
+  return (
+    meeting.meeting_for ||
+    meeting.start_time ||
+    meeting.meeting_date ||
+    meeting.scheduled_for ||
+    null
+  );
+}
+
+function getContactId(meeting) {
+  return (
+    meeting.contact_id ||
+    meeting.lead_id ||
+    meeting.hs_contact_id ||
+    meeting.contactId ||
+    null
+  );
+}
+
+function getMeetingId(meeting) {
+  return (
+    meeting.meeting_id ||
+    meeting.id ||
+    meeting.hs_meeting_id ||
+    `${getContactId(meeting) || "no-contact"}-${getMeetingDate(meeting) || Math.random()}`
+  );
 }
 
 function MeetingCard({ meeting, section }) {
   const isPast = section === "past";
+  const meetingDate = getMeetingDate(meeting);
+  const meetingId = getMeetingId(meeting);
+
   return (
-    <div style={{
-      background: "#fff",
-      borderRadius: 12,
-      padding: "16px 20px",
-      border: `1.5px solid ${isPast ? "#f0f0f0" : "#e8e4f5"}`,
-      display: "flex",
-      flexDirection: "column",
-      gap: 10,
-      boxShadow: "0 2px 8px rgba(80,51,144,0.06)",
-    }}>
-      {/* Top row */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+    <div
+      style={{
+        background: "#fff",
+        borderRadius: 12,
+        padding: "16px 20px",
+        border: `1.5px solid ${isPast ? "#f0f0f0" : "#e8e4f5"}`,
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        boxShadow: "0 2px 8px rgba(80,51,144,0.06)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+        }}
+      >
         <div>
           <div style={{ fontWeight: 800, fontSize: 15, color: "#321e57" }}>
-            {meeting.firstname} {meeting.lastname}
+            {`${meeting.firstname || ""} ${meeting.lastname || ""}`.trim() || "Unknown Contact"}
           </div>
           <div style={{ fontSize: 13, color: "#6b7280", marginTop: 2 }}>
             {meeting.company || "—"}
           </div>
         </div>
-        <OutcomeBadge outcome={meeting.outcome || "NONE"} />
+        <OutcomeBadge outcome={meeting.outcome} />
       </div>
 
-      {/* Meeting title */}
       <div style={{ fontSize: 13, color: "#503390", fontWeight: 600 }}>
-        📋 {meeting.title || "—"}
+        📋 {meeting.title || meeting.meeting_title || "—"}
       </div>
 
-      {/* Dates */}
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
         <div style={{ fontSize: 12, color: "#6b7280" }}>
           <span style={{ fontWeight: 600, color: "#374151" }}>Booked: </span>
-          {formatDate(meeting.booked_on)}
+          {formatDate(meeting.booked_on || meeting.created_at)}
         </div>
         <div style={{ fontSize: 12, color: "#6b7280" }}>
           <span style={{ fontWeight: 600, color: "#374151" }}>Meeting: </span>
-          {formatDate(meeting.meeting_for)} · {formatTime(meeting.meeting_for)}
+          {formatDate(meetingDate)}{meetingDate ? ` · ${formatTime(meetingDate)}` : ""}
         </div>
       </div>
 
-      {/* Footer */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 6, borderTop: "1px solid #f3f4f6" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingTop: 6,
+          borderTop: "1px solid #f3f4f6",
+        }}
+      >
         <span style={{ fontSize: 11, color: "#9ca3af" }}>
           🌏 {meeting.country || "—"}
         </span>
-        <a
-          href={`https://app.hubspot.com/contacts/9423176/record/0-47/${meeting.meeting_id}`}
-          target="_blank"
-          rel="noreferrer"
-          style={{ fontSize: 11, color: "#6c3fc5", fontWeight: 700, textDecoration: "none" }}
-        >
-          View in HubSpot ↗
-        </a>
+
+        {meetingId ? (
+          <a
+            href={`https://app.hubspot.com/contacts/9423176/record/0-47/${meetingId}`}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              fontSize: 11,
+              color: "#6c3fc5",
+              fontWeight: 700,
+              textDecoration: "none",
+            }}
+          >
+            View in HubSpot ↗
+          </a>
+        ) : (
+          <span style={{ fontSize: 11, color: "#9ca3af" }}>No HubSpot link</span>
+        )}
       </div>
     </div>
   );
@@ -102,12 +179,15 @@ function MeetingCard({ meeting, section }) {
 
 export default function MeetingsBooked() {
   const [allMeetings, setAllMeetings] = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [filter, setFilter]           = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("All");
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
+      setErrorMsg("");
+
       try {
         const { data, error } = await supabase
           .from("hubspot_meetings")
@@ -116,80 +196,143 @@ export default function MeetingsBooked() {
 
         if (error) throw error;
 
-        // Fetch master_leads separately to avoid type mismatch
-        const contactIds = [...new Set((data || []).map(m => String(m.contact_id)).filter(Boolean))];
+        const meetings = Array.isArray(data) ? data : [];
+
+        const contactIds = [
+          ...new Set(
+            meetings
+              .map((m) => getContactId(m))
+              .filter(Boolean)
+              .map((v) => String(v))
+          ),
+        ];
 
         let leadsMap = {};
+
         if (contactIds.length > 0) {
-          const { data: leads } = await supabase
+          const { data: leads, error: leadsError } = await supabase
             .from("master_leads")
             .select("lead_id, firstname, lastname, company, country")
             .in("lead_id", contactIds);
 
-          (leads || []).forEach(l => {
-            leadsMap[String(l.lead_id)] = l;
+          if (leadsError) {
+            console.error("Error fetching master_leads:", leadsError);
+          }
+
+          (leads || []).forEach((lead) => {
+            leadsMap[String(lead.lead_id)] = lead;
           });
         }
 
-        // Merge
-        const merged = (data || []).map(m => ({
-          ...m,
-          firstname: leadsMap[String(m.contact_id)]?.firstname || "",
-          lastname:  leadsMap[String(m.contact_id)]?.lastname  || "",
-          company:   leadsMap[String(m.contact_id)]?.company   || "",
-          country:   leadsMap[String(m.contact_id)]?.country   || "",
-        }));
+        const merged = meetings.map((meeting) => {
+          const contactId = String(getContactId(meeting) || "");
+          const lead = leadsMap[contactId] || {};
+
+          return {
+            ...meeting,
+            firstname: meeting.firstname || lead.firstname || "",
+            lastname: meeting.lastname || lead.lastname || "",
+            company: meeting.company || lead.company || "",
+            country: meeting.country || lead.country || "",
+          };
+        });
+
+        console.log("RAW meetings:", meetings);
+        console.log("MERGED meetings:", merged);
 
         setAllMeetings(merged);
       } catch (err) {
         console.error("Error fetching meetings:", err);
+        setErrorMsg(err?.message || "Failed to load meetings");
+        setAllMeetings([]);
       } finally {
         setLoading(false);
       }
     }
+
     fetchData();
   }, []);
 
-  // UTC-based day boundaries
-  const now          = new Date();
-  const todayUTC     = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-  const yesterdayUTC = todayUTC - 86400000;
+  const todayStart = useMemo(() => startOfLocalDay(new Date()), []);
+  const tomorrowStart = useMemo(() => {
+    const d = new Date(todayStart);
+    d.setDate(d.getDate() + 1);
+    return d;
+  }, [todayStart]);
 
-  // Section 1 — Yesterday's meetings
+  const yesterdayStart = useMemo(() => {
+    const d = new Date(todayStart);
+    d.setDate(d.getDate() - 1);
+    return d;
+  }, [todayStart]);
+
+  const dayAfterTomorrowStart = useMemo(() => {
+    const d = new Date(todayStart);
+    d.setDate(d.getDate() + 2);
+    return d;
+  }, [todayStart]);
+
+  const nextWeekStart = useMemo(() => {
+    const d = new Date(todayStart);
+    d.setDate(d.getDate() + 7);
+    return d;
+  }, [todayStart]);
+
   const yesterdayMeetings = useMemo(() => {
-    return allMeetings.filter(m => {
-      if (!m.meeting_for) return false;
-      return toUTCDay(m.meeting_for) === yesterdayUTC;
+    return allMeetings.filter((meeting) => {
+      const meetingDate = safeDate(getMeetingDate(meeting));
+      if (!meetingDate) return false;
+      return meetingDate >= yesterdayStart && meetingDate < todayStart;
     });
-  }, [allMeetings]);
+  }, [allMeetings, yesterdayStart, todayStart]);
 
-  // Section 2 — Upcoming (today onwards), one per lead
   const upcomingMeetings = useMemo(() => {
-    let future = allMeetings.filter(m => {
-      if (!m.meeting_for) return false;
-      return toUTCDay(m.meeting_for) >= todayUTC;
+    let future = allMeetings.filter((meeting) => {
+      const meetingDate = safeDate(getMeetingDate(meeting));
+      if (!meetingDate) return false;
+      return meetingDate >= todayStart;
     });
 
-    // Apply filter
     if (filter === "Tomorrow") {
-      const tomorrowUTC = todayUTC + 86400000;
-      future = future.filter(m => toUTCDay(m.meeting_for) === tomorrowUTC);
+      future = future.filter((meeting) => {
+        const meetingDate = safeDate(getMeetingDate(meeting));
+        return meetingDate && meetingDate >= tomorrowStart && meetingDate < dayAfterTomorrowStart;
+      });
     } else if (filter === "This Week") {
-      const weekEndUTC = todayUTC + 7 * 86400000;
-      future = future.filter(m => toUTCDay(m.meeting_for) <= weekEndUTC);
+      future = future.filter((meeting) => {
+        const meetingDate = safeDate(getMeetingDate(meeting));
+        return meetingDate && meetingDate >= todayStart && meetingDate < nextWeekStart;
+      });
     }
 
-    // One per lead — keep only next upcoming per contact
-    const seen    = new Set();
+    future.sort((a, b) => {
+      const aDate = safeDate(getMeetingDate(a));
+      const bDate = safeDate(getMeetingDate(b));
+      return (aDate?.getTime() || 0) - (bDate?.getTime() || 0);
+    });
+
+    const seen = new Set();
     const deduped = [];
-    for (const m of future) {
-      if (!seen.has(m.contact_id)) {
-        seen.add(m.contact_id);
-        deduped.push(m);
+
+    for (const meeting of future) {
+      const contactId = String(getContactId(meeting) || "");
+      const dedupeKey = contactId || String(getMeetingId(meeting));
+
+      if (!seen.has(dedupeKey)) {
+        seen.add(dedupeKey);
+        deduped.push(meeting);
       }
     }
+
     return deduped;
-  }, [allMeetings, filter]);
+  }, [
+    allMeetings,
+    filter,
+    todayStart,
+    tomorrowStart,
+    dayAfterTomorrowStart,
+    nextWeekStart,
+  ]);
 
   if (loading) {
     return (
@@ -203,33 +346,60 @@ export default function MeetingsBooked() {
 
   return (
     <div className="page">
+      {errorMsg ? (
+        <div
+          style={{
+            background: "#fff1f0",
+            border: "1px solid #ffa39e",
+            color: "#cf1322",
+            padding: "12px 16px",
+            borderRadius: 12,
+            marginBottom: 20,
+            fontSize: 13,
+            fontWeight: 600,
+          }}
+        >
+          Failed to load meetings: {errorMsg}
+        </div>
+      ) : null}
 
-      {/* ── SECTION 1 — YESTERDAY ── */}
       <div style={{ marginBottom: 48 }}>
         <div className="page-header-row" style={{ marginBottom: 16 }}>
           <div>
             <h2 className="page-title">Yesterday's Meetings</h2>
             <p style={{ fontSize: 13, color: "#6b7280", margin: 0 }}>
-              {formatDate(new Date(yesterdayUTC))} — what happened
+              {formatDate(yesterdayStart)} — what happened
             </p>
           </div>
           <span className="page-sub">{yesterdayMeetings.length} meetings</span>
         </div>
 
         {yesterdayMeetings.length === 0 ? (
-          <div style={{ background: "#f9fafb", borderRadius: 12, padding: "32px", textAlign: "center", color: "#9ca3af", fontSize: 14 }}>
+          <div
+            style={{
+              background: "#f9fafb",
+              borderRadius: 12,
+              padding: "32px",
+              textAlign: "center",
+              color: "#9ca3af",
+              fontSize: 14,
+            }}
+          >
             No meetings were scheduled yesterday
           </div>
         ) : (
           <div className="meetings-grid">
-            {yesterdayMeetings.map(m => (
-              <MeetingCard key={m.meeting_id} meeting={m} section="past" />
+            {yesterdayMeetings.map((meeting) => (
+              <MeetingCard
+                key={getMeetingId(meeting)}
+                meeting={meeting}
+                section="past"
+              />
             ))}
           </div>
         )}
       </div>
 
-      {/* ── SECTION 2 — UPCOMING ── */}
       <div>
         <div className="page-header-row" style={{ marginBottom: 16 }}>
           <div>
@@ -241,30 +411,43 @@ export default function MeetingsBooked() {
           <span className="page-sub">{upcomingMeetings.length} meetings</span>
         </div>
 
-        {/* Filters */}
         <div className="filter-bar" style={{ marginBottom: 20 }}>
-          {["All", "Tomorrow", "This Week"].map(f => (
+          {["All", "Tomorrow", "This Week"].map((item) => (
             <button
-              key={f}
-              className={`filter-pill ${filter === f ? "active" : ""}`}
-              onClick={() => setFilter(f)}
-            >{f}</button>
+              key={item}
+              className={`filter-pill ${filter === item ? "active" : ""}`}
+              onClick={() => setFilter(item)}
+            >
+              {item}
+            </button>
           ))}
         </div>
 
         {upcomingMeetings.length === 0 ? (
-          <div style={{ background: "#f9fafb", borderRadius: 12, padding: "32px", textAlign: "center", color: "#9ca3af", fontSize: 14 }}>
+          <div
+            style={{
+              background: "#f9fafb",
+              borderRadius: 12,
+              padding: "32px",
+              textAlign: "center",
+              color: "#9ca3af",
+              fontSize: 14,
+            }}
+          >
             No upcoming meetings found
           </div>
         ) : (
           <div className="meetings-grid">
-            {upcomingMeetings.map(m => (
-              <MeetingCard key={m.meeting_id} meeting={m} section="upcoming" />
+            {upcomingMeetings.map((meeting) => (
+              <MeetingCard
+                key={getMeetingId(meeting)}
+                meeting={meeting}
+                section="upcoming"
+              />
             ))}
           </div>
         )}
       </div>
-
     </div>
   );
 }
