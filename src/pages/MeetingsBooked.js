@@ -2,12 +2,12 @@ import React, { useState, useEffect, useMemo } from "react";
 import { supabase } from "../lib/supabase";
 
 const OUTCOME_STYLE = {
-  COMPLETED:   { bg: "#e8faf0", color: "#1a8a5c", label: "✓ Completed" },
-  NO_SHOW:     { bg: "#fff1f0", color: "#cf1322", label: "✗ No Show"   },
-  CANCELED:    { bg: "#fff7e6", color: "#d46b08", label: "⊘ Cancelled" },
+  COMPLETED:   { bg: "#e8faf0", color: "#1a8a5c", label: "✓ Completed"   },
+  NO_SHOW:     { bg: "#fff1f0", color: "#cf1322", label: "✗ No Show"     },
+  CANCELED:    { bg: "#fff7e6", color: "#d46b08", label: "⊘ Cancelled"   },
   RESCHEDULED: { bg: "#e6f4ff", color: "#096dd9", label: "↺ Rescheduled" },
-  SCHEDULED:   { bg: "#f0f5ff", color: "#2f54eb", label: "● Scheduled" },
-  NONE:        { bg: "#f5f5f5", color: "#8c8c8c", label: "— Pending"   },
+  SCHEDULED:   { bg: "#f0f5ff", color: "#2f54eb", label: "● Scheduled"   },
+  NONE:        { bg: "#f5f5f5", color: "#8c8c8c", label: "— Pending"     },
 };
 
 function OutcomeBadge({ outcome }) {
@@ -45,7 +45,6 @@ function MeetingCard({ meeting, section }) {
       flexDirection: "column",
       gap: 10,
       boxShadow: "0 2px 8px rgba(80,51,144,0.06)",
-      transition: "box-shadow 0.2s",
     }}>
       {/* Top row */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -104,41 +103,38 @@ export default function MeetingsBooked() {
     async function fetchData() {
       setLoading(true);
       try {
-        // Fetch meetings joined with master_leads
         const { data, error } = await supabase
           .from("hubspot_meetings")
-          .select(`
-            meeting_id,
-            contact_id,
-            title,
-            booked_on,
-            meeting_for,
-            meeting_end,
-            outcome,
-            source,
-            master_leads (
-              firstname,
-              lastname,
-              company,
-              country,
-              is_sql
-            )
-          `)
+          .select("*")
           .order("meeting_for", { ascending: true });
 
         if (error) throw error;
 
-        // Flatten joined data
-        const flat = (data || []).map(m => ({
+        // Fetch master_leads for company/name info
+        const contactIds = [...new Set((data || []).map(m => m.contact_id).filter(Boolean))];
+
+        let leadsMap = {};
+        if (contactIds.length > 0) {
+          const { data: leads } = await supabase
+            .from("master_leads")
+            .select("lead_id, firstname, lastname, company, country")
+            .in("lead_id", contactIds);
+
+          (leads || []).forEach(l => {
+            leadsMap[String(l.lead_id)] = l;
+          });
+        }
+
+        // Merge meetings with lead info
+        const merged = (data || []).map(m => ({
           ...m,
-          firstname: m.master_leads?.firstname || "",
-          lastname:  m.master_leads?.lastname  || "",
-          company:   m.master_leads?.company   || "",
-          country:   m.master_leads?.country   || "",
-          is_sql:    m.master_leads?.is_sql,
+          firstname: leadsMap[String(m.contact_id)]?.firstname || "",
+          lastname:  leadsMap[String(m.contact_id)]?.lastname  || "",
+          company:   leadsMap[String(m.contact_id)]?.company   || "",
+          country:   leadsMap[String(m.contact_id)]?.country   || "",
         }));
 
-        setAllMeetings(flat);
+        setAllMeetings(merged);
       } catch (err) {
         console.error("Error fetching meetings:", err);
       } finally {
@@ -148,7 +144,7 @@ export default function MeetingsBooked() {
     fetchData();
   }, []);
 
-  const today     = new Date();
+  const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   const yesterday = new Date(today);
@@ -164,7 +160,7 @@ export default function MeetingsBooked() {
     });
   }, [allMeetings]);
 
-  // Section 2 — Upcoming meetings (today onwards), one per lead (next upcoming)
+  // Section 2 — Upcoming meetings (today onwards), one per lead
   const upcomingMeetings = useMemo(() => {
     const future = allMeetings.filter(m => {
       if (!m.meeting_for) return false;
@@ -203,7 +199,9 @@ export default function MeetingsBooked() {
   if (loading) {
     return (
       <div className="page">
-        <div style={{ textAlign: "center", padding: 80, color: "#9ca3af" }}>Loading meetings...</div>
+        <div style={{ textAlign: "center", padding: 80, color: "#9ca3af" }}>
+          Loading meetings...
+        </div>
       </div>
     );
   }
