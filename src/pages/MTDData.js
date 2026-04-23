@@ -203,28 +203,24 @@ export default function MTDDataRevamp() {
           planSqlRes,
           sqlDetailRes,
         ] = await Promise.all([
-          // Plan
           supabase
             .from("plan_daily")
             .select("geo, daily_spend_usd, daily_mql_target")
             .gte("plan_date", startIso)
             .lte("plan_date", endIso),
 
-          // Actual spend etc from meta_performance
           supabase
             .from("meta_performance")
             .select("country_name, spend_usd, impressions, clicks, reach, leads")
             .gte("perf_date", startIso)
             .lte("perf_date", endIso),
 
-          // Actual MQL from master_leads
           supabase
             .from("master_leads")
             .select("country")
             .gte("lead_created_date", startIso)
             .lte("lead_created_date", endIso),
 
-          // Actual SQL + pipeline from master_leads
           supabase
             .from("master_leads")
             .select("country, amount_usd")
@@ -232,13 +228,11 @@ export default function MTDDataRevamp() {
             .gte("sql_date", startIso)
             .lte("sql_date", endIso),
 
-          // Monthly SQL target
           supabase
             .from("plan_monthly")
             .select("geo, sql_target")
             .eq("plan_month", planMonth),
 
-          // MTD SQL detail table
           supabase
             .from("master_leads")
             .select(`
@@ -278,7 +272,6 @@ export default function MTDDataRevamp() {
           if (res.error) throw res.error;
         }
 
-        // Plan by geo
         const planMtdByGeo = {};
         for (const r of planMtdRes.data || []) {
           if (!planMtdByGeo[r.geo]) {
@@ -288,21 +281,18 @@ export default function MTDDataRevamp() {
           planMtdByGeo[r.geo].expectedMql += Number(r.daily_mql_target || 0);
         }
 
-        // Actual spend from meta_performance
         const spendByGeo = {};
         for (const r of actualSpendRes.data || []) {
           const geo = r.country_name || "Unknown";
           spendByGeo[geo] = (spendByGeo[geo] || 0) + Number(r.spend_usd || 0);
         }
 
-        // Actual MQL by geo
         const mqlByGeo = {};
         for (const r of actualMqlRes.data || []) {
           const geo = r.country || "Unknown";
           mqlByGeo[geo] = (mqlByGeo[geo] || 0) + 1;
         }
 
-        // Actual SQL + Pipeline by geo
         const sqlByGeo = {};
         const pipelineByGeo = {};
         for (const r of actualSqlRes.data || []) {
@@ -313,13 +303,11 @@ export default function MTDDataRevamp() {
           pipelineByGeo[geo] = (pipelineByGeo[geo] || 0) + value;
         }
 
-        // Expected SQL by geo
         const planSqlByGeo = {};
         for (const r of planSqlRes.data || []) {
           planSqlByGeo[r.geo] = Math.round((Number(r.sql_target || 0) / 30) * daysElapsed);
         }
 
-        // Include all geos, not only plan geos
         const allGeos = Array.from(
           new Set([
             ...Object.keys(planMtdByGeo),
@@ -392,6 +380,11 @@ export default function MTDDataRevamp() {
     const mqlVar = pctDelta(totals.expectedMql, totals.actualMql);
     const sqlVar = pctDelta(totals.expectedSql, totals.actualSql);
 
+    const costPerMql =
+      totals.actualMql > 0 ? safeDivide(totals.actualSpend, totals.actualMql) : null;
+    const costPerSql =
+      totals.actualSql > 0 ? safeDivide(totals.actualSpend, totals.actualSql) : null;
+
     const bestGeo =
       [...rows].sort(
         (a, b) => safeDivide(b.actualMql, b.actualSpend) - safeDivide(a.actualMql, a.actualSpend)
@@ -402,7 +395,16 @@ export default function MTDDataRevamp() {
         (a, b) => pctDelta(a.expectedMql, a.actualMql) - pctDelta(b.expectedMql, b.actualMql)
       )[0] || null;
 
-    return { totals, spendVar, mqlVar, sqlVar, bestGeo, riskGeo };
+    return {
+      totals,
+      spendVar,
+      mqlVar,
+      sqlVar,
+      costPerMql,
+      costPerSql,
+      bestGeo,
+      riskGeo,
+    };
   }, [rows]);
 
   const sortedSqlDetailRows = useMemo(() => {
@@ -477,7 +479,7 @@ export default function MTDDataRevamp() {
 
         .kpi-grid {
           display: grid;
-          grid-template-columns: repeat(4, minmax(220px, 1fr));
+          grid-template-columns: repeat(6, minmax(180px, 1fr));
           gap: 16px;
           margin-bottom: 20px;
         }
@@ -639,6 +641,12 @@ export default function MTDDataRevamp() {
           color: #374151;
         }
 
+        @media (max-width: 1400px) {
+          .kpi-grid {
+            grid-template-columns: repeat(3, minmax(220px, 1fr));
+          }
+        }
+
         @media (max-width: 1200px) {
           .kpi-grid, .section-grid {
             grid-template-columns: 1fr;
@@ -687,6 +695,17 @@ export default function MTDDataRevamp() {
             </div>
 
             <div className="card">
+              <div className="kpi-label">Cost per MQL</div>
+              <div className="kpi-value">
+                {computed.costPerMql !== null ? fmtUSD(computed.costPerMql) : "—"}
+              </div>
+              <div className="kpi-sub">
+                <span>Actual only</span>
+                <span className="badge delta-neutral">Spend ÷ MQL</span>
+              </div>
+            </div>
+
+            <div className="card">
               <div className="kpi-label">SQL</div>
               <div className="kpi-value">{fmtNum(computed.totals.actualSql)}</div>
               <div className="kpi-sub">
@@ -694,6 +713,17 @@ export default function MTDDataRevamp() {
                 <span className={`badge ${getDeltaClass(computed.sqlVar)}`}>
                   {varianceLabel(computed.totals.expectedSql, computed.totals.actualSql)} vs Plan
                 </span>
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="kpi-label">Cost per SQL</div>
+              <div className="kpi-value">
+                {computed.costPerSql !== null ? fmtUSD(computed.costPerSql) : "—"}
+              </div>
+              <div className="kpi-sub">
+                <span>Actual only</span>
+                <span className="badge delta-neutral">Spend ÷ SQL</span>
               </div>
             </div>
 
