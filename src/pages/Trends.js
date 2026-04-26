@@ -126,16 +126,23 @@ function normalizeMetaCountry(raw) {
   return normalizeMasterCountry(raw);
 }
 
-function getAllGeos(metaRows, leadRows) {
-  const metaGeos = (metaRows || []).map((row) =>
-    normalizeMetaCountry(row.country_name)
-  );
-  const leadGeos = (leadRows || []).map((row) =>
-    normalizeMasterCountry(row.country)
-  );
+/* GEO FILTER: only show countries where Spend > $5 */
+function getAllGeos(metaRows, leadRows, rangeKey, customRange = null) {
+  const spendByGeo = {};
 
-  return [...new Set([...metaGeos, ...leadGeos])]
-    .filter(Boolean)
+  (metaRows || []).forEach((row) => {
+    const geo = normalizeMetaCountry(row.country_name);
+
+    if (!isWithinRange(row.perf_date, rangeKey, customRange)) return;
+
+    const spend = safeNum(row.spend_usd);
+
+    if (!spendByGeo[geo]) spendByGeo[geo] = 0;
+    spendByGeo[geo] += spend;
+  });
+
+  return Object.keys(spendByGeo)
+    .filter((geo) => spendByGeo[geo] > 5)
     .sort((a, b) => a.localeCompare(b));
 }
 
@@ -370,8 +377,21 @@ function LineChart({ data, metricKey, metricFmt }) {
         );
       })}
 
-      <line x1={PAD.left} y1={PAD.top} x2={PAD.left} y2={PAD.top + innerH} stroke="rgba(124,79,214,0.18)" />
-      <line x1={PAD.left} y1={PAD.top + innerH} x2={PAD.left + innerW} y2={PAD.top + innerH} stroke="rgba(124,79,214,0.18)" />
+      <line
+        x1={PAD.left}
+        y1={PAD.top}
+        x2={PAD.left}
+        y2={PAD.top + innerH}
+        stroke="rgba(124,79,214,0.18)"
+      />
+
+      <line
+        x1={PAD.left}
+        y1={PAD.top + innerH}
+        x2={PAD.left + innerW}
+        y2={PAD.top + innerH}
+        stroke="rgba(124,79,214,0.18)"
+      />
 
       <defs>
         <linearGradient id="trendAreaFill" x1="0" y1="0" x2="0" y2="1">
@@ -568,11 +588,19 @@ export default function Trends() {
   }, [dateRange, activeCustomRange]);
 
   const allGeos = useMemo(() => {
-    return getAllGeos(supabaseMetaRows, supabaseLeadRows);
-  }, [supabaseMetaRows, supabaseLeadRows]);
+    return getAllGeos(
+      supabaseMetaRows,
+      supabaseLeadRows,
+      dateRange,
+      activeCustomRange
+    );
+  }, [supabaseMetaRows, supabaseLeadRows, dateRange, activeCustomRange]);
 
   useEffect(() => {
-    if (!allGeos.length) return;
+    if (!allGeos.length) {
+      setSelectedGeos([]);
+      return;
+    }
 
     setSelectedGeos((prev) => {
       if (!prev.length) return allGeos;
@@ -705,6 +733,7 @@ export default function Trends() {
                 ))}
               </tr>
             </thead>
+
             <tbody>
               {trendRows.length > 0 ? (
                 trendRows.map((row, i) => (
