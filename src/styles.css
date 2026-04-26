@@ -1,5 +1,5 @@
 /* ============================================================
-   SUPY MARKETING DASHBOARD — Light Business Theme
+   SUPY MARKETING DASHBOARD â€” Light Business Theme
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -14,7 +14,7 @@
 
   /* Page & surface */
   --bg:           #f3f0f8;
-  --bg-2:         #4b2a7b;   /* navbar — deep purple */
+  --bg-2:         #4b2a7b;   /* navbar â€” deep purple */
   --bg-3:         #f8f5fc;
   --surface:      #ffffff;
   --surface-2:    #f8f5fc;
@@ -52,7 +52,7 @@
   --t:            0.16s ease;
 }
 
-/* ── Reset ──────────────────────────────────────────────────── */
+/* â”€â”€ Reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 14px; }
 body {
@@ -66,10 +66,10 @@ body {
 ::-webkit-scrollbar-track { background: var(--bg-3); }
 ::-webkit-scrollbar-thumb { background: var(--brand-border); border-radius: 99px; }
 
-/* ── App shell ──────────────────────────────────────────────── */
+/* â”€â”€ App shell â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .app { display: flex; flex-direction: column; min-height: 100vh; }
 
-/* ── Header ─────────────────────────────────────────────────── */
+/* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .app-header {
   position: sticky;
   top: 0;
@@ -169,7 +169,7 @@ body {
 }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-/* ── Main ───────────────────────────────────────────────────── */
+/* â”€â”€ Main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .app-main { flex: 1; }
 
 .page {
@@ -210,7 +210,7 @@ body {
   font-weight: 600;
 }
 
-/* ── Card ───────────────────────────────────────────────────── */
+/* â”€â”€ Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .card {
   background: var(--surface);
   border-radius: var(--radius-lg);
@@ -229,7 +229,7 @@ body {
   margin-bottom: 14px;
 }
 
-/* ── Filter bar ─────────────────────────────────────────────── */
+/* â”€â”€ Filter bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
@@ -276,7 +276,7 @@ body {
   font-weight: 600;
 }
 
-/* ── KPI Grid ───────────────────────────────────────────────── */
+/* â”€â”€ KPI Grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -316,7 +316,7 @@ body {
 .kpi-value  { font-size: 1.2rem; font-weight: 700; font-family: var(--mono); letter-spacing: -0.5px; color: var(--text); }
 .kpi-sub    { font-size: 0.68rem; color: var(--text-3); margin-top: 3px; }
 
-/* ── Executive split ────────────────────────────────────────── */
+/* â”€â”€ Executive split â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .exec-split {
   display: grid;
   grid-template-columns: 320px 1fr;
@@ -324,7 +324,7 @@ body {
   align-items: start;
 }
 
-/* ── Funnel ─────────────────────────────────────────────────── */
+/* â”€â”€ Funnel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .funnel-card { padding: 20px; }
 
 .funnel-list { display: flex; flex-direction: column; gap: 0; }
@@ -355,7 +355,7 @@ body {
   text-align: right;
 }
 
-/* ── Tables ─────────────────────────────────────────────────── */
+/* â”€â”€ Tables â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .sql-preview-card { padding: 20px; }
 
 .table-wrap { overflow-x: auto; }
@@ -406,7 +406,7 @@ body {
 .pos-text   { color: var(--green) !important; font-weight: 600; }
 .neg-text   { color: var(--red) !important; font-weight: 600; }
 
-/* ── Badges ─────────────────────────────────────────────────── */
+/* â”€â”€ Badges â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .delta-badge {
   display: inline-block;
   padding: 2px 7px;
@@ -471,7 +471,7 @@ body {
 }
 .hs-link:hover { background: var(--brand); color: #fff; border-color: var(--brand); }
 
-/* ── AI blocks ──────────────────────────────────────────────── */
+/* â”€â”€ AI blocks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ai-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -513,17 +513,17 @@ body {
   gap: 7px;
 }
 .ai-block-list li::before {
-  content: '→';
+  content: 'â†’';
   color: var(--brand);
   flex-shrink: 0;
   margin-top: 1px;
   font-size: 0.7rem;
 }
 
-/* ── Chart ──────────────────────────────────────────────────── */
+/* â”€â”€ Chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .chart-placeholder { }
 
-/* ── Bar chart classes (kept for CSS stability) ─────────────── */
+/* â”€â”€ Bar chart classes (kept for CSS stability) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .bar-chart {
   display: flex;
   align-items: flex-end;
@@ -579,7 +579,7 @@ body {
   max-width: 60px;
 }
 
-/* ── Week on Week ───────────────────────────────────────────── */
+/* â”€â”€ Week on Week â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .wow-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -610,7 +610,7 @@ body {
   margin: 2px 0;
 }
 
-/* ── Meetings grid ──────────────────────────────────────────── */
+/* â”€â”€ Meetings grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .meetings-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -677,7 +677,7 @@ body {
 }
 .meeting-link:hover { color: var(--brand-dark); }
 
-/* ── Responsive ─────────────────────────────────────────────── */
+/* â”€â”€ Responsive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @media (max-width: 1100px) {
   .exec-split { grid-template-columns: 1fr; }
   .wow-grid   { grid-template-columns: repeat(2, 1fr); }
@@ -692,4 +692,389 @@ body {
   .kpi-grid   { grid-template-columns: repeat(2, 1fr); }
   .kpi-grid-4 { grid-template-columns: repeat(2, 1fr); }
   .brand-name { display: none; }
+}
+
+/* ============================================================
+   DASHBOARD POLISH OVERRIDES â€” layout + alignment only
+   No JS/business logic changes
+   ============================================================ */
+
+/* Global page rhythm */
+.app-main {
+  width: 100%;
+  min-height: calc(100vh - var(--navbar-h));
+  background: var(--bg);
+}
+
+.page,
+.mtd-page {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 24px 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.page-header-row,
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.header h1,
+.page-title {
+  font-size: 1.28rem;
+  line-height: 1.2;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.header p,
+.page-sub {
+  font-size: 0.78rem;
+  color: var(--text-3);
+}
+
+/* Navbar polish */
+.app-header {
+  min-width: 0;
+}
+
+.tab-nav {
+  min-width: 0;
+  scrollbar-width: none;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+
+/* Filter rows */
+.filter-bar {
+  width: 100%;
+  gap: 8px;
+  row-gap: 8px;
+}
+
+.filter-pill,
+.tag {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.tag {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--brand-dim);
+  border: 1px solid var(--brand-border);
+  color: var(--brand-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.ctx-label {
+  width: 100%;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+}
+
+/* KPI alignment */
+.kpi-grid {
+  width: 100%;
+  display: grid;
+  gap: 12px;
+  align-items: stretch;
+}
+
+/* Executive summary: 13 cards = clean 7 + 6 layout */
+.kpi-grid:has(.kpi-card:nth-child(13)) {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+/* QTD monthly: 8 cards = clean 4 + 4 layout */
+.kpi-grid:has(.kpi-card:nth-child(8)):not(:has(.kpi-card:nth-child(9))) {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* MTD page has 6 KPI cards using .card */
+.mtd-page > .kpi-grid,
+.mtd-page .kpi-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.kpi-grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.kpi-card,
+.kpi-grid > .card {
+  min-height: 86px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.kpi-icon {
+  margin-bottom: 7px;
+  line-height: 1;
+}
+
+.kpi-label {
+  line-height: 1.15;
+  min-height: 15px;
+}
+
+.kpi-value {
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.kpi-sub {
+  min-height: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Executive page layout */
+.exec-split {
+  width: 100%;
+  grid-template-columns: minmax(280px, 330px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.funnel-card,
+.sql-preview-card,
+.card {
+  border-radius: 14px;
+}
+
+.funnel-left {
+  min-width: 120px;
+}
+
+.funnel-val {
+  min-width: 88px;
+}
+
+.ai-grid {
+  width: 100%;
+  align-items: stretch;
+}
+
+.ai-block {
+  min-height: 112px;
+}
+
+/* Tables: consistent spacing and no broken alignment */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 10px;
+}
+
+.data-table {
+  min-width: 900px;
+  table-layout: auto;
+}
+
+.sql-preview-card .data-table {
+  min-width: 760px;
+}
+
+.data-table thead th,
+.data-table tbody td,
+.data-table tfoot td {
+  line-height: 1.25;
+}
+
+.data-table thead th {
+  height: 36px;
+}
+
+.data-table tbody td {
+  height: 40px;
+}
+
+.data-table td:first-child,
+.data-table th:first-child {
+  padding-left: 14px;
+}
+
+.num,
+.num-cell {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.geo-cell,
+.strong {
+  font-weight: 700;
+}
+
+.badge,
+.delta-badge,
+.geo-tag,
+.size-badge,
+.stage-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  min-height: 20px;
+}
+
+.badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+.delta-pos { background: var(--green-dim); color: var(--green); }
+.delta-neg { background: var(--red-dim); color: var(--red); }
+.delta-neutral { background: var(--brand-dim); color: var(--brand-dark); }
+
+/* SQL/Closure stage badge class names used in JS */
+.stage-badge.won { background: var(--green-dim); color: var(--green); }
+.stage-badge.sql { background: var(--brand-dim); color: var(--brand); }
+.stage-badge.opp { background: var(--blue-dim); color: var(--blue); }
+.stage-badge.lost { background: var(--red-dim); color: var(--red); }
+
+/* Chart cards */
+.chart-placeholder svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Loading/error states */
+.loading-state,
+.error-state {
+  width: 100%;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: var(--border);
+  box-shadow: var(--shadow);
+  color: var(--text-2);
+  font-weight: 700;
+}
+
+.error-state {
+  color: var(--red);
+  background: #fff7f7;
+  border-color: #f4c7c7;
+}
+
+/* Meetings page consistency */
+.meetings-grid {
+  width: 100%;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+/* Responsive */
+@media (max-width: 1280px) {
+  .kpi-grid:has(.kpi-card:nth-child(13)) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .mtd-page > .kpi-grid,
+  .mtd-page .kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .exec-split {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-grid:has(.kpi-card:nth-child(8)):not(:has(.kpi-card:nth-child(9))),
+  .kpi-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  html { font-size: 13px; }
+
+  .app-header {
+    height: auto;
+    min-height: var(--navbar-h);
+    padding: 10px 14px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .tab-nav {
+    order: 3;
+    width: 100%;
+    flex-basis: 100%;
+  }
+
+  .header-badge {
+    margin-left: auto;
+  }
+
+  .page,
+  .mtd-page {
+    padding: 16px 14px 44px;
+    gap: 14px;
+  }
+
+  .kpi-grid,
+  .kpi-grid:has(.kpi-card:nth-child(13)),
+  .kpi-grid:has(.kpi-card:nth-child(8)):not(:has(.kpi-card:nth-child(9))),
+  .mtd-page > .kpi-grid,
+  .mtd-page .kpi-grid,
+  .kpi-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .kpi-card,
+  .kpi-grid > .card {
+    min-height: 82px;
+    padding: 14px;
+  }
+
+  .ai-grid,
+  .ai-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .meetings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 460px) {
+  .kpi-grid,
+  .kpi-grid:has(.kpi-card:nth-child(13)),
+  .kpi-grid:has(.kpi-card:nth-child(8)):not(:has(.kpi-card:nth-child(9))),
+  .mtd-page > .kpi-grid,
+  .mtd-page .kpi-grid,
+  .kpi-grid-4 {
+    grid-template-columns: 1fr !important;
+  }
 }
