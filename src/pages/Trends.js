@@ -1,12 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
-const RANGE_DAYS = {
-  "7d": 7,
-  "30d": 30,
-  "60d": 60,
-  "90d": 90,
-};
+const RANGE_DAYS = { "7d": 7, "30d": 30, "60d": 60, "90d": 90 };
 
 const DATE_RANGES = [
   { v: "7d", l: "Last 7d" },
@@ -36,21 +31,15 @@ function safeNum(v) {
 }
 
 function fmtMoney(value) {
-  return `$${Number(value || 0).toLocaleString(undefined, {
-    maximumFractionDigits: 0,
-  })}`;
+  return `$${Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 }
 
 function fmtUSD(value) {
-  return `$${Number(value || 0).toLocaleString(undefined, {
-    maximumFractionDigits: 0,
-  })}`;
+  return `$${Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 }
 
 function fmtNum(value) {
-  return Number(value || 0).toLocaleString(undefined, {
-    maximumFractionDigits: 0,
-  });
+  return Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
 }
 
 function fmtValue(value, type = "num") {
@@ -81,9 +70,10 @@ function formatShortDate(value) {
 
 function getDateRange(rangeKey, customRange = null) {
   if (customRange?.from && customRange?.to) {
-    const start = new Date(`${customRange.from}T00:00:00`);
-    const end = new Date(`${customRange.to}T23:59:59.999`);
-    return { start, end };
+    return {
+      start: new Date(`${customRange.from}T00:00:00`),
+      end: new Date(`${customRange.to}T23:59:59.999`),
+    };
   }
 
   const now = new Date();
@@ -106,7 +96,6 @@ function daysBetween(start, end) {
 function isWithinRange(dateValue, rangeKey, customRange = null) {
   const d = parseDate(dateValue);
   if (!d) return false;
-
   const { start, end } = getDateRange(rangeKey, customRange);
   return d >= start && d <= end;
 }
@@ -126,19 +115,15 @@ function normalizeMetaCountry(raw) {
   return normalizeMasterCountry(raw);
 }
 
-/* GEO FILTER: only show countries where Spend > $5 */
+/* Only show geos where Spend > $10 */
 function getAllGeos(metaRows, leadRows, rangeKey, customRange = null) {
   const spendByGeo = {};
 
   (metaRows || []).forEach((row) => {
     const geo = normalizeMetaCountry(row.country_name);
-
     if (!isWithinRange(row.perf_date, rangeKey, customRange)) return;
 
-    const spend = safeNum(row.spend_usd);
-
-    if (!spendByGeo[geo]) spendByGeo[geo] = 0;
-    spendByGeo[geo] += spend;
+    spendByGeo[geo] = (spendByGeo[geo] || 0) + safeNum(row.spend_usd);
   });
 
   return Object.keys(spendByGeo)
@@ -151,7 +136,6 @@ function getBucketMode(rangeKey, customRange = null) {
     const { start, end } = getDateRange(rangeKey, customRange);
     return daysBetween(start, end) > 45 ? "week" : "day";
   }
-
   return rangeKey === "60d" || rangeKey === "90d" ? "week" : "day";
 }
 
@@ -172,7 +156,6 @@ function getBucketKey(dateValue, mode) {
     const d = startOfUtcWeek(dateValue);
     return d ? d.toISOString().slice(0, 10) : null;
   }
-
   return toDayKey(dateValue);
 }
 
@@ -184,7 +167,6 @@ function getBucketLabel(bucketKey, mode) {
     end.setUTCDate(end.getUTCDate() + 6);
     return `${formatShortDate(d)} - ${formatShortDate(end)}`;
   }
-
   return formatShortDate(bucketKey);
 }
 
@@ -247,9 +229,7 @@ function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos, customRange 
 
     if (isWithinRange(row.lead_created_date, rangeKey, customRange)) {
       const bucketKey = getBucketKey(row.lead_created_date, bucketMode);
-      if (bucketKey && byBucket[bucketKey]) {
-        byBucket[bucketKey].leads += 1;
-      }
+      if (bucketKey && byBucket[bucketKey]) byBucket[bucketKey].leads += 1;
     }
 
     if (row.is_sql === true && isWithinRange(row.sql_date, rangeKey, customRange)) {
@@ -260,10 +240,7 @@ function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos, customRange 
       }
     }
 
-    if (
-      row.is_closed_won === true &&
-      isWithinRange(row.close_date, rangeKey, customRange)
-    ) {
+    if (row.is_closed_won === true && isWithinRange(row.close_date, rangeKey, customRange)) {
       const bucketKey = getBucketKey(row.close_date, bucketMode);
       if (bucketKey && byBucket[bucketKey]) {
         byBucket[bucketKey].closures += 1;
@@ -292,9 +269,7 @@ function getNiceMax(maxVal) {
 function getTickValues(maxVal, count = 5) {
   const niceMax = getNiceMax(maxVal);
   const ticks = [];
-  for (let i = 0; i <= count; i++) {
-    ticks.push((niceMax / count) * i);
-  }
+  for (let i = 0; i <= count; i++) ticks.push((niceMax / count) * i);
   return ticks;
 }
 
@@ -307,16 +282,7 @@ function LineChart({ data, metricKey, metricFmt }) {
 
   if (!data.length) {
     return (
-      <div
-        style={{
-          height: H,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#8d86a8",
-          fontSize: 14,
-        }}
-      >
+      <div style={{ height: H, display: "flex", alignItems: "center", justifyContent: "center", color: "#8d86a8", fontSize: 14 }}>
         No data for selected filters
       </div>
     );
@@ -347,51 +313,21 @@ function LineChart({ data, metricKey, metricFmt }) {
     data.length <= 60 ? 4 : 5;
 
   return (
-    <svg
-      viewBox={`0 0 ${W} ${H}`}
-      style={{ width: "100%", height: H, overflow: "visible" }}
-      aria-label="line chart"
-    >
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: H, overflow: "visible" }} aria-label="line chart">
       {ticks.map((tick, idx) => {
         const y = yOf(tick);
         return (
           <g key={idx}>
-            <line
-              x1={PAD.left}
-              y1={y}
-              x2={PAD.left + innerW}
-              y2={y}
-              stroke="rgba(124,79,214,0.12)"
-              strokeWidth="1"
-            />
-            <text
-              x={PAD.left - 14}
-              y={y + 4}
-              textAnchor="end"
-              fontSize="11"
-              fill="#8d86a8"
-            >
+            <line x1={PAD.left} y1={y} x2={PAD.left + innerW} y2={y} stroke="rgba(124,79,214,0.12)" strokeWidth="1" />
+            <text x={PAD.left - 14} y={y + 4} textAnchor="end" fontSize="11" fill="#8d86a8">
               {fmtNum(tick)}
             </text>
           </g>
         );
       })}
 
-      <line
-        x1={PAD.left}
-        y1={PAD.top}
-        x2={PAD.left}
-        y2={PAD.top + innerH}
-        stroke="rgba(124,79,214,0.18)"
-      />
-
-      <line
-        x1={PAD.left}
-        y1={PAD.top + innerH}
-        x2={PAD.left + innerW}
-        y2={PAD.top + innerH}
-        stroke="rgba(124,79,214,0.18)"
-      />
+      <line x1={PAD.left} y1={PAD.top} x2={PAD.left} y2={PAD.top + innerH} stroke="rgba(124,79,214,0.18)" />
+      <line x1={PAD.left} y1={PAD.top + innerH} x2={PAD.left + innerW} y2={PAD.top + innerH} stroke="rgba(124,79,214,0.18)" />
 
       <defs>
         <linearGradient id="trendAreaFill" x1="0" y1="0" x2="0" y2="1">
@@ -401,15 +337,7 @@ function LineChart({ data, metricKey, metricFmt }) {
       </defs>
 
       <polygon points={fillPoints} fill="url(#trendAreaFill)" />
-
-      <polyline
-        points={points}
-        fill="none"
-        stroke="#7c4fd6"
-        strokeWidth="3"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
+      <polyline points={points} fill="none" stroke="#7c4fd6" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
 
       {data.map((d, i) => {
         const cx = xOf(i);
@@ -431,20 +359,8 @@ function LineChart({ data, metricKey, metricFmt }) {
 
         return (
           <g key={`x-${d.bucketKey}-${i}`}>
-            <line
-              x1={x}
-              y1={PAD.top + innerH}
-              x2={x}
-              y2={PAD.top + innerH + 6}
-              stroke="rgba(124,79,214,0.18)"
-            />
-            <text
-              x={x}
-              y={PAD.top + innerH + 22}
-              textAnchor="middle"
-              fontSize="11"
-              fill="#8d86a8"
-            >
+            <line x1={x} y1={PAD.top + innerH} x2={x} y2={PAD.top + innerH + 6} stroke="rgba(124,79,214,0.18)" />
+            <text x={x} y={PAD.top + innerH + 22} textAnchor="middle" fontSize="11" fill="#8d86a8">
               {d.label}
             </text>
           </g>
@@ -588,12 +504,7 @@ export default function Trends() {
   }, [dateRange, activeCustomRange]);
 
   const allGeos = useMemo(() => {
-    return getAllGeos(
-      supabaseMetaRows,
-      supabaseLeadRows,
-      dateRange,
-      activeCustomRange
-    );
+    return getAllGeos(supabaseMetaRows, supabaseLeadRows, dateRange, activeCustomRange);
   }, [supabaseMetaRows, supabaseLeadRows, dateRange, activeCustomRange]);
 
   useEffect(() => {
@@ -612,12 +523,18 @@ export default function Trends() {
   const toggleGeo = (geo) => {
     setSelectedGeos((prev) => {
       if (prev.includes(geo)) {
-        const next = prev.filter((g) => g !== geo);
-        return next.length ? next : [geo];
+        return prev.filter((g) => g !== geo);
       }
-
       return [...prev, geo];
     });
+  };
+
+  const selectAllGeos = () => {
+    setSelectedGeos(allGeos);
+  };
+
+  const clearAllGeos = () => {
+    setSelectedGeos([]);
   };
 
   const trendRows = useMemo(() => {
@@ -630,8 +547,7 @@ export default function Trends() {
     );
   }, [dateRange, selectedGeos, supabaseMetaRows, supabaseLeadRows, activeCustomRange]);
 
-  const metric =
-    TREND_METRICS.find((m) => m.key === selectedMetric) || TREND_METRICS[0];
+  const metric = TREND_METRICS.find((m) => m.key === selectedMetric) || TREND_METRICS[0];
 
   return (
     <div className="page">
@@ -683,6 +599,22 @@ export default function Trends() {
       </div>
 
       <div className="filter-bar">
+        <button
+          className={`filter-pill ${selectedGeos.length === allGeos.length && allGeos.length > 0 ? "active" : ""}`}
+          onClick={selectAllGeos}
+        >
+          Select All
+        </button>
+
+        <button
+          className={`filter-pill ${selectedGeos.length === 0 ? "active" : ""}`}
+          onClick={clearAllGeos}
+        >
+          Clear All
+        </button>
+
+        <div className="filter-sep" />
+
         {allGeos.map((geo) => (
           <button
             key={geo}
@@ -708,11 +640,7 @@ export default function Trends() {
 
       <div className="card chart-placeholder">
         <h3 className="section-title">{metric.label.toUpperCase()} OVER TIME</h3>
-        <LineChart
-          data={trendRows}
-          metricKey={selectedMetric}
-          metricFmt={metric.fmt}
-        />
+        <LineChart data={trendRows} metricKey={selectedMetric} metricFmt={metric.fmt} />
       </div>
 
       <div className="card">
@@ -721,11 +649,7 @@ export default function Trends() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>
-                  {getBucketMode(dateRange, activeCustomRange) === "week"
-                    ? "Week"
-                    : "Date"}
-                </th>
+                <th>{getBucketMode(dateRange, activeCustomRange) === "week" ? "Week" : "Date"}</th>
                 {TREND_METRICS.map((m) => (
                   <th key={m.key} className="num-cell">
                     {m.label}
