@@ -282,9 +282,9 @@ function getTickValues(maxVal, count = 4) {
 }
 
 function LineChart({ data, metricKey, metricFmt }) {
-  const W = 1100;
+  const W = 1200;
   const H = 360;
-  const PAD = { top: 18, right: 36, bottom: 48, left: 64 };
+  const PAD = { top: 18, right: 18, bottom: 42, left: 50 };
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
 
