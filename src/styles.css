@@ -1281,3 +1281,89 @@ body {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ===============================
+   TOP SQL TABLE FIX (FINAL)
+================================ */
+
+/* Force proper table layout */
+.table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+/* Header styling */
+.table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #8c82a8;
+  font-weight: 600;
+  padding: 12px 16px;
+}
+
+/* Row cells */
+.table td {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #2f2350;
+  vertical-align: middle;
+}
+
+/* Row spacing */
+.table tr {
+  border-bottom: 1px solid #eee9f7;
+}
+
+/* Column widths + alignment */
+
+/* Company */
+.table th:nth-child(1),
+.table td:nth-child(1) {
+  width: 34%;
+  text-align: left;
+}
+
+/* Deal Value (FIXED RIGHT ALIGN) */
+.table th:nth-child(2),
+.table td:nth-child(2) {
+  width: 16%;
+  text-align: right;
+  padding-right: 28px;
+  font-weight: 600;
+}
+
+/* Size */
+.table th:nth-child(3),
+.table td:nth-child(3) {
+  width: 12%;
+  text-align: center;
+}
+
+/* Geo */
+.table th:nth-child(4),
+.table td:nth-child(4) {
+  width: 20%;
+  text-align: center;
+}
+
+/* Link */
+.table th:nth-child(5),
+.table td:nth-child(5) {
+  width: 10%;
+  text-align: center;
+}
+
+/* Fix badge alignment inside size/geo */
+.table td:nth-child(3) span,
+.table td:nth-child(4) span {
+  display: inline-block;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* Hover */
+.table tr:hover {
+  background: #f8f5fc;
+}
