@@ -1,35 +1,63 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { supabase } from "../lib/supabase";
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function getDateRange() {
+  const today = new Date();
+  const year = today.getUTCFullYear();
+  const month = today.getUTCMonth();
 
-const QUARTER_MONTHS = {
-  Q1: ["Jan", "Feb", "Mar"],
-  Q2: ["Apr", "May", "Jun"],
-  Q3: ["Jul", "Aug", "Sep"],
-  Q4: ["Oct", "Nov", "Dec"],
-};
+  const start = new Date(Date.UTC(year, month, 1));
+  const yesterday = new Date(Date.UTC(year, month, today.getUTCDate() - 1));
 
-const AVAILABLE_QUARTERS = ["Q1", "Q2", "Q3", "Q4"];
-const DISPLAY_YEAR = 2026;
+  const startIso = start.toISOString().slice(0, 10);
+  const endIso = `${yesterday.toISOString().slice(0, 10)}T23:59:59.999Z`;
 
-const STAGE_COLORS = {
-  "Closed Won": "won",
-  "Sales Qualified": "sql",
-  Opportunity: "opp",
-  "Closed Lost": "lost",
-  "Closed/Lost": "lost",
-};
+  const fmt = (d) =>
+    d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      timeZone: "UTC",
+    });
+
+  const label = `${fmt(start)} – ${fmt(yesterday)}, ${year}`;
+  const planMonth = `${year}-${String(month + 1).padStart(2, "0")}`;
+  const daysElapsed = today.getUTCDate() - 1;
+
+  return { startIso, endIso, label, planMonth, daysElapsed };
+}
+
+function fmtUSD(value) {
+  return `$${Math.round(Number(value || 0)).toLocaleString()}`;
+}
+
+function fmtNum(value) {
+  return Number(value || 0).toLocaleString();
+}
 
 function safeNum(v) {
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
 }
 
-function fmtUSD(value) {
-  return `$${Number(value || 0).toLocaleString(undefined, {
-    maximumFractionDigits: 0,
-  })}`;
+function safeDivide(a, b) {
+  if (!b) return 0;
+  return a / b;
+}
+
+function pctDelta(expected, actual) {
+  if (!expected) return 0;
+  return Math.round(((actual - expected) / expected) * 100);
+}
+
+function varianceLabel(expected, actual) {
+  const val = pctDelta(expected, actual);
+  return `${val > 0 ? "+" : ""}${val}%`;
+}
+
+function getDeltaClass(value) {
+  if (value > 0) return "delta-pos";
+  if (value < 0) return "delta-neg";
+  return "delta-neutral";
 }
 
 function parseDate(value) {
@@ -38,28 +66,10 @@ function parseDate(value) {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
-function getQuarterDateRange(quarter, month) {
-  const quarterMonths = QUARTER_MONTHS[quarter] || [];
-  const selectedMonths = month ? [month] : quarterMonths;
-
-  const monthIndexes = selectedMonths
-    .map((m) => MONTHS.indexOf(m))
-    .filter((idx) => idx >= 0);
-
-  if (monthIndexes.length === 0) {
-    return { startIso: null, endIso: null };
-  }
-
-  const minMonth = Math.min(...monthIndexes);
-  const maxMonth = Math.max(...monthIndexes);
-
-  const start = new Date(Date.UTC(DISPLAY_YEAR, minMonth, 1, 0, 0, 0, 0));
-  const end = new Date(Date.UTC(DISPLAY_YEAR, maxMonth + 1, 0, 23, 59, 59, 999));
-
-  return {
-    startIso: start.toISOString(),
-    endIso: end.toISOString(),
-  };
+function formatDateForDisplay(value) {
+  const d = parseDate(value);
+  if (!d) return "—";
+  return d.toISOString().slice(0, 10);
 }
 
 function getSqlStage(row) {
@@ -99,18 +109,8 @@ function getCreatedDate(row) {
   return row.lead_created_date ?? null;
 }
 
-function getOwner() {
-  return "—";
-}
-
 function getHsUrl(row) {
   return row.deal_link || row.lead_link || "#";
-}
-
-function formatDateForDisplay(value) {
-  const d = parseDate(value);
-  if (!d) return "—";
-  return d.toISOString().slice(0, 10);
 }
 
 function buildSqlRows(rows) {
@@ -126,13 +126,11 @@ function buildSqlRows(rows) {
     createdDateRaw: parseDate(getCreatedDate(row)),
     dealValue: safeNum(row.amount_usd),
     stage: getSqlStage(row),
-    owner: getOwner(row),
     hsUrl: getHsUrl(row),
-    isClosedWon: row.is_closed_won === true,
   }));
 }
 
-function sortRows(rows, sortKey, sortDir) {
+function sortSqlRows(rows, sortKey, sortDir) {
   const arr = [...rows];
 
   arr.sort((a, b) => {
@@ -165,250 +163,749 @@ function sortRows(rows, sortKey, sortDir) {
   return arr;
 }
 
-export default function SQL() {
-  const [qFilter, setQFilter] = useState("Q1");
-  const [monthFilter, setMonthFilter] = useState(null);
-  const [geoFilter, setGeoFilter] = useState(null);
-  const [sortKey, setSortKey] = useState("sqlDate");
-  const [sortDir, setSortDir] = useState("desc");
-  const [supabaseRows, setSupabaseRows] = useState([]);
+export default function MTDDataRevamp() {
+  const [rows, setRows] = useState([]);
+  const [sqlDetailRows, setSqlDetailRows] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const monthsInQuarter = useMemo(() => {
-    return QUARTER_MONTHS[qFilter] || [];
-  }, [qFilter]);
+  const [sqlSortKey, setSqlSortKey] = useState("sqlDate");
+  const [sqlSortDir, setSqlSortDir] = useState("desc");
 
-  const handleQuarterClick = (q) => {
-    setQFilter(q);
-    setMonthFilter(null);
-    setGeoFilter(null);
-  };
-
-  const handleMonthClick = (m) => {
-    setMonthFilter((prev) => (prev === m ? null : m));
-    setGeoFilter(null);
-  };
+  const dateRange = useMemo(() => getDateRange(), []);
 
   useEffect(() => {
-    async function fetchSqlRows() {
+    async function fetchMTD() {
       try {
         setLoading(true);
+        setError(null);
 
-        const { startIso, endIso } = getQuarterDateRange(qFilter, monthFilter);
-        if (!startIso || !endIso) {
-          setSupabaseRows([]);
-          return;
+        const { startIso, endIso, planMonth, daysElapsed } = dateRange;
+
+        const [
+          planMtdRes,
+          actualSpendRes,
+          actualMqlRes,
+          actualSqlRes,
+          planSqlRes,
+          sqlDetailRes,
+        ] = await Promise.all([
+          supabase
+            .from("plan_daily")
+            .select("geo, daily_spend_usd, daily_mql_target")
+            .gte("plan_date", startIso)
+            .lte("plan_date", endIso),
+
+          supabase
+            .from("meta_performance")
+            .select("country_name, spend_usd, impressions, clicks, reach, leads")
+            .gte("perf_date", startIso)
+            .lte("perf_date", endIso),
+
+          supabase
+            .from("master_leads")
+            .select("country")
+            .gte("lead_created_date", startIso)
+            .lte("lead_created_date", endIso),
+
+          supabase
+            .from("master_leads")
+            .select("country, amount_usd")
+            .eq("is_sql", true)
+            .gte("sql_date", startIso)
+            .lte("sql_date", endIso),
+
+          supabase
+            .from("plan_monthly")
+            .select("geo, sql_target")
+            .eq("plan_month", planMonth),
+
+          supabase
+            .from("master_leads")
+            .select(`
+              lead_id,
+              deal_id,
+              company,
+              country,
+              campaign_name,
+              utm_campaign,
+              hs_analytics_source_data_1,
+              hs_analytics_source_data_2,
+              lead_created_date,
+              is_sql,
+              sql_date,
+              is_closed_won,
+              close_date,
+              amount_usd,
+              deal_stage,
+              deal_name,
+              deal_link,
+              lead_link
+            `)
+            .eq("is_sql", true)
+            .gte("sql_date", startIso)
+            .lte("sql_date", endIso)
+            .order("sql_date", { ascending: false }),
+        ]);
+
+        for (const res of [
+          planMtdRes,
+          actualSpendRes,
+          actualMqlRes,
+          actualSqlRes,
+          planSqlRes,
+          sqlDetailRes,
+        ]) {
+          if (res.error) throw res.error;
         }
 
-        const { data, error } = await supabase
-          .from("master_leads")
-          .select(`
-            lead_id,
-            deal_id,
-            company,
-            country,
-            campaign_name,
-            utm_campaign,
-            hs_analytics_source_data_1,
-            hs_analytics_source_data_2,
-            lead_created_date,
-            is_sql,
-            sql_date,
-            is_closed_won,
-            close_date,
-            amount_usd,
-            deal_stage,
-            deal_name,
-            deal_link,
-            lead_link
-          `)
-          .eq("is_sql", true)
-          .gte("sql_date", startIso)
-          .lte("sql_date", endIso);
-
-        if (error) {
-          console.error("SQL page fetch error:", error);
-          setSupabaseRows([]);
-        } else {
-          setSupabaseRows(data || []);
+        const planMtdByGeo = {};
+        for (const r of planMtdRes.data || []) {
+          if (!planMtdByGeo[r.geo]) {
+            planMtdByGeo[r.geo] = { expectedSpend: 0, expectedMql: 0 };
+          }
+          planMtdByGeo[r.geo].expectedSpend += Number(r.daily_spend_usd || 0);
+          planMtdByGeo[r.geo].expectedMql += Number(r.daily_mql_target || 0);
         }
+
+        const spendByGeo = {};
+        for (const r of actualSpendRes.data || []) {
+          const geo = r.country_name || "Unknown";
+          spendByGeo[geo] = (spendByGeo[geo] || 0) + Number(r.spend_usd || 0);
+        }
+
+        const mqlByGeo = {};
+        for (const r of actualMqlRes.data || []) {
+          const geo = r.country || "Unknown";
+          mqlByGeo[geo] = (mqlByGeo[geo] || 0) + 1;
+        }
+
+        const sqlByGeo = {};
+        const pipelineByGeo = {};
+        for (const r of actualSqlRes.data || []) {
+          const geo = r.country || "Unknown";
+          const value = Number(r.amount_usd || 0);
+
+          sqlByGeo[geo] = (sqlByGeo[geo] || 0) + 1;
+          pipelineByGeo[geo] = (pipelineByGeo[geo] || 0) + value;
+        }
+
+        const planSqlByGeo = {};
+        for (const r of planSqlRes.data || []) {
+          planSqlByGeo[r.geo] = Math.round((Number(r.sql_target || 0) / 30) * daysElapsed);
+        }
+
+        const allGeos = Array.from(
+          new Set([
+            ...Object.keys(planMtdByGeo),
+            ...Object.keys(spendByGeo),
+            ...Object.keys(mqlByGeo),
+            ...Object.keys(sqlByGeo),
+          ])
+        );
+
+        const merged = allGeos.map((geo) => {
+          const expectedSpend = Math.round(planMtdByGeo[geo]?.expectedSpend || 0);
+          const expectedMql = Math.round(planMtdByGeo[geo]?.expectedMql || 0);
+          const actualSpend = Math.round(spendByGeo[geo] || 0);
+          const actualMql = mqlByGeo[geo] || 0;
+          const expectedSql = planSqlByGeo[geo] || 0;
+          const actualSql = sqlByGeo[geo] || 0;
+          const pipeline = pipelineByGeo[geo] || 0;
+
+          return {
+            geo,
+            expectedSpend,
+            actualSpend,
+            expectedMql,
+            actualMql,
+            expectedSql,
+            actualSql,
+            pipeline,
+          };
+        });
+
+        merged.sort((a, b) => b.actualSpend - a.actualSpend);
+
+        setRows(merged);
+        setSqlDetailRows(buildSqlRows(sqlDetailRes.data || []));
       } catch (err) {
-        console.error("Unexpected SQL page fetch error:", err);
-        setSupabaseRows([]);
+        console.error("MTD fetch error:", err);
+        setError(err.message || "Failed to load MTD data");
       } finally {
         setLoading(false);
       }
     }
 
-    fetchSqlRows();
-  }, [qFilter, monthFilter]);
+    fetchMTD();
+  }, [dateRange]);
 
-  const sqlRows = useMemo(() => {
-    return buildSqlRows(supabaseRows);
-  }, [supabaseRows]);
+  const computed = useMemo(() => {
+    const totals = rows.reduce(
+      (acc, row) => {
+        acc.expectedSpend += row.expectedSpend;
+        acc.actualSpend += row.actualSpend;
+        acc.expectedMql += row.expectedMql;
+        acc.actualMql += row.actualMql;
+        acc.expectedSql += row.expectedSql;
+        acc.actualSql += row.actualSql;
+        acc.pipeline += row.pipeline;
+        return acc;
+      },
+      {
+        expectedSpend: 0,
+        actualSpend: 0,
+        expectedMql: 0,
+        actualMql: 0,
+        expectedSql: 0,
+        actualSql: 0,
+        pipeline: 0,
+      }
+    );
 
-  const availableGeos = useMemo(() => {
-    return [...new Set(sqlRows.map((r) => r.geo))].filter(Boolean).sort((a, b) => a.localeCompare(b));
-  }, [sqlRows]);
+    const spendVar = pctDelta(totals.expectedSpend, totals.actualSpend);
+    const mqlVar = pctDelta(totals.expectedMql, totals.actualMql);
+    const sqlVar = pctDelta(totals.expectedSql, totals.actualSql);
 
-  const displayRows = useMemo(() => {
-    const rows = geoFilter ? sqlRows.filter((r) => r.geo === geoFilter) : sqlRows;
-    return sortRows(rows, sortKey, sortDir);
-  }, [sqlRows, geoFilter, sortKey, sortDir]);
+    const costPerMql =
+      totals.actualMql > 0 ? safeDivide(totals.actualSpend, totals.actualMql) : null;
+    const costPerSql =
+      totals.actualSql > 0 ? safeDivide(totals.actualSpend, totals.actualSql) : null;
 
-  const kpiSql = displayRows.length;
-  const kpiPipeline = displayRows.reduce((s, r) => s + safeNum(r.dealValue), 0);
-  const kpiAvg = kpiSql ? Math.round(kpiPipeline / kpiSql) : 0;
-  const kpiWon = displayRows.filter((r) => r.isClosedWon).length;
+    const bestGeo =
+      [...rows].sort(
+        (a, b) => safeDivide(b.actualMql, b.actualSpend) - safeDivide(a.actualMql, a.actualSpend)
+      )[0] || null;
 
-  const handleSort = (key) => {
-    if (sortKey === key) {
-      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    const riskGeo =
+      [...rows].sort(
+        (a, b) => pctDelta(a.expectedMql, a.actualMql) - pctDelta(b.expectedMql, b.actualMql)
+      )[0] || null;
+
+    return {
+      totals,
+      spendVar,
+      mqlVar,
+      sqlVar,
+      costPerMql,
+      costPerSql,
+      bestGeo,
+      riskGeo,
+    };
+  }, [rows]);
+
+  const sortedSqlDetailRows = useMemo(() => {
+    return sortSqlRows(sqlDetailRows, sqlSortKey, sqlSortDir);
+  }, [sqlDetailRows, sqlSortKey, sqlSortDir]);
+
+  const handleSqlSort = (key) => {
+    if (sqlSortKey === key) {
+      setSqlSortDir((d) => (d === "asc" ? "desc" : "asc"));
     } else {
-      setSortKey(key);
-      setSortDir(
-        key === "sqlDate" || key === "createdDate" || key === "dealValue"
-          ? "desc"
-          : "asc"
+      setSqlSortKey(key);
+      setSqlSortDir(
+        key === "sqlDate" || key === "createdDate" || key === "dealValue" ? "desc" : "asc"
       );
     }
   };
 
-  const SortTh = ({ k, label, className = "" }) => (
-    <th onClick={() => handleSort(k)} className={`sortable-th ${className}`}>
-      {label} {sortKey === k ? (sortDir === "asc" ? "▲" : "▼") : ""}
+  const SqlSortTh = ({ k, label, className = "" }) => (
+    <th onClick={() => handleSqlSort(k)} className={`sortable-th ${className}`}>
+      {label} {sqlSortKey === k ? (sqlSortDir === "asc" ? "▲" : "▼") : ""}
     </th>
   );
 
   return (
-    <div className="page">
-      <div className="page-header-row">
-        <h2 className="page-title">SQL Pipeline</h2>
+    <div className="mtd-page">
+      <style>{`
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Inter, Arial, sans-serif; }
+
+        .mtd-page {
+          padding: 24px;
+          background: #f6f8fb;
+          min-height: 100vh;
+          color: #172033;
+        }
+
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 16px;
+          margin-bottom: 20px;
+        }
+
+        .header-left h1 {
+          margin: 0 0 6px;
+          font-size: 28px;
+          line-height: 1.2;
+        }
+
+        .header-left p {
+          margin: 0;
+          color: #5b667a;
+          font-size: 14px;
+        }
+
+        .header-right {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+
+        .tag {
+          padding: 8px 12px;
+          border-radius: 999px;
+          background: white;
+          border: 1px solid #e3e8f2;
+          font-size: 12px;
+          color: #44506a;
+          font-weight: 600;
+        }
+
+        .kpi-grid {
+          display: grid;
+          grid-template-columns: repeat(6, minmax(180px, 1fr));
+          gap: 16px;
+          margin-bottom: 20px;
+        }
+
+        .card {
+          background: white;
+          border: 1px solid #e7ebf3;
+          border-radius: 18px;
+          padding: 18px;
+          box-shadow: 0 4px 14px rgba(18, 38, 63, 0.04);
+        }
+
+        .kpi-label {
+          font-size: 13px;
+          color: #69758c;
+          margin-bottom: 8px;
+          font-weight: 600;
+        }
+
+        .kpi-value {
+          font-size: 28px;
+          font-weight: 800;
+          margin-bottom: 8px;
+        }
+
+        .kpi-sub {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          font-size: 13px;
+          color: #536079;
+        }
+
+        .badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 4px 10px;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .delta-pos { color: #0f8a43; background: #e9f8ef; }
+        .delta-neg { color: #c23535; background: #fdecec; }
+        .delta-neutral { color: #6b7280; background: #f3f4f6; }
+
+        .section-grid {
+          display: grid;
+          grid-template-columns: 2fr 1fr;
+          gap: 16px;
+          margin-bottom: 20px;
+        }
+
+        .section-title {
+          margin: 0 0 14px;
+          font-size: 18px;
+          font-weight: 800;
+        }
+
+        .table-wrap { overflow-x: auto; }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 1100px;
+        }
+
+        th {
+          text-align: left;
+          font-size: 12px;
+          color: #6b7280;
+          font-weight: 700;
+          padding: 12px 10px;
+          border-bottom: 1px solid #edf1f7;
+          white-space: nowrap;
+          background: #fafbfd;
+        }
+
+        td {
+          padding: 14px 10px;
+          border-bottom: 1px solid #f1f4f9;
+          font-size: 14px;
+          vertical-align: middle;
+        }
+
+        tr:hover td { background: #fafcff; }
+
+        .geo-cell { font-weight: 700; white-space: nowrap; }
+        .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .muted { color: #738099; }
+        .strong { font-weight: 800; }
+
+        .side-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .insight-item {
+          border: 1px solid #eef2f7;
+          border-radius: 14px;
+          padding: 14px;
+          background: #fbfcfe;
+        }
+
+        .insight-item h4 { margin: 0 0 6px; font-size: 14px; }
+        .insight-item p  { margin: 0; font-size: 13px; line-height: 1.5; color: #5b667a; }
+
+        .loading-state {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 200px;
+          color: #69758c;
+          font-size: 15px;
+        }
+
+        .error-state {
+          padding: 16px;
+          background: #fdecec;
+          color: #c23535;
+          border-radius: 12px;
+          margin-bottom: 16px;
+          font-size: 14px;
+        }
+
+        .sql-link {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 6px 10px;
+          border-radius: 999px;
+          border: 1px solid #d9dff0;
+          background: #fff;
+          color: #6b46c1;
+          text-decoration: none;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .sql-link:hover {
+          background: #f7f4ff;
+        }
+
+        .sql-stage {
+          display: inline-flex;
+          align-items: center;
+          padding: 6px 10px;
+          border-radius: 999px;
+          background: #f3f0ff;
+          color: #6b46c1;
+          font-size: 12px;
+          font-weight: 700;
+          white-space: nowrap;
+        }
+
+        .sortable-th {
+          cursor: pointer;
+          user-select: none;
+        }
+
+        .sortable-th:hover {
+          color: #374151;
+        }
+
+        @media (max-width: 1400px) {
+          .kpi-grid {
+            grid-template-columns: repeat(3, minmax(220px, 1fr));
+          }
+        }
+
+        @media (max-width: 1200px) {
+          .kpi-grid, .section-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
+      <div className="header">
+        <div className="header-left">
+          <h1>MTD Performance Dashboard</h1>
+          <p>{dateRange.label} — Plan vs Actual</p>
+        </div>
+        <div className="header-right">
+          <div className="tag">Period: {dateRange.label}</div>
+          <div className="tag">Days Elapsed: {dateRange.daysElapsed}</div>
+        </div>
       </div>
 
-      <div className="filter-bar">
-        {AVAILABLE_QUARTERS.map((q) => (
-          <button
-            key={q}
-            className={`filter-pill ${qFilter === q && !monthFilter ? "active" : ""}`}
-            onClick={() => handleQuarterClick(q)}
-          >
-            {q}
-          </button>
-        ))}
+      {error && <div className="error-state">⚠️ {error}</div>}
 
-        {monthsInQuarter.length > 0 && <div className="filter-sep" />}
+      {loading ? (
+        <div className="loading-state">Loading MTD data...</div>
+      ) : (
+        <>
+          <div className="kpi-grid">
+            <div className="card">
+              <div className="kpi-label">Spend (USD)</div>
+              <div className="kpi-value">{fmtUSD(computed.totals.actualSpend)}</div>
+              <div className="kpi-sub">
+                <span>Expected: {fmtUSD(computed.totals.expectedSpend)}</span>
+                <span className={`badge ${getDeltaClass(computed.spendVar)}`}>
+                  {varianceLabel(computed.totals.expectedSpend, computed.totals.actualSpend)} vs Plan
+                </span>
+              </div>
+            </div>
 
-        {monthsInQuarter.map((m) => (
-          <button
-            key={m}
-            className={`filter-pill ${monthFilter === m ? "active" : ""}`}
-            onClick={() => handleMonthClick(m)}
-          >
-            {m}
-          </button>
-        ))}
-      </div>
+            <div className="card">
+              <div className="kpi-label">MQL</div>
+              <div className="kpi-value">{fmtNum(computed.totals.actualMql)}</div>
+              <div className="kpi-sub">
+                <span>Expected: {fmtNum(computed.totals.expectedMql)}</span>
+                <span className={`badge ${getDeltaClass(computed.mqlVar)}`}>
+                  {varianceLabel(computed.totals.expectedMql, computed.totals.actualMql)} vs Plan
+                </span>
+              </div>
+            </div>
 
-      {availableGeos.length > 0 && (
-        <div className="filter-bar" style={{ marginTop: 8 }}>
-          <span className="filter-label">Geo:</span>
-          {availableGeos.map((g) => (
-            <button
-              key={g}
-              className={`filter-pill ${geoFilter === g ? "active" : ""}`}
-              onClick={() => setGeoFilter((prev) => (prev === g ? null : g))}
-            >
-              {g}
-            </button>
-          ))}
-        </div>
-      )}
+            <div className="card">
+              <div className="kpi-label">Cost per MQL</div>
+              <div className="kpi-value">
+                {computed.costPerMql !== null ? fmtUSD(computed.costPerMql) : "—"}
+              </div>
+              <div className="kpi-sub">
+                <span>Actual only</span>
+                <span className="badge delta-neutral">Spend ÷ MQL</span>
+              </div>
+            </div>
 
-      <div className="kpi-grid kpi-grid-4">
-        <div className="kpi-card">
-          <span className="kpi-icon">🏆</span>
-          <div className="kpi-label">SQLs</div>
-          <div className="kpi-value">{kpiSql}</div>
-        </div>
+            <div className="card">
+              <div className="kpi-label">SQL</div>
+              <div className="kpi-value">{fmtNum(computed.totals.actualSql)}</div>
+              <div className="kpi-sub">
+                <span>Expected: {fmtNum(computed.totals.expectedSql)}</span>
+                <span className={`badge ${getDeltaClass(computed.sqlVar)}`}>
+                  {varianceLabel(computed.totals.expectedSql, computed.totals.actualSql)} vs Plan
+                </span>
+              </div>
+            </div>
 
-        <div className="kpi-card">
-          <span className="kpi-icon">📊</span>
-          <div className="kpi-label">Pipeline</div>
-          <div className="kpi-value">{fmtUSD(kpiPipeline)}</div>
-        </div>
+            <div className="card">
+              <div className="kpi-label">Cost per SQL</div>
+              <div className="kpi-value">
+                {computed.costPerSql !== null ? fmtUSD(computed.costPerSql) : "—"}
+              </div>
+              <div className="kpi-sub">
+                <span>Actual only</span>
+                <span className="badge delta-neutral">Spend ÷ SQL</span>
+              </div>
+            </div>
 
-        <div className="kpi-card">
-          <span className="kpi-icon">💡</span>
-          <div className="kpi-label">Avg Deal</div>
-          <div className="kpi-value">{fmtUSD(kpiAvg)}</div>
-        </div>
+            <div className="card">
+              <div className="kpi-label">Pipeline</div>
+              <div className="kpi-value">{fmtUSD(computed.totals.pipeline)}</div>
+              <div className="kpi-sub">
+                <span>Actual only</span>
+                <span className="badge delta-neutral">Live decision view</span>
+              </div>
+            </div>
+          </div>
 
-        <div className="kpi-card">
-          <span className="kpi-icon">🔒</span>
-          <div className="kpi-label">Closed Won</div>
-          <div className="kpi-value">{kpiWon}</div>
-        </div>
-      </div>
+          <div className="section-grid">
+            <div className="card">
+              <h3 className="section-title">Geo Performance Overview</h3>
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Geo</th>
+                      <th className="num">Expected Spend</th>
+                      <th className="num">Actual Spend</th>
+                      <th className="num">Spend Var</th>
+                      <th className="num">Expected MQL</th>
+                      <th className="num">Actual MQL</th>
+                      <th className="num">MQL Var</th>
+                      <th className="num">Expected SQL</th>
+                      <th className="num">Actual SQL</th>
+                      <th className="num">Cost / SQL</th>
+                      <th className="num">SQL Var</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((row) => {
+                      const spendVar = pctDelta(row.expectedSpend, row.actualSpend);
+                      const mqlVar = pctDelta(row.expectedMql, row.actualMql);
+                      const sqlVar = pctDelta(row.expectedSql, row.actualSql);
 
-      <div className="card">
-        <div className="table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th className="num-cell">#</th>
-                <SortTh k="company" label="Company" />
-                <SortTh k="country" label="Country" />
-                <SortTh k="geo" label="Geo" />
-                <SortTh k="campaign" label="Campaign" />
-                <SortTh k="sqlDate" label="SQL Date" />
-                <SortTh k="createdDate" label="Created" />
-                <SortTh k="dealValue" label="Deal Value" className="num-cell" />
-                <SortTh k="stage" label="Stage" />
-                <SortTh k="owner" label="Owner" />
-                <th>HubSpot</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayRows.length > 0 ? (
-                displayRows.map((row, i) => (
-                  <tr key={row.id}>
-                    <td className="num-cell dim">{i + 1}</td>
-                    <td>{row.company}</td>
-                    <td>
-                      <span className="geo-tag">{row.country}</span>
-                    </td>
-                    <td>
-                      <span className="geo-tag secondary">{row.geo}</span>
-                    </td>
-                    <td className="dim">{row.campaign}</td>
-                    <td>{row.sqlDate}</td>
-                    <td className="dim">{row.createdDate}</td>
-                    <td className="num-cell accent">{fmtUSD(row.dealValue)}</td>
-                    <td>
-                      <span className={`stage-badge ${STAGE_COLORS[row.stage] || ""}`}>
-                        {row.stage}
-                      </span>
-                    </td>
-                    <td>{row.owner}</td>
-                    <td>
-                      <a className="hs-link" href={row.hsUrl} target="_blank" rel="noreferrer">
-                        ↗ View
-                      </a>
-                    </td>
+                      return (
+                        <tr key={row.geo}>
+                          <td className="geo-cell">{row.geo}</td>
+                          <td className="num muted">{fmtUSD(row.expectedSpend)}</td>
+                          <td className="num">{fmtUSD(row.actualSpend)}</td>
+                          <td className="num">
+                            <span className={`badge ${getDeltaClass(spendVar)}`}>
+                              {varianceLabel(row.expectedSpend, row.actualSpend)}
+                            </span>
+                          </td>
+                          <td className="num muted">{fmtNum(row.expectedMql)}</td>
+                          <td className="num">{fmtNum(row.actualMql)}</td>
+                          <td className="num">
+                            <span className={`badge ${getDeltaClass(mqlVar)}`}>
+                              {varianceLabel(row.expectedMql, row.actualMql)}
+                            </span>
+                          </td>
+                          <td className="num muted">{fmtNum(row.expectedSql)}</td>
+                          <td className="num">{fmtNum(row.actualSql)}</td>
+                          <td className="num strong">
+                            {row.actualSql > 0 ? fmtUSD(row.actualSpend / row.actualSql) : "—"}
+                          </td>
+                          <td className="num">
+                            <span className={`badge ${getDeltaClass(sqlVar)}`}>
+                              {varianceLabel(row.expectedSql, row.actualSql)}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td className="geo-cell strong">Total</td>
+                      <td className="num muted strong">{fmtUSD(computed.totals.expectedSpend)}</td>
+                      <td className="num strong">{fmtUSD(computed.totals.actualSpend)}</td>
+                      <td className="num">
+                        <span className={`badge ${getDeltaClass(computed.spendVar)}`}>
+                          {varianceLabel(computed.totals.expectedSpend, computed.totals.actualSpend)}
+                        </span>
+                      </td>
+                      <td className="num muted strong">{fmtNum(computed.totals.expectedMql)}</td>
+                      <td className="num strong">{fmtNum(computed.totals.actualMql)}</td>
+                      <td className="num">
+                        <span className={`badge ${getDeltaClass(computed.mqlVar)}`}>
+                          {varianceLabel(computed.totals.expectedMql, computed.totals.actualMql)}
+                        </span>
+                      </td>
+                      <td className="num muted strong">{fmtNum(computed.totals.expectedSql)}</td>
+                      <td className="num strong">{fmtNum(computed.totals.actualSql)}</td>
+                      <td className="num strong">
+                        {computed.totals.actualSql > 0
+                          ? fmtUSD(computed.totals.actualSpend / computed.totals.actualSql)
+                          : "—"}
+                      </td>
+                      <td className="num">
+                        <span className={`badge ${getDeltaClass(computed.sqlVar)}`}>
+                          {varianceLabel(computed.totals.expectedSql, computed.totals.actualSql)}
+                        </span>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+
+            <div className="card">
+              <h3 className="section-title">Live Insights</h3>
+              <div className="side-list">
+                {computed.bestGeo && (
+                  <div className="insight-item">
+                    <h4>Best Efficiency Geo</h4>
+                    <p>
+                      <strong>{computed.bestGeo.geo}</strong> has the strongest MQL-per-spend
+                      efficiency so far this month.
+                    </p>
+                  </div>
+                )}
+
+                {computed.riskGeo && (
+                  <div className="insight-item">
+                    <h4>Biggest Risk</h4>
+                    <p>
+                      <strong>{computed.riskGeo.geo}</strong> is the biggest under-delivery risk
+                      vs MQL plan right now.
+                    </p>
+                  </div>
+                )}
+
+                <div className="insight-item">
+                  <h4>Period</h4>
+                  <p>
+                    Showing {dateRange.daysElapsed} days of data ({dateRange.label}).
+                    Updates automatically each day.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3 className="section-title">MTD SQL Details ({sortedSqlDetailRows.length})</h3>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <SqlSortTh k="company" label="Company" />
+                    <SqlSortTh k="country" label="Country" />
+                    <SqlSortTh k="geo" label="Geo" />
+                    <SqlSortTh k="campaign" label="Campaign" />
+                    <SqlSortTh k="sqlDate" label="SQL Date" />
+                    <SqlSortTh k="createdDate" label="Created" />
+                    <SqlSortTh k="dealValue" label="Deal Value" className="num" />
+                    <SqlSortTh k="stage" label="Stage" />
+                    <th>HubSpot</th>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="11" className="num-cell">
-                    {loading ? "Loading..." : "No SQL data found"}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                </thead>
+                <tbody>
+                  {sortedSqlDetailRows.length > 0 ? (
+                    sortedSqlDetailRows.map((row) => (
+                      <tr key={row.id}>
+                        <td>{row.company}</td>
+                        <td>{row.country}</td>
+                        <td>{row.geo}</td>
+                        <td className="muted">{row.campaign}</td>
+                        <td>{row.sqlDate}</td>
+                        <td className="muted">{row.createdDate}</td>
+                        <td className="num">{fmtUSD(row.dealValue)}</td>
+                        <td>
+                          <span className="sql-stage">{row.stage}</span>
+                        </td>
+                        <td>
+                          <a
+                            className="sql-link"
+                            href={row.hsUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            ↗ View
+                          </a>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="9" style={{ textAlign: "center", color: "#738099" }}>
+                        No MTD SQL rows found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
