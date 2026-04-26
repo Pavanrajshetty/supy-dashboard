@@ -42,6 +42,15 @@ function fmtNum(value) {
   return Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
 }
 
+function fmtCompact(value, type = "num") {
+  const n = safeNum(value);
+  const prefix = type === "money" || type === "usd" ? "$" : "";
+
+  if (n >= 1000000) return `${prefix}${(n / 1000000).toFixed(n >= 10000000 ? 0 : 1)}M`;
+  if (n >= 1000) return `${prefix}${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}K`;
+  return `${prefix}${Math.round(n).toLocaleString()}`;
+}
+
 function fmtValue(value, type = "num") {
   if (type === "money") return fmtMoney(value);
   if (type === "usd") return fmtUSD(value);
@@ -122,13 +131,12 @@ function getAllGeos(metaRows, leadRows, rangeKey, customRange = null) {
   (metaRows || []).forEach((row) => {
     const geo = normalizeMetaCountry(row.country_name);
     if (!isWithinRange(row.perf_date, rangeKey, customRange)) return;
-
     spendByGeo[geo] = (spendByGeo[geo] || 0) + safeNum(row.spend_usd);
   });
 
   return Object.keys(spendByGeo)
-    .filter((geo) => spendByGeo[geo] > 40)
-    .sort((a, b) => a.localeCompare(b));
+    .filter((geo) => spendByGeo[geo] > 10)
+    .sort((a, b) => spendByGeo[b] - spendByGeo[a]);
 }
 
 function getBucketMode(rangeKey, customRange = null) {
@@ -266,7 +274,7 @@ function getNiceMax(maxVal) {
   return niceFraction * Math.pow(10, exponent);
 }
 
-function getTickValues(maxVal, count = 5) {
+function getTickValues(maxVal, count = 4) {
   const niceMax = getNiceMax(maxVal);
   const ticks = [];
   for (let i = 0; i <= count; i++) ticks.push((niceMax / count) * i);
@@ -276,13 +284,22 @@ function getTickValues(maxVal, count = 5) {
 function LineChart({ data, metricKey, metricFmt }) {
   const W = 1100;
   const H = 360;
-  const PAD = { top: 24, right: 24, bottom: 56, left: 84 };
+  const PAD = { top: 18, right: 36, bottom: 48, left: 64 };
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
 
   if (!data.length) {
     return (
-      <div style={{ height: H, display: "flex", alignItems: "center", justifyContent: "center", color: "#8d86a8", fontSize: 14 }}>
+      <div
+        style={{
+          height: H,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#8d86a8",
+          fontSize: 14,
+        }}
+      >
         No data for selected filters
       </div>
     );
@@ -291,7 +308,7 @@ function LineChart({ data, metricKey, metricFmt }) {
   const values = data.map((d) => safeNum(d[metricKey]));
   const rawMax = Math.max(...values, 0);
   const maxVal = getNiceMax(rawMax || 10);
-  const ticks = getTickValues(maxVal, 5);
+  const ticks = getTickValues(maxVal, 4);
 
   const xOf = (i) =>
     PAD.left + (data.length === 1 ? innerW / 2 : (i * innerW) / (data.length - 1));
@@ -307,37 +324,67 @@ function LineChart({ data, metricKey, metricFmt }) {
   ].join(" ");
 
   const xLabelStep =
-    data.length <= 10 ? 1 :
-    data.length <= 20 ? 2 :
-    data.length <= 35 ? 3 :
-    data.length <= 60 ? 4 : 5;
+    data.length <= 8 ? 1 :
+    data.length <= 16 ? 2 :
+    data.length <= 32 ? 3 :
+    data.length <= 60 ? 5 : 7;
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: H, overflow: "visible" }} aria-label="line chart">
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      style={{ width: "100%", height: H, overflow: "visible" }}
+      aria-label="line chart"
+    >
       {ticks.map((tick, idx) => {
         const y = yOf(tick);
         return (
           <g key={idx}>
-            <line x1={PAD.left} y1={y} x2={PAD.left + innerW} y2={y} stroke="rgba(124,79,214,0.12)" strokeWidth="1" />
-            <text x={PAD.left - 14} y={y + 4} textAnchor="end" fontSize="11" fill="#8d86a8">
-              {fmtNum(tick)}
+            <line
+              x1={PAD.left}
+              y1={y}
+              x2={PAD.left + innerW}
+              y2={y}
+              stroke="rgba(124,79,214,0.10)"
+              strokeWidth="1"
+            />
+            <text
+              x={PAD.left - 14}
+              y={y + 4}
+              textAnchor="end"
+              fontSize="11"
+              fill="#8d86a8"
+            >
+              {fmtCompact(tick, metricFmt)}
             </text>
           </g>
         );
       })}
 
-      <line x1={PAD.left} y1={PAD.top} x2={PAD.left} y2={PAD.top + innerH} stroke="rgba(124,79,214,0.18)" />
-      <line x1={PAD.left} y1={PAD.top + innerH} x2={PAD.left + innerW} y2={PAD.top + innerH} stroke="rgba(124,79,214,0.18)" />
+      <line
+        x1={PAD.left}
+        y1={PAD.top + innerH}
+        x2={PAD.left + innerW}
+        y2={PAD.top + innerH}
+        stroke="rgba(124,79,214,0.18)"
+      />
 
       <defs>
         <linearGradient id="trendAreaFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="rgba(124,79,214,0.22)" />
-          <stop offset="100%" stopColor="rgba(124,79,214,0.03)" />
+          <stop offset="0%" stopColor="rgba(124,79,214,0.20)" />
+          <stop offset="100%" stopColor="rgba(124,79,214,0.02)" />
         </linearGradient>
       </defs>
 
       <polygon points={fillPoints} fill="url(#trendAreaFill)" />
-      <polyline points={points} fill="none" stroke="#7c4fd6" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
+
+      <polyline
+        points={points}
+        fill="none"
+        stroke="#7c4fd6"
+        strokeWidth="3.2"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
 
       {data.map((d, i) => {
         const cx = xOf(i);
@@ -345,7 +392,7 @@ function LineChart({ data, metricKey, metricFmt }) {
 
         return (
           <g key={`${d.bucketKey}-${i}`}>
-            <circle cx={cx} cy={cy} r={4.5} fill="#7c4fd6" stroke="#ffffff" strokeWidth={2} />
+            <circle cx={cx} cy={cy} r={4.4} fill="#7c4fd6" stroke="#ffffff" strokeWidth={2} />
             <circle cx={cx} cy={cy} r={14} fill="transparent">
               <title>{`${d.label}: ${fmtValue(d[metricKey], metricFmt)}`}</title>
             </circle>
@@ -359,8 +406,20 @@ function LineChart({ data, metricKey, metricFmt }) {
 
         return (
           <g key={`x-${d.bucketKey}-${i}`}>
-            <line x1={x} y1={PAD.top + innerH} x2={x} y2={PAD.top + innerH + 6} stroke="rgba(124,79,214,0.18)" />
-            <text x={x} y={PAD.top + innerH + 22} textAnchor="middle" fontSize="11" fill="#8d86a8">
+            <line
+              x1={x}
+              y1={PAD.top + innerH}
+              x2={x}
+              y2={PAD.top + innerH + 6}
+              stroke="rgba(124,79,214,0.16)"
+            />
+            <text
+              x={x}
+              y={PAD.top + innerH + 22}
+              textAnchor="middle"
+              fontSize="11"
+              fill="#8d86a8"
+            >
               {d.label}
             </text>
           </g>
@@ -522,20 +581,13 @@ export default function Trends() {
 
   const toggleGeo = (geo) => {
     setSelectedGeos((prev) => {
-      if (prev.includes(geo)) {
-        return prev.filter((g) => g !== geo);
-      }
+      if (prev.includes(geo)) return prev.filter((g) => g !== geo);
       return [...prev, geo];
     });
   };
 
-  const selectAllGeos = () => {
-    setSelectedGeos(allGeos);
-  };
-
-  const clearAllGeos = () => {
-    setSelectedGeos([]);
-  };
+  const selectAllGeos = () => setSelectedGeos(allGeos);
+  const clearAllGeos = () => setSelectedGeos([]);
 
   const trendRows = useMemo(() => {
     return buildTrendRows(
@@ -548,6 +600,19 @@ export default function Trends() {
   }, [dateRange, selectedGeos, supabaseMetaRows, supabaseLeadRows, activeCustomRange]);
 
   const metric = TREND_METRICS.find((m) => m.key === selectedMetric) || TREND_METRICS[0];
+
+  const chartSummary = useMemo(() => {
+    const total = trendRows.reduce((s, r) => s + safeNum(r[selectedMetric]), 0);
+    const peak = [...trendRows].sort((a, b) => safeNum(b[selectedMetric]) - safeNum(a[selectedMetric]))[0];
+    const avg = trendRows.length ? total / trendRows.length : 0;
+
+    return {
+      total,
+      avg,
+      peakLabel: peak?.label || "—",
+      peakValue: peak ? safeNum(peak[selectedMetric]) : 0,
+    };
+  }, [trendRows, selectedMetric]);
 
   return (
     <div className="page">
@@ -639,7 +704,25 @@ export default function Trends() {
       </div>
 
       <div className="card chart-placeholder">
-        <h3 className="section-title">{metric.label.toUpperCase()} OVER TIME</h3>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 16, alignItems: "flex-start", marginBottom: 8 }}>
+          <div>
+            <h3 className="section-title" style={{ marginBottom: 6 }}>
+              {metric.label.toUpperCase()} OVER TIME
+            </h3>
+            <div style={{ fontSize: 12, color: "#8d86a8" }}>
+              {selectedGeos.length} geo(s) selected
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <div className="geo-tag">Total: {fmtValue(chartSummary.total, metric.fmt)}</div>
+            <div className="geo-tag">Avg: {fmtValue(chartSummary.avg, metric.fmt)}</div>
+            <div className="geo-tag">
+              Peak: {chartSummary.peakLabel} · {fmtValue(chartSummary.peakValue, metric.fmt)}
+            </div>
+          </div>
+        </div>
+
         <LineChart data={trendRows} metricKey={selectedMetric} metricFmt={metric.fmt} />
       </div>
 
