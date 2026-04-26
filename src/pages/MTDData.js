@@ -166,10 +166,9 @@ function sortSqlRows(rows, sortKey, sortDir) {
 export default function MTDDataRevamp() {
   const [rows, setRows] = useState([]);
   const [sqlDetailRows, setSqlDetailRows] = useState([]);
+  const [aiInsights, setAiInsights] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const [aiInsights, setAiInsights] = useState(null);
 
   const [sqlSortKey, setSqlSortKey] = useState("sqlDate");
   const [sqlSortDir, setSqlSortDir] = useState("desc");
@@ -252,9 +251,10 @@ export default function MTDDataRevamp() {
 
           supabase
             .from("dashboard_ai_insights")
-            .select("insights_json")
-            .eq("report_date", new Date().toISOString().slice(0, 10))
+            .select("insights_json, report_date")
             .eq("page_key", "mtd_data")
+            .order("report_date", { ascending: false })
+            .limit(1)
             .maybeSingle(),
         ]);
 
@@ -595,8 +595,17 @@ export default function MTDDataRevamp() {
           margin-bottom: 12px;
         }
 
-        .insight-card h4 { margin: 0 0 6px; font-size: 14px; }
-        .insight-card p  { margin: 0; font-size: 13px; line-height: 1.5; color: #5b667a; }
+        .insight-card h4 {
+          margin: 0 0 6px;
+          font-size: 14px;
+        }
+
+        .insight-card p {
+          margin: 0;
+          font-size: 13px;
+          line-height: 1.5;
+          color: #5b667a;
+        }
 
         .insight-action {
           margin-top: 8px;
@@ -638,9 +647,7 @@ export default function MTDDataRevamp() {
           font-weight: 700;
         }
 
-        .sql-link:hover {
-          background: #f7f4ff;
-        }
+        .sql-link:hover { background: #f7f4ff; }
 
         .sql-stage {
           display: inline-flex;
@@ -659,9 +666,7 @@ export default function MTDDataRevamp() {
           user-select: none;
         }
 
-        .sortable-th:hover {
-          color: #374151;
-        }
+        .sortable-th:hover { color: #374151; }
 
         @media (max-width: 1400px) {
           .kpi-grid {
