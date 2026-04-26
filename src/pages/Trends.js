@@ -127,7 +127,7 @@ function getAllGeos(metaRows, leadRows, rangeKey, customRange = null) {
   });
 
   return Object.keys(spendByGeo)
-    .filter((geo) => spendByGeo[geo] > 10)
+    .filter((geo) => spendByGeo[geo] > 40)
     .sort((a, b) => a.localeCompare(b));
 }
 
