@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
-// ── Config ───────────────────────────────────────────────────
 const RANGE_DAYS = {
   "7d": 7,
   "30d": 30,
@@ -31,7 +30,6 @@ const DISPLAY_NAME_OVERRIDES = {
   "United States": "USA",
 };
 
-// ── Helpers ──────────────────────────────────────────────────
 function safeNum(v) {
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
@@ -81,8 +79,13 @@ function formatShortDate(value) {
   return `${day}/${month}`;
 }
 
-// ── FIXED: same pattern as ExecutiveSummary ──────────────────
-function getDateRange(rangeKey) {
+function getDateRange(rangeKey, customRange = null) {
+  if (customRange?.from && customRange?.to) {
+    const start = new Date(`${customRange.from}T00:00:00`);
+    const end = new Date(`${customRange.to}T23:59:59.999`);
+    return { start, end };
+  }
+
   const now = new Date();
   const days = RANGE_DAYS[rangeKey] ?? 30;
 
@@ -96,10 +99,15 @@ function getDateRange(rangeKey) {
   return { start, end };
 }
 
-function isWithinRange(dateValue, rangeKey) {
+function daysBetween(start, end) {
+  return Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+}
+
+function isWithinRange(dateValue, rangeKey, customRange = null) {
   const d = parseDate(dateValue);
   if (!d) return false;
-  const { start, end } = getDateRange(rangeKey);
+
+  const { start, end } = getDateRange(rangeKey, customRange);
   return d >= start && d <= end;
 }
 
@@ -114,22 +122,29 @@ function normalizeMasterCountry(raw) {
   return normalizeDisplayCountry(String(raw).trim());
 }
 
-// country_name from meta_performance is already a full name — no ISO mapping needed
 function normalizeMetaCountry(raw) {
   return normalizeMasterCountry(raw);
 }
 
 function getAllGeos(metaRows, leadRows) {
-  // metaRows now from Supabase: use country_name field
-  const metaGeos = (metaRows || []).map((row) => normalizeMetaCountry(row.country_name));
-  const leadGeos = (leadRows || []).map((row) => normalizeMasterCountry(row.country));
+  const metaGeos = (metaRows || []).map((row) =>
+    normalizeMetaCountry(row.country_name)
+  );
+  const leadGeos = (leadRows || []).map((row) =>
+    normalizeMasterCountry(row.country)
+  );
 
   return [...new Set([...metaGeos, ...leadGeos])]
     .filter(Boolean)
     .sort((a, b) => a.localeCompare(b));
 }
 
-function getBucketMode(rangeKey) {
+function getBucketMode(rangeKey, customRange = null) {
+  if (customRange?.from && customRange?.to) {
+    const { start, end } = getDateRange(rangeKey, customRange);
+    return daysBetween(start, end) > 45 ? "week" : "day";
+  }
+
   return rangeKey === "60d" || rangeKey === "90d" ? "week" : "day";
 }
 
@@ -139,7 +154,7 @@ function startOfUtcWeek(dateValue) {
 
   const utc = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
   const day = utc.getUTCDay();
-  const diff = day === 0 ? -6 : 1 - day; // Monday start
+  const diff = day === 0 ? -6 : 1 - day;
   utc.setUTCDate(utc.getUTCDate() + diff);
   utc.setUTCHours(0, 0, 0, 0);
   return utc;
@@ -150,6 +165,7 @@ function getBucketKey(dateValue, mode) {
     const d = startOfUtcWeek(dateValue);
     return d ? d.toISOString().slice(0, 10) : null;
   }
+
   return toDayKey(dateValue);
 }
 
@@ -161,12 +177,13 @@ function getBucketLabel(bucketKey, mode) {
     end.setUTCDate(end.getUTCDate() + 6);
     return `${formatShortDate(d)} - ${formatShortDate(end)}`;
   }
+
   return formatShortDate(bucketKey);
 }
 
-function getBucketKeys(rangeKey) {
-  const { start, end } = getDateRange(rangeKey);
-  const mode = getBucketMode(rangeKey);
+function getBucketKeys(rangeKey, customRange = null) {
+  const { start, end } = getDateRange(rangeKey, customRange);
+  const mode = getBucketMode(rangeKey, customRange);
   const out = [];
 
   if (mode === "day") {
@@ -189,9 +206,9 @@ function getBucketKeys(rangeKey) {
   return out;
 }
 
-function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos) {
-  const bucketMode = getBucketMode(rangeKey);
-  const bucketKeys = getBucketKeys(rangeKey);
+function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos, customRange = null) {
+  const bucketMode = getBucketMode(rangeKey, customRange);
+  const bucketKeys = getBucketKeys(rangeKey, customRange);
   const byBucket = {};
 
   bucketKeys.forEach((bucketKey) => {
@@ -207,7 +224,6 @@ function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos) {
     };
   });
 
-  // ── REPLACED: was reading from JSON, now reads Supabase meta_performance rows ──
   (metaRows || []).forEach((row) => {
     const geo = normalizeMetaCountry(row.country_name);
     if (!selectedGeos.includes(geo)) return;
@@ -222,14 +238,14 @@ function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos) {
     const geo = normalizeMasterCountry(row.country);
     if (!selectedGeos.includes(geo)) return;
 
-    if (isWithinRange(row.lead_created_date, rangeKey)) {
+    if (isWithinRange(row.lead_created_date, rangeKey, customRange)) {
       const bucketKey = getBucketKey(row.lead_created_date, bucketMode);
       if (bucketKey && byBucket[bucketKey]) {
         byBucket[bucketKey].leads += 1;
       }
     }
 
-    if (row.is_sql === true && isWithinRange(row.sql_date, rangeKey)) {
+    if (row.is_sql === true && isWithinRange(row.sql_date, rangeKey, customRange)) {
       const bucketKey = getBucketKey(row.sql_date, bucketMode);
       if (bucketKey && byBucket[bucketKey]) {
         byBucket[bucketKey].sql += 1;
@@ -237,7 +253,10 @@ function buildTrendRows(metaRows, leadRows, rangeKey, selectedGeos) {
       }
     }
 
-    if (row.is_closed_won === true && isWithinRange(row.close_date, rangeKey)) {
+    if (
+      row.is_closed_won === true &&
+      isWithinRange(row.close_date, rangeKey, customRange)
+    ) {
       const bucketKey = getBucketKey(row.close_date, bucketMode);
       if (bucketKey && byBucket[bucketKey]) {
         byBucket[bucketKey].closures += 1;
@@ -351,20 +370,8 @@ function LineChart({ data, metricKey, metricFmt }) {
         );
       })}
 
-      <line
-        x1={PAD.left}
-        y1={PAD.top}
-        x2={PAD.left}
-        y2={PAD.top + innerH}
-        stroke="rgba(124,79,214,0.18)"
-      />
-      <line
-        x1={PAD.left}
-        y1={PAD.top + innerH}
-        x2={PAD.left + innerW}
-        y2={PAD.top + innerH}
-        stroke="rgba(124,79,214,0.18)"
-      />
+      <line x1={PAD.left} y1={PAD.top} x2={PAD.left} y2={PAD.top + innerH} stroke="rgba(124,79,214,0.18)" />
+      <line x1={PAD.left} y1={PAD.top + innerH} x2={PAD.left + innerW} y2={PAD.top + innerH} stroke="rgba(124,79,214,0.18)" />
 
       <defs>
         <linearGradient id="trendAreaFill" x1="0" y1="0" x2="0" y2="1">
@@ -387,6 +394,7 @@ function LineChart({ data, metricKey, metricFmt }) {
       {data.map((d, i) => {
         const cx = xOf(i);
         const cy = yOf(d[metricKey]);
+
         return (
           <g key={`${d.bucketKey}-${i}`}>
             <circle cx={cx} cy={cy} r={4.5} fill="#7c4fd6" stroke="#ffffff" strokeWidth={2} />
@@ -400,6 +408,7 @@ function LineChart({ data, metricKey, metricFmt }) {
       {data.map((d, i) => {
         if (i % xLabelStep !== 0 && i !== data.length - 1) return null;
         const x = xOf(i);
+
         return (
           <g key={`x-${d.bucketKey}-${i}`}>
             <line
@@ -425,32 +434,64 @@ function LineChart({ data, metricKey, metricFmt }) {
   );
 }
 
-// ── Page ─────────────────────────────────────────────────────
 export default function Trends() {
   const [dateRange, setDateRange] = useState("30d");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
+  const [customRange, setCustomRange] = useState(null);
+
   const [supabaseMetaRows, setSupabaseMetaRows] = useState([]);
   const [supabaseLeadRows, setSupabaseLeadRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedGeos, setSelectedGeos] = useState([]);
   const [selectedMetric, setSelectedMetric] = useState("leads");
 
+  const activeCustomRange = dateRange === "custom" ? customRange : null;
+
+  const handlePresetRange = (rangeKey) => {
+    setDateRange(rangeKey);
+    setCustomRange(null);
+  };
+
+  const handleApplyCustomRange = () => {
+    if (!customFrom || !customTo) return;
+
+    const from = new Date(`${customFrom}T00:00:00`);
+    const to = new Date(`${customTo}T23:59:59.999`);
+
+    if (from > to) {
+      alert("From date cannot be after To date");
+      return;
+    }
+
+    setCustomRange({ from: customFrom, to: customTo });
+    setDateRange("custom");
+  };
+
+  const handleClearCustomRange = () => {
+    setCustomRange(null);
+    setCustomFrom("");
+    setCustomTo("");
+    setDateRange("30d");
+  };
+
   useEffect(() => {
     async function fetchTrendData() {
       try {
         setLoading(true);
 
-        const { start, end } = getDateRange(dateRange);
+        const { start, end } = getDateRange(dateRange, activeCustomRange);
         const startDate = start.toISOString().slice(0, 10);
         const endDate = end.toISOString().slice(0, 10);
         const startIso = start.toISOString();
         const endIso = end.toISOString();
 
         const [metaRows, leadData] = await Promise.all([
-          // ── REPLACED: was meta_master.json, now live from Supabase ──
           (async () => {
             let allRows = [];
             let from = 0;
             const pageSize = 1000;
+
             while (true) {
               const { data, error } = await supabase
                 .from("meta_performance")
@@ -459,20 +500,24 @@ export default function Trends() {
                 .gte("perf_date", startDate)
                 .lte("perf_date", endDate)
                 .range(from, from + pageSize - 1);
+
               if (error) throw error;
+
               const rows = data || [];
               allRows = allRows.concat(rows);
+
               if (rows.length < pageSize) break;
               from += pageSize;
             }
+
             return allRows;
           })(),
 
-          // leads: fetch all rows that touch the date range
           (async () => {
             let allRows = [];
             let from = 0;
             const pageSize = 1000;
+
             while (true) {
               const { data, error } = await supabase
                 .from("master_leads")
@@ -494,12 +539,16 @@ export default function Trends() {
                   ].join(",")
                 )
                 .range(from, from + pageSize - 1);
+
               if (error) throw error;
+
               const rows = data || [];
               allRows = allRows.concat(rows);
+
               if (rows.length < pageSize) break;
               from += pageSize;
             }
+
             return allRows;
           })(),
         ]);
@@ -516,7 +565,7 @@ export default function Trends() {
     }
 
     fetchTrendData();
-  }, [dateRange]);
+  }, [dateRange, activeCustomRange]);
 
   const allGeos = useMemo(() => {
     return getAllGeos(supabaseMetaRows, supabaseLeadRows);
@@ -538,6 +587,7 @@ export default function Trends() {
         const next = prev.filter((g) => g !== geo);
         return next.length ? next : [geo];
       }
+
       return [...prev, geo];
     });
   };
@@ -547,11 +597,13 @@ export default function Trends() {
       supabaseMetaRows,
       supabaseLeadRows,
       dateRange,
-      selectedGeos
+      selectedGeos,
+      activeCustomRange
     );
-  }, [dateRange, selectedGeos, supabaseMetaRows, supabaseLeadRows]);
+  }, [dateRange, selectedGeos, supabaseMetaRows, supabaseLeadRows, activeCustomRange]);
 
-  const metric = TREND_METRICS.find((m) => m.key === selectedMetric) || TREND_METRICS[0];
+  const metric =
+    TREND_METRICS.find((m) => m.key === selectedMetric) || TREND_METRICS[0];
 
   return (
     <div className="page">
@@ -564,11 +616,42 @@ export default function Trends() {
           <button
             key={r.v}
             className={`filter-pill ${dateRange === r.v ? "active" : ""}`}
-            onClick={() => setDateRange(r.v)}
+            onClick={() => handlePresetRange(r.v)}
           >
             {r.l}
           </button>
         ))}
+
+        <div className="filter-sep" />
+
+        <input
+          type="date"
+          value={customFrom}
+          onChange={(e) => setCustomFrom(e.target.value)}
+          className="filter-pill"
+          style={{ height: 34 }}
+        />
+
+        <input
+          type="date"
+          value={customTo}
+          onChange={(e) => setCustomTo(e.target.value)}
+          className="filter-pill"
+          style={{ height: 34 }}
+        />
+
+        <button
+          className={`filter-pill ${dateRange === "custom" ? "active" : ""}`}
+          onClick={handleApplyCustomRange}
+        >
+          Apply
+        </button>
+
+        {dateRange === "custom" && (
+          <button className="filter-pill" onClick={handleClearCustomRange}>
+            Clear
+          </button>
+        )}
       </div>
 
       <div className="filter-bar">
@@ -610,9 +693,15 @@ export default function Trends() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>{getBucketMode(dateRange) === "week" ? "Week" : "Date"}</th>
+                <th>
+                  {getBucketMode(dateRange, activeCustomRange) === "week"
+                    ? "Week"
+                    : "Date"}
+                </th>
                 {TREND_METRICS.map((m) => (
-                  <th key={m.key} className="num-cell">{m.label}</th>
+                  <th key={m.key} className="num-cell">
+                    {m.label}
+                  </th>
                 ))}
               </tr>
             </thead>
