@@ -1078,3 +1078,206 @@ body {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ============================================================
+   V2 LAYOUT FIX â€” wider, cleaner dashboard alignment
+   Core logic untouched. CSS-only.
+   ============================================================ */
+
+/* Use real screen width. Earlier layout was centered/narrow on desktop. */
+.page,
+.mtd-page {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 28px 48px 60px !important;
+}
+
+/* Keep content readable on very large monitors, but aligned from left */
+.page > *,
+.mtd-page > * {
+  width: 100%;
+}
+
+/* Filters should start aligned with content, not float oddly */
+.filter-bar {
+  justify-content: flex-start !important;
+}
+
+/* KPI cards: consistent desktop alignment */
+.kpi-grid {
+  width: 100% !important;
+  display: grid !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+}
+
+/* Executive summary has 13 KPI cards: 7 top + 6 bottom */
+.kpi-grid:has(.kpi-card:nth-child(13)) {
+  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+}
+
+/* QTD page has 8 KPI cards: keep all in one clean row on desktop */
+.kpi-grid:has(.kpi-card:nth-child(8)):not(:has(.kpi-card:nth-child(9))) {
+  grid-template-columns: repeat(8, minmax(0, 1fr)) !important;
+}
+
+/* SQL + Closure pages */
+.kpi-grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+/* MTD has 6 cards: one clean row */
+.mtd-page > .kpi-grid,
+.mtd-page .kpi-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+}
+
+.kpi-card,
+.kpi-grid > .card {
+  min-width: 0 !important;
+  min-height: 112px !important;
+  padding: 18px 20px !important;
+}
+
+.kpi-value {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Executive split: funnel + SQL table aligned and balanced */
+.exec-split {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: 360px minmax(0, 1fr) !important;
+  gap: 18px !important;
+  align-items: start !important;
+}
+
+.funnel-card,
+.sql-preview-card,
+.card {
+  min-width: 0 !important;
+}
+
+.sql-preview-card {
+  width: 100% !important;
+}
+
+.table-wrap {
+  width: 100% !important;
+  overflow-x: auto !important;
+}
+
+.data-table {
+  width: 100% !important;
+  min-width: 900px;
+  table-layout: fixed;
+}
+
+.sql-preview-card .data-table {
+  min-width: 760px;
+}
+
+.data-table th,
+.data-table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Recommendation blocks align with table width */
+.ai-grid {
+  width: 100% !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+/* Navbar alignment fix */
+.app-header {
+  padding: 0 32px !important;
+  gap: 18px !important;
+}
+
+.tab-nav {
+  min-width: 0 !important;
+}
+
+/* Large screens */
+@media (min-width: 1600px) {
+  .page,
+  .mtd-page {
+    padding-left: 64px !important;
+    padding-right: 64px !important;
+  }
+
+  .exec-split {
+    grid-template-columns: 380px minmax(0, 1fr) !important;
+  }
+}
+
+/* Medium desktop/tablet */
+@media (max-width: 1400px) {
+  .page,
+  .mtd-page {
+    padding-left: 28px !important;
+    padding-right: 28px !important;
+  }
+
+  .kpi-grid:has(.kpi-card:nth-child(13)) {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .kpi-grid:has(.kpi-card:nth-child(8)):not(:has(.kpi-card:nth-child(9))) {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .mtd-page > .kpi-grid,
+  .mtd-page .kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 1100px) {
+  .exec-split {
+    grid-template-columns: 1fr !important;
+  }
+
+  .kpi-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .page,
+  .mtd-page {
+    padding: 16px 14px 44px !important;
+  }
+
+  .kpi-grid,
+  .kpi-grid:has(.kpi-card:nth-child(13)),
+  .kpi-grid:has(.kpi-card:nth-child(8)):not(:has(.kpi-card:nth-child(9))),
+  .mtd-page > .kpi-grid,
+  .mtd-page .kpi-grid,
+  .kpi-grid-4,
+  .ai-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .app-header {
+    padding: 10px 14px !important;
+  }
+}
+
+@media (max-width: 460px) {
+  .kpi-grid,
+  .kpi-grid:has(.kpi-card:nth-child(13)),
+  .kpi-grid:has(.kpi-card:nth-child(8)):not(:has(.kpi-card:nth-child(9))),
+  .mtd-page > .kpi-grid,
+  .mtd-page .kpi-grid,
+  .kpi-grid-4,
+  .ai-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
