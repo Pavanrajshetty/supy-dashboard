@@ -169,6 +169,8 @@ export default function MTDDataRevamp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [aiInsights, setAiInsights] = useState(null);
+
   const [sqlSortKey, setSqlSortKey] = useState("sqlDate");
   const [sqlSortDir, setSqlSortDir] = useState("desc");
 
@@ -189,6 +191,7 @@ export default function MTDDataRevamp() {
           actualSqlRes,
           planSqlRes,
           sqlDetailRes,
+          insightRes,
         ] = await Promise.all([
           supabase
             .from("plan_daily")
@@ -246,6 +249,13 @@ export default function MTDDataRevamp() {
             .gte("sql_date", startIso)
             .lte("sql_date", endIso)
             .order("sql_date", { ascending: false }),
+
+          supabase
+            .from("dashboard_ai_insights")
+            .select("insights_json")
+            .eq("report_date", new Date().toISOString().slice(0, 10))
+            .eq("page_key", "mtd_data")
+            .maybeSingle(),
         ]);
 
         for (const res of [
@@ -326,6 +336,12 @@ export default function MTDDataRevamp() {
         });
 
         merged.sort((a, b) => b.actualSpend - a.actualSpend);
+
+        if (!insightRes.error && insightRes.data?.insights_json) {
+          setAiInsights(insightRes.data.insights_json);
+        } else {
+          setAiInsights(null);
+        }
 
         setRows(merged);
         setSqlDetailRows(buildSqlRows(sqlDetailRes.data || []));
@@ -559,17 +575,36 @@ export default function MTDDataRevamp() {
         .muted { color: #738099; }
         .strong { font-weight: 800; }
 
-        .side-list { display: flex; flex-direction: column; gap: 12px; }
+        .live-insights {
+          height: 420px;
+          display: flex;
+          flex-direction: column;
+        }
 
-        .insight-item {
+        .insights-scroll {
+          flex: 1;
+          overflow-y: auto;
+          padding-right: 6px;
+        }
+
+        .insight-card {
           border: 1px solid #eef2f7;
           border-radius: 14px;
           padding: 14px;
           background: #fbfcfe;
+          margin-bottom: 12px;
         }
 
-        .insight-item h4 { margin: 0 0 6px; font-size: 14px; }
-        .insight-item p  { margin: 0; font-size: 13px; line-height: 1.5; color: #5b667a; }
+        .insight-card h4 { margin: 0 0 6px; font-size: 14px; }
+        .insight-card p  { margin: 0; font-size: 13px; line-height: 1.5; color: #5b667a; }
+
+        .insight-action {
+          margin-top: 8px;
+          font-size: 12px;
+          color: #6b46c1;
+          font-weight: 700;
+          line-height: 1.4;
+        }
 
         .loading-state {
           display: flex;
@@ -816,36 +851,49 @@ export default function MTDDataRevamp() {
               </div>
             </div>
 
-            <div className="card">
+            <div className="card live-insights">
               <h3 className="section-title">Live Insights</h3>
-              <div className="side-list">
-                {computed.bestGeo && (
-                  <div className="insight-item">
-                    <h4>Best Efficiency Geo</h4>
-                    <p>
-                      <strong>{computed.bestGeo.geo}</strong> has the strongest MQL-per-spend
-                      efficiency so far this month.
-                    </p>
-                  </div>
-                )}
 
-                {computed.riskGeo && (
-                  <div className="insight-item">
-                    <h4>Biggest Risk</h4>
-                    <p>
-                      <strong>{computed.riskGeo.geo}</strong> is the biggest under-delivery risk
-                      vs MQL plan right now.
-                    </p>
-                  </div>
-                )}
+              <div className="insights-scroll">
+                {aiInsights?.cards?.length ? (
+                  aiInsights.cards.map((card, i) => (
+                    <div key={i} className="insight-card">
+                      <h4>{card.title}</h4>
+                      <p>{card.insight}</p>
+                      {card.action && <div className="insight-action">→ {card.action}</div>}
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    {computed.bestGeo && (
+                      <div className="insight-card">
+                        <h4>Best Efficiency Geo</h4>
+                        <p>
+                          <strong>{computed.bestGeo.geo}</strong> has the strongest MQL-per-spend
+                          efficiency so far this month.
+                        </p>
+                      </div>
+                    )}
 
-                <div className="insight-item">
-                  <h4>Period</h4>
-                  <p>
-                    Showing {dateRange.daysElapsed} days of data ({dateRange.label}).
-                    Updates automatically each day.
-                  </p>
-                </div>
+                    {computed.riskGeo && (
+                      <div className="insight-card">
+                        <h4>Biggest Risk</h4>
+                        <p>
+                          <strong>{computed.riskGeo.geo}</strong> is the biggest under-delivery risk
+                          vs MQL plan right now.
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="insight-card">
+                      <h4>Period</h4>
+                      <p>
+                        Showing {dateRange.daysElapsed} days of data ({dateRange.label}).
+                        Updates automatically each day.
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
