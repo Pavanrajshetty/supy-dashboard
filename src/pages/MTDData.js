@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { supabase } from "../lib/supabase";
 
-/* =========================
-   AUTO DATE LOGIC
-   - Current month: 1st → yesterday
-========================= */
-
 function getDateRange() {
   const today = new Date();
   const year = today.getUTCFullYear();
@@ -31,12 +26,8 @@ function getDateRange() {
   return { startIso, endIso, label, planMonth, daysElapsed };
 }
 
-/* =========================
-   HELPERS
-========================= */
-
 function fmtUSD(value) {
-  return `$${Number(value || 0).toLocaleString()}`;
+  return `$${Math.round(Number(value || 0)).toLocaleString()}`;
 }
 
 function fmtNum(value) {
@@ -171,10 +162,6 @@ function sortSqlRows(rows, sortKey, sortDir) {
 
   return arr;
 }
-
-/* =========================
-   COMPONENT
-========================= */
 
 export default function MTDDataRevamp() {
   const [rows, setRows] = useState([]);
@@ -544,7 +531,7 @@ export default function MTDDataRevamp() {
         table {
           width: 100%;
           border-collapse: collapse;
-          min-width: 980px;
+          min-width: 1100px;
         }
 
         th {
@@ -753,6 +740,7 @@ export default function MTDDataRevamp() {
                       <th className="num">MQL Var</th>
                       <th className="num">Expected SQL</th>
                       <th className="num">Actual SQL</th>
+                      <th className="num">Cost / SQL</th>
                       <th className="num">SQL Var</th>
                     </tr>
                   </thead>
@@ -781,6 +769,9 @@ export default function MTDDataRevamp() {
                           </td>
                           <td className="num muted">{fmtNum(row.expectedSql)}</td>
                           <td className="num">{fmtNum(row.actualSql)}</td>
+                          <td className="num strong">
+                            {row.actualSql > 0 ? fmtUSD(row.actualSpend / row.actualSql) : "—"}
+                          </td>
                           <td className="num">
                             <span className={`badge ${getDeltaClass(sqlVar)}`}>
                               {varianceLabel(row.expectedSql, row.actualSql)}
@@ -809,6 +800,11 @@ export default function MTDDataRevamp() {
                       </td>
                       <td className="num muted strong">{fmtNum(computed.totals.expectedSql)}</td>
                       <td className="num strong">{fmtNum(computed.totals.actualSql)}</td>
+                      <td className="num strong">
+                        {computed.totals.actualSql > 0
+                          ? fmtUSD(computed.totals.actualSpend / computed.totals.actualSql)
+                          : "—"}
+                      </td>
                       <td className="num">
                         <span className={`badge ${getDeltaClass(computed.sqlVar)}`}>
                           {varianceLabel(computed.totals.expectedSql, computed.totals.actualSql)}
@@ -832,6 +828,7 @@ export default function MTDDataRevamp() {
                     </p>
                   </div>
                 )}
+
                 {computed.riskGeo && (
                   <div className="insight-item">
                     <h4>Biggest Risk</h4>
@@ -841,6 +838,7 @@ export default function MTDDataRevamp() {
                     </p>
                   </div>
                 )}
+
                 <div className="insight-item">
                   <h4>Period</h4>
                   <p>
