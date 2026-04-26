@@ -576,7 +576,7 @@ export default function MTDDataRevamp() {
         .strong { font-weight: 800; }
 
         .live-insights {
-          height: 420px;
+          height: 600px;
           display: flex;
           flex-direction: column;
         }
