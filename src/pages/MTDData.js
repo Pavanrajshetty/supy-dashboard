@@ -163,6 +163,31 @@ function sortSqlRows(rows, sortKey, sortDir) {
   return arr;
 }
 
+function normalizeInsights(aiInsights) {
+  if (!aiInsights) return [];
+
+  if (Array.isArray(aiInsights.cards) && aiInsights.cards.length > 0) {
+    return aiInsights.cards.map((card, index) => ({
+      title: card.title || `Insight ${index + 1}`,
+      insight: card.insight || card.reason || "",
+      action: card.action || "",
+    }));
+  }
+
+  if (Array.isArray(aiInsights.priority_actions) && aiInsights.priority_actions.length > 0) {
+    return aiInsights.priority_actions.map((item) => ({
+      title: `Priority ${item.priority || ""} • ${item.action_type || "Action"}`,
+      insight: item.why_this_matters || item.evidence || "",
+      action: item.action || "",
+      impact: item.expected_sql_impact || "",
+      owner: item.owner || "",
+      timeSensitivity: item.time_sensitivity || "",
+    }));
+  }
+
+  return [];
+}
+
 export default function MTDDataRevamp() {
   const [rows, setRows] = useState([]);
   const [sqlDetailRows, setSqlDetailRows] = useState([]);
@@ -410,6 +435,8 @@ export default function MTDDataRevamp() {
     };
   }, [rows]);
 
+  const normalizedInsights = useMemo(() => normalizeInsights(aiInsights), [aiInsights]);
+
   const sortedSqlDetailRows = useMemo(() => {
     return sortSqlRows(sqlDetailRows, sqlSortKey, sqlSortDir);
   }, [sqlDetailRows, sqlSortKey, sqlSortDir]);
@@ -613,6 +640,24 @@ export default function MTDDataRevamp() {
           color: #6b46c1;
           font-weight: 700;
           line-height: 1.4;
+        }
+
+        .insight-meta {
+          margin-top: 8px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+        }
+
+        .insight-pill {
+          display: inline-flex;
+          align-items: center;
+          padding: 3px 8px;
+          border-radius: 999px;
+          background: #f3f0ff;
+          color: #6b46c1;
+          font-size: 11px;
+          font-weight: 700;
         }
 
         .loading-state {
@@ -860,12 +905,30 @@ export default function MTDDataRevamp() {
               <h3 className="section-title">Live Insights</h3>
 
               <div className="insights-scroll">
-                {aiInsights?.cards?.length ? (
-                  aiInsights.cards.map((card, i) => (
+                {normalizedInsights.length > 0 ? (
+                  normalizedInsights.map((card, i) => (
                     <div key={i} className="insight-card">
                       <h4>{card.title}</h4>
-                      <p>{card.insight}</p>
-                      {card.action && <div className="insight-action">→ {card.action}</div>}
+
+                      {card.insight && <p>{card.insight}</p>}
+
+                      {card.action && (
+                        <div className="insight-action">→ {card.action}</div>
+                      )}
+
+                      {(card.impact || card.owner || card.timeSensitivity) && (
+                        <div className="insight-meta">
+                          {card.impact && (
+                            <span className="insight-pill">{card.impact}</span>
+                          )}
+                          {card.owner && (
+                            <span className="insight-pill">{card.owner}</span>
+                          )}
+                          {card.timeSensitivity && (
+                            <span className="insight-pill">{card.timeSensitivity}</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))
                 ) : (
