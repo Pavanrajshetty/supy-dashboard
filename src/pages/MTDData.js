@@ -435,6 +435,12 @@ export default function MTDDataRevamp() {
     };
   }, [rows]);
 
+  const filteredRows = useMemo(() => {
+    return rows.filter(
+      (r) => r.actualSql > 0 || r.expectedSpend >= 10
+    );
+  }, [rows]);
+
   const normalizedInsights = useMemo(() => normalizeInsights(aiInsights), [aiInsights]);
 
   const sortedSqlDetailRows = useMemo(() => {
@@ -830,7 +836,7 @@ export default function MTDDataRevamp() {
                     </tr>
                   </thead>
                   <tbody>
-                    {rows.map((row) => {
+                    {filteredRows.map((row) => {
                       const spendVar = pctDelta(row.expectedSpend, row.actualSpend);
                       const mqlVar = pctDelta(row.expectedMql, row.actualMql);
                       const sqlVar = pctDelta(row.expectedSql, row.actualSql);
