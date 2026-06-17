@@ -10,7 +10,10 @@ function getDateRange() {
   const yesterday = new Date(Date.UTC(year, month, today.getUTCDate() - 1));
 
   const startIso = start.toISOString().slice(0, 10);
-  const endIso = yesterday.toISOString().slice(0, 10);
+  // For date columns (meta_performance.perf_date, plan_daily.plan_date)
+  const endIsoDate = yesterday.toISOString().slice(0, 10);
+  // For timestamp columns (master_leads.sql_date, lead_created_date)
+  const endIsoTs = `${yesterday.toISOString().slice(0, 10)}T23:59:59.999Z`;
 
   const fmt = (d) =>
     d.toLocaleDateString("en-US", {
@@ -23,7 +26,7 @@ function getDateRange() {
   const planMonth = `${year}-${String(month + 1).padStart(2, "0")}`;
   const daysElapsed = today.getUTCDate() - 1;
 
-  return { startIso, endIso, label, planMonth, daysElapsed };
+  return { startIso, endIsoDate, endIsoTs, label, planMonth, daysElapsed };
 }
 
 function fmtUSD(value) {
@@ -206,7 +209,7 @@ export default function MTDDataRevamp() {
         setLoading(true);
         setError(null);
 
-        const { startIso, endIso, planMonth, daysElapsed } = dateRange;
+        const { startIso, endIsoDate, endIsoTs, planMonth, daysElapsed } = dateRange;
 
         const [
           planMtdRes,
@@ -217,36 +220,40 @@ export default function MTDDataRevamp() {
           sqlDetailRes,
           insightRes,
         ] = await Promise.all([
+          // plan_daily.plan_date is a date column — use endIsoDate
           supabase
             .from("plan_daily")
             .select("geo, daily_spend_usd, daily_mql_target")
             .gte("plan_date", startIso)
-            .lte("plan_date", endIso),
+            .lte("plan_date", endIsoDate),
 
-          // RPC bypasses PostgREST max_rows cap — returns 1 pre-aggregated row per country
+          // RPC handles its own date casting internally
           supabase.rpc("get_meta_spend_by_country", {
             start_date: startIso,
-            end_date: endIso,
+            end_date: endIsoDate,
           }),
 
+          // master_leads.lead_created_date is a timestamp — use endIsoTs
           supabase
             .from("master_leads")
             .select("country")
             .gte("lead_created_date", startIso)
-            .lte("lead_created_date", endIso),
+            .lte("lead_created_date", endIsoTs),
 
+          // master_leads.sql_date is a timestamp — use endIsoTs
           supabase
             .from("master_leads")
             .select("country, amount_usd")
             .eq("is_sql", true)
             .gte("sql_date", startIso)
-            .lte("sql_date", endIso),
+            .lte("sql_date", endIsoTs),
 
           supabase
             .from("plan_monthly")
             .select("geo, sql_target")
             .eq("plan_month", planMonth),
 
+          // master_leads.sql_date is a timestamp — use endIsoTs
           supabase
             .from("master_leads")
             .select(`
@@ -271,7 +278,7 @@ export default function MTDDataRevamp() {
             `)
             .eq("is_sql", true)
             .gte("sql_date", startIso)
-            .lte("sql_date", endIso)
+            .lte("sql_date", endIsoTs)
             .order("sql_date", { ascending: false }),
 
           supabase
