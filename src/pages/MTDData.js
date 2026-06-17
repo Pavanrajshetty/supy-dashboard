@@ -10,7 +10,7 @@ function getDateRange() {
   const yesterday = new Date(Date.UTC(year, month, today.getUTCDate() - 1));
 
   const startIso = start.toISOString().slice(0, 10);
-  const endIso = `${yesterday.toISOString().slice(0, 10)}T23:59:59.999Z`;
+  const endIso = yesterday.toISOString().slice(0, 10); // FIXED: was "...T23:59:59.999Z", now plain date
 
   const fmt = (d) =>
     d.toLocaleDateString("en-US", {
@@ -227,7 +227,8 @@ export default function MTDDataRevamp() {
             .from("meta_performance")
             .select("country_name, spend_usd, impressions, clicks, reach, leads")
             .gte("perf_date", startIso)
-            .lte("perf_date", endIso),
+            .lte("perf_date", endIso)
+            .limit(10000), // FIXED: was hitting default 1000-row cap, causing truncated spend totals
 
           supabase
             .from("master_leads")
@@ -1004,7 +1005,7 @@ export default function MTDDataRevamp() {
                           <span className="sql-stage">{row.stage}</span>
                         </td>
                         <td>
-                          <a
+                          
                             className="sql-link"
                             href={row.hsUrl}
                             target="_blank"
