@@ -914,7 +914,7 @@ export default function MTDDataRevamp() {
                       <h4>{card.title}</h4>
                       {card.insight && <p>{card.insight}</p>}
                       {card.action && (
-                        <div className="insight-action">-&gt; {card.action}</div>
+                        <div className="insight-action">{"-> "}{card.action}</div>
                       )}
                       {(card.impact || card.owner || card.timeSensitivity) && (
                         <div className="insight-meta">
@@ -996,7 +996,7 @@ export default function MTDDataRevamp() {
                           <span className="sql-stage">{row.stage}</span>
                         </td>
                         <td>
-                          
+                          <a
                             className="sql-link"
                             href={row.hsUrl}
                             target="_blank"
