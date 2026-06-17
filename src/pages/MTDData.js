@@ -223,12 +223,11 @@ export default function MTDDataRevamp() {
             .gte("plan_date", startIso)
             .lte("plan_date", endIso),
 
-          supabase
-            .from("meta_performance")
-            .select("country_name, spend_usd, impressions, clicks, reach, leads")
-            .gte("perf_date", startIso)
-            .lte("perf_date", endIso)
-            .limit(10000),
+          // RPC bypasses PostgREST max_rows cap — returns 1 pre-aggregated row per country
+          supabase.rpc("get_meta_spend_by_country", {
+            start_date: startIso,
+            end_date: endIso,
+          }),
 
           supabase
             .from("master_leads")
