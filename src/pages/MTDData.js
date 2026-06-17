@@ -10,7 +10,7 @@ function getDateRange() {
   const yesterday = new Date(Date.UTC(year, month, today.getUTCDate() - 1));
 
   const startIso = start.toISOString().slice(0, 10);
-  const endIso = yesterday.toISOString().slice(0, 10); // FIXED: was "...T23:59:59.999Z", now plain date
+  const endIso = yesterday.toISOString().slice(0, 10);
 
   const fmt = (d) =>
     d.toLocaleDateString("en-US", {
@@ -68,7 +68,7 @@ function parseDate(value) {
 
 function formatDateForDisplay(value) {
   const d = parseDate(value);
-  if (!d) return "—";
+  if (!d) return "-";
   return d.toISOString().slice(0, 10);
 }
 
@@ -76,11 +76,11 @@ function getSqlStage(row) {
   if (row?.deal_stage) return row.deal_stage;
   if (row?.is_closed_won === true) return "Closed Won";
   if (row?.is_sql === true) return "Sales Qualified";
-  return "—";
+  return "-";
 }
 
 function getCompany(row) {
-  return row.company ?? row.deal_name ?? "—";
+  return row.company ?? row.deal_name ?? "-";
 }
 
 function getCountry(row) {
@@ -97,7 +97,7 @@ function getCampaign(row) {
     row.utm_campaign ??
     row.hs_analytics_source_data_2 ??
     row.hs_analytics_source_data_1 ??
-    "—"
+    "-"
   );
 }
 
@@ -176,7 +176,7 @@ function normalizeInsights(aiInsights) {
 
   if (Array.isArray(aiInsights.priority_actions) && aiInsights.priority_actions.length > 0) {
     return aiInsights.priority_actions.map((item) => ({
-      title: `Priority ${item.priority || ""} • ${item.action_type || "Action"}`,
+      title: `Priority ${item.priority || ""} - ${item.action_type || "Action"}`,
       insight: item.why_this_matters || item.evidence || "",
       action: item.action || "",
       impact: item.expected_sql_impact || "",
@@ -228,7 +228,7 @@ export default function MTDDataRevamp() {
             .select("country_name, spend_usd, impressions, clicks, reach, leads")
             .gte("perf_date", startIso)
             .lte("perf_date", endIso)
-            .limit(10000), // FIXED: was hitting default 1000-row cap, causing truncated spend totals
+            .limit(10000),
 
           supabase
             .from("master_leads")
@@ -321,7 +321,6 @@ export default function MTDDataRevamp() {
         for (const r of actualSqlRes.data || []) {
           const geo = r.country || "Unknown";
           const value = Number(r.amount_usd || 0);
-
           sqlByGeo[geo] = (sqlByGeo[geo] || 0) + 1;
           pipelineByGeo[geo] = (pipelineByGeo[geo] || 0) + value;
         }
@@ -437,9 +436,7 @@ export default function MTDDataRevamp() {
   }, [rows]);
 
   const filteredRows = useMemo(() => {
-    return rows.filter(
-      (r) => r.actualSql > 0 || r.expectedSpend >= 10
-    );
+    return rows.filter((r) => r.actualSql > 0 || r.expectedSpend >= 10);
   }, [rows]);
 
   const normalizedInsights = useMemo(() => normalizeInsights(aiInsights), [aiInsights]);
@@ -776,11 +773,11 @@ export default function MTDDataRevamp() {
             <div className="card">
               <div className="kpi-label">Cost per MQL</div>
               <div className="kpi-value">
-                {computed.costPerMql !== null ? fmtUSD(computed.costPerMql) : "—"}
+                {computed.costPerMql !== null ? fmtUSD(computed.costPerMql) : "-"}
               </div>
               <div className="kpi-sub">
                 <span>Actual only</span>
-                <span className="badge delta-neutral">Spend ÷ MQL</span>
+                <span className="badge delta-neutral">Spend / MQL</span>
               </div>
             </div>
 
@@ -798,11 +795,11 @@ export default function MTDDataRevamp() {
             <div className="card">
               <div className="kpi-label">Cost per SQL</div>
               <div className="kpi-value">
-                {computed.costPerSql !== null ? fmtUSD(computed.costPerSql) : "—"}
+                {computed.costPerSql !== null ? fmtUSD(computed.costPerSql) : "-"}
               </div>
               <div className="kpi-sub">
                 <span>Actual only</span>
-                <span className="badge delta-neutral">Spend ÷ SQL</span>
+                <span className="badge delta-neutral">Spend / SQL</span>
               </div>
             </div>
 
@@ -862,7 +859,7 @@ export default function MTDDataRevamp() {
                           <td className="num muted">{fmtNum(row.expectedSql)}</td>
                           <td className="num">{fmtNum(row.actualSql)}</td>
                           <td className="num strong">
-                            {row.actualSql > 0 ? fmtUSD(row.actualSpend / row.actualSql) : "—"}
+                            {row.actualSql > 0 ? fmtUSD(row.actualSpend / row.actualSql) : "-"}
                           </td>
                           <td className="num">
                             <span className={`badge ${getDeltaClass(sqlVar)}`}>
@@ -895,7 +892,7 @@ export default function MTDDataRevamp() {
                       <td className="num strong">
                         {computed.totals.actualSql > 0
                           ? fmtUSD(computed.totals.actualSpend / computed.totals.actualSql)
-                          : "—"}
+                          : "-"}
                       </td>
                       <td className="num">
                         <span className={`badge ${getDeltaClass(computed.sqlVar)}`}>
@@ -910,19 +907,15 @@ export default function MTDDataRevamp() {
 
             <div className="card live-insights">
               <h3 className="section-title">Live Insights</h3>
-
               <div className="insights-scroll">
                 {normalizedInsights.length > 0 ? (
                   normalizedInsights.map((card, i) => (
                     <div key={i} className="insight-card">
                       <h4>{card.title}</h4>
-
                       {card.insight && <p>{card.insight}</p>}
-
                       {card.action && (
-                        <div className="insight-action">→ {card.action}</div>
+                        <div className="insight-action">-&gt; {card.action}</div>
                       )}
-
                       {(card.impact || card.owner || card.timeSensitivity) && (
                         <div className="insight-meta">
                           {card.impact && (
@@ -949,7 +942,6 @@ export default function MTDDataRevamp() {
                         </p>
                       </div>
                     )}
-
                     {computed.riskGeo && (
                       <div className="insight-card">
                         <h4>Biggest Risk</h4>
@@ -959,7 +951,6 @@ export default function MTDDataRevamp() {
                         </p>
                       </div>
                     )}
-
                     <div className="insight-card">
                       <h4>Period</h4>
                       <p>
@@ -1011,7 +1002,7 @@ export default function MTDDataRevamp() {
                             target="_blank"
                             rel="noreferrer"
                           >
-                            ↗ View
+                            View
                           </a>
                         </td>
                       </tr>
