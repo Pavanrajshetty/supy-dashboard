@@ -8,6 +8,12 @@ const TABS = [
   { id: "wow",       label: "Closure MOM"       },
   { id: "sql",       label: "SQL"               },
   { id: "meetings",  label: "Meetings Booked"   },
+  // Google Ads — flat tabs for now, group under a dropdown later
+  { id: "ga_exec",     label: "GAds: Executive"     },
+  { id: "ga_geo",      label: "GAds: Geo"           },
+  { id: "ga_campaigns",label: "GAds: Campaigns"     },
+  { id: "ga_terms",    label: "GAds: Search Terms"  },
+  { id: "ga_keywords", label: "GAds: Keywords"      },
 ];
 
 export default function Navbar({ activePage, setActivePage }) {
