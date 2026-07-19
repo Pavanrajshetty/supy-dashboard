@@ -27,6 +27,7 @@ export default function App() {
     wow:       <WeekOnWeek />,
     sql:       <SQL />,
     meetings:  <MeetingsBooked />,
+    ga_negkw:     <GoogleAdsNegativeKeywords />,
     ga_exec:      <GoogleAdsExecutive />,
     ga_geo:       <GoogleAdsGeo />,
     ga_campaigns: <GoogleAdsCampaigns />,
