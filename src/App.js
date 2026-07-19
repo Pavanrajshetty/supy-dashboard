@@ -14,6 +14,7 @@ import GoogleAdsGeo from "./pages/GoogleAdsGeo";
 import GoogleAdsCampaigns from "./pages/GoogleAdsCampaigns";
 import GoogleAdsSearchTerms from "./pages/GoogleAdsSearchTerms";
 import GoogleAdsKeywords from "./pages/GoogleAdsKeywords";
+import GoogleAdsNegativeKeywords from "./pages/GoogleAdsNegativeKeywords";
 
 export default function App() {
   const [activePage, setActivePage] = useState("executive");
