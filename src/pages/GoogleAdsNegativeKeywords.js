@@ -4,7 +4,9 @@ import { supabase } from "../lib/supabase";
 // Inlined design tokens to avoid any theme.js path resolution issues
 const colors = {
   green: "#1f8f5f",
+  greenDark: "#166b47",
   red: "#d64545",
+  redDark: "#a83333",
   accent: "#d4a62a",
   textPrimary: "#2f2350",
   textMuted: "#6f6784",
@@ -14,6 +16,7 @@ const colors = {
 
 const radius = {
   sm: "6px",
+  pill: "999px",
 };
 
 const fontSizeSm = "11px";
@@ -55,6 +58,43 @@ async function fetchAllRows(buildQuery, pageSize = 1000) {
   return allRows;
 }
 
+const thStyle = {
+  textAlign: "center",
+  whiteSpace: "nowrap",
+};
+
+const ActionButton = ({ variant, disabled, onClick, children }) => {
+  const isApprove = variant === "approve";
+  return (
+    <button
+      disabled={disabled}
+      onClick={onClick}
+      style={{
+        background: isApprove ? colors.green : "#fff",
+        color: isApprove ? "#fff" : colors.red,
+        border: isApprove ? "none" : `1.5px solid ${colors.red}`,
+        borderRadius: radius.pill,
+        padding: "8px 18px",
+        fontSize: "12.5px",
+        fontWeight: 700,
+        letterSpacing: "0.2px",
+        cursor: disabled ? "wait" : "pointer",
+        opacity: disabled ? 0.55 : 1,
+        whiteSpace: "nowrap",
+        minWidth: isApprove ? "88px" : "76px",
+        boxShadow: isApprove
+          ? "0 1px 3px rgba(31,143,95,0.35)"
+          : "0 1px 2px rgba(214,69,69,0.12)",
+        transition: "transform 0.05s ease",
+      }}
+      onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
+      onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+    >
+      {children}
+    </button>
+  );
+};
+
 export default function GoogleAdsNegativeKeywords() {
   const [rows, setRows] = useState([]);
   const [last7Map, setLast7Map] = useState({});
@@ -69,7 +109,6 @@ export default function GoogleAdsNegativeKeywords() {
       setLoading(true);
       setError(null);
 
-      // Pending items across all history, joined to their most recent queue entry
       const logRows = await fetchAllRows(() =>
         supabase
           .from("google_ads_neg_keyword_review_log")
@@ -82,9 +121,6 @@ export default function GoogleAdsNegativeKeywords() {
 
       setRows(logRows);
 
-      // Fetch fresh last-7-day impressions/clicks for exactly the term+campaign+ad_group
-      // combos currently pending, so the dashboard shows current momentum, not just
-      // the window stats that originally triggered the flag.
       if (logRows.length > 0) {
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -174,8 +210,6 @@ export default function GoogleAdsNegativeKeywords() {
     setBusy(row.id, true);
     setActionError(null);
     try {
-      // This calls the Supabase Edge Function that performs the actual
-      // Google Ads mutate (add negative keyword) at the scope Claude decided.
       const { data, error: fnError } = await supabase.functions.invoke(
         "approve-negative-keyword",
         { body: { review_log_id: row.id } }
@@ -256,9 +290,7 @@ export default function GoogleAdsNegativeKeywords() {
         </div>
       )}
 
-      {loading && (
-        <div className="card">Loading suggestions...</div>
-      )}
+      {loading && <div className="card">Loading suggestions...</div>}
 
       {!loading && totalPending === 0 && !error && (
         <div className="card" style={{ textAlign: "center", padding: "32px", color: colors.textMuted }}>
@@ -286,32 +318,32 @@ export default function GoogleAdsNegativeKeywords() {
               <div className="table-wrap" style={{ overflowX: "auto" }}>
                 <table
                   className="data-table"
-                  style={{ tableLayout: "auto", width: "100%", minWidth: "1100px" }}
+                  style={{ tableLayout: "fixed", width: "100%", minWidth: "1300px" }}
                 >
                   <colgroup>
-                    <col style={{ width: "22%" }} />
+                    <col style={{ width: "16%" }} />
                     <col style={{ width: "9%" }} />
+                    <col style={{ width: "7%" }} />
+                    <col style={{ width: "7%" }} />
                     <col style={{ width: "6%" }} />
                     <col style={{ width: "6%" }} />
                     <col style={{ width: "6%" }} />
+                    <col style={{ width: "27%" }} />
                     <col style={{ width: "6%" }} />
-                    <col style={{ width: "6%" }} />
-                    <col style={{ width: "25%" }} />
-                    <col style={{ width: "6%" }} />
-                    <col style={{ width: "8%" }} />
+                    <col style={{ width: "10%" }} />
                   </colgroup>
                   <thead>
                     <tr>
-                      <th>Search term</th>
-                      <th>Tier</th>
-                      <th className="num-cell">Impr (7d)</th>
-                      <th className="num-cell">Clicks (7d)</th>
-                      <th className="num-cell">Clicks</th>
-                      <th className="num-cell">Cost</th>
-                      <th className="num-cell">Conv</th>
-                      <th>Reason</th>
-                      <th>Scope</th>
-                      <th style={{ textAlign: "right" }}>Actions</th>
+                      <th style={thStyle}>Search term</th>
+                      <th style={thStyle}>Tier</th>
+                      <th style={thStyle}>Impr (7d)</th>
+                      <th style={thStyle}>Clicks (7d)</th>
+                      <th style={thStyle}>Clicks</th>
+                      <th style={thStyle}>Cost</th>
+                      <th style={thStyle}>Conv</th>
+                      <th style={thStyle}>Reason</th>
+                      <th style={thStyle}>Scope</th>
+                      <th style={thStyle}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -320,7 +352,15 @@ export default function GoogleAdsNegativeKeywords() {
                       const last7 = last7Map[key] || { impressions: 0, clicks: 0 };
                       return (
                         <tr key={row.id}>
-                          <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
+                          <td
+                            style={{
+                              whiteSpace: "normal",
+                              wordBreak: "break-word",
+                              textAlign: "right",
+                              verticalAlign: "top",
+                              padding: "10px 8px",
+                            }}
+                          >
                             <strong>{row.search_term}</strong>
                             {row.times_suggested > 1 && (
                               <div style={{ fontSize: "11px", color: colors.textMuted }}>
@@ -328,64 +368,64 @@ export default function GoogleAdsNegativeKeywords() {
                               </div>
                             )}
                           </td>
-                          <td>{tierBadge(row.tier)}</td>
-                          <td className="num-cell">{fmtNum(last7.impressions)}</td>
-                          <td className="num-cell">{fmtNum(last7.clicks)}</td>
-                          <td className="num-cell">{fmtNum(row.clicks)}</td>
-                          <td className="num-cell">{fmtMoney(row.cost)}</td>
-                          <td className="num-cell">{fmtNum(row.conversions)}</td>
+                          <td style={{ textAlign: "center", verticalAlign: "top" }}>
+                            {tierBadge(row.tier)}
+                          </td>
+                          <td className="num-cell" style={{ textAlign: "center", verticalAlign: "top" }}>
+                            {fmtNum(last7.impressions)}
+                          </td>
+                          <td className="num-cell" style={{ textAlign: "center", verticalAlign: "top" }}>
+                            {fmtNum(last7.clicks)}
+                          </td>
+                          <td className="num-cell" style={{ textAlign: "center", verticalAlign: "top" }}>
+                            {fmtNum(row.clicks)}
+                          </td>
+                          <td className="num-cell" style={{ textAlign: "center", verticalAlign: "top" }}>
+                            {fmtMoney(row.cost)}
+                          </td>
+                          <td className="num-cell" style={{ textAlign: "center", verticalAlign: "top" }}>
+                            {fmtNum(row.conversions)}
+                          </td>
                           <td
                             style={{
                               whiteSpace: "normal",
                               wordBreak: "break-word",
                               fontSize: "12px",
                               color: colors.textMuted,
-                              lineHeight: 1.4,
+                              lineHeight: 1.5,
+                              verticalAlign: "top",
+                              padding: "10px 8px",
+                              textAlign: "left",
                             }}
                           >
                             {row.reason}
                           </td>
-                          <td>
+                          <td style={{ textAlign: "center", verticalAlign: "top" }}>
                             <span className="geo-tag secondary">{row.suggested_scope}</span>
                           </td>
-                          <td>
-                            <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
-                              <button
+                          <td style={{ verticalAlign: "top", padding: "10px 6px" }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "6px",
+                                alignItems: "center",
+                              }}
+                            >
+                              <ActionButton
+                                variant="approve"
                                 disabled={busyIds[row.id]}
                                 onClick={() => handleApprove(row)}
-                                style={{
-                                  background: colors.green,
-                                  color: "#fff",
-                                  border: "none",
-                                  borderRadius: radius.sm,
-                                  padding: "6px 12px",
-                                  fontSize: "12px",
-                                  fontWeight: 600,
-                                  cursor: busyIds[row.id] ? "wait" : "pointer",
-                                  opacity: busyIds[row.id] ? 0.6 : 1,
-                                  whiteSpace: "nowrap",
-                                }}
                               >
-                                {busyIds[row.id] ? "..." : "Approve"}
-                              </button>
-                              <button
+                                {busyIds[row.id] ? "..." : "✓ Approve"}
+                              </ActionButton>
+                              <ActionButton
+                                variant="reject"
                                 disabled={busyIds[row.id]}
                                 onClick={() => handleReject(row)}
-                                style={{
-                                  background: colors.surfaceAlt,
-                                  color: colors.textPrimary,
-                                  border: `1px solid ${colors.border}`,
-                                  borderRadius: radius.sm,
-                                  padding: "6px 12px",
-                                  fontSize: "12px",
-                                  fontWeight: 600,
-                                  cursor: busyIds[row.id] ? "wait" : "pointer",
-                                  opacity: busyIds[row.id] ? 0.6 : 1,
-                                  whiteSpace: "nowrap",
-                                }}
                               >
-                                Reject
-                              </button>
+                                ✕ Reject
+                              </ActionButton>
                             </div>
                           </td>
                         </tr>
