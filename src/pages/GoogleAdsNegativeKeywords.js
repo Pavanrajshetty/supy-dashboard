@@ -36,6 +36,10 @@ function fmtNum(v) {
   return Math.round(Number(v || 0)).toLocaleString();
 }
 
+function last7Key(searchTerm, campaignId, adGroupId) {
+  return `${searchTerm}|${campaignId}|${adGroupId}`;
+}
+
 async function fetchAllRows(buildQuery, pageSize = 1000) {
   let allRows = [];
   let from = 0;
@@ -53,6 +57,7 @@ async function fetchAllRows(buildQuery, pageSize = 1000) {
 
 export default function GoogleAdsNegativeKeywords() {
   const [rows, setRows] = useState([]);
+  const [last7Map, setLast7Map] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [tierFilter, setTierFilter] = useState("ALL");
@@ -76,10 +81,38 @@ export default function GoogleAdsNegativeKeywords() {
       );
 
       setRows(logRows);
+
+      // Fetch fresh last-7-day impressions/clicks for exactly the term+campaign+ad_group
+      // combos currently pending, so the dashboard shows current momentum, not just
+      // the window stats that originally triggered the flag.
+      if (logRows.length > 0) {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const sevenDaysStr = sevenDaysAgo.toISOString().slice(0, 10);
+
+        const dailyRows = await fetchAllRows(() =>
+          supabase
+            .from("google_ads_search_terms_daily")
+            .select("search_term, campaign_id, ad_group_id, impressions, clicks")
+            .gte("date", sevenDaysStr)
+        );
+
+        const map = {};
+        dailyRows.forEach((r) => {
+          const key = last7Key(r.search_term, r.campaign_id, r.ad_group_id);
+          if (!map[key]) map[key] = { impressions: 0, clicks: 0 };
+          map[key].impressions += Number(r.impressions || 0);
+          map[key].clicks += Number(r.clicks || 0);
+        });
+        setLast7Map(map);
+      } else {
+        setLast7Map({});
+      }
     } catch (err) {
       console.error("Negative keyword fetch error:", err);
       setError(err.message || "Failed to load suggestions");
       setRows([]);
+      setLast7Map({});
     } finally {
       setLoading(false);
     }
@@ -172,6 +205,7 @@ export default function GoogleAdsNegativeKeywords() {
         fontWeight: 600,
         color: "#fff",
         background: TIER_COLORS[tier] || colors.textMuted,
+        whiteSpace: "nowrap",
       }}
     >
       {TIER_LABELS[tier] || tier}
@@ -249,12 +283,29 @@ export default function GoogleAdsNegativeKeywords() {
                 Ad group: {adGroupName}
               </div>
 
-              <div className="table-wrap">
-                <table className="data-table">
+              <div className="table-wrap" style={{ overflowX: "auto" }}>
+                <table
+                  className="data-table"
+                  style={{ tableLayout: "auto", width: "100%", minWidth: "1100px" }}
+                >
+                  <colgroup>
+                    <col style={{ width: "22%" }} />
+                    <col style={{ width: "9%" }} />
+                    <col style={{ width: "6%" }} />
+                    <col style={{ width: "6%" }} />
+                    <col style={{ width: "6%" }} />
+                    <col style={{ width: "6%" }} />
+                    <col style={{ width: "6%" }} />
+                    <col style={{ width: "25%" }} />
+                    <col style={{ width: "6%" }} />
+                    <col style={{ width: "8%" }} />
+                  </colgroup>
                   <thead>
                     <tr>
                       <th>Search term</th>
                       <th>Tier</th>
+                      <th className="num-cell">Impr (7d)</th>
+                      <th className="num-cell">Clicks (7d)</th>
                       <th className="num-cell">Clicks</th>
                       <th className="num-cell">Cost</th>
                       <th className="num-cell">Conv</th>
@@ -264,66 +315,82 @@ export default function GoogleAdsNegativeKeywords() {
                     </tr>
                   </thead>
                   <tbody>
-                    {terms.map((row) => (
-                      <tr key={row.id}>
-                        <td>
-                          <strong>{row.search_term}</strong>
-                          {row.times_suggested > 1 && (
-                            <div style={{ fontSize: "11px", color: colors.textMuted }}>
-                              Suggested {row.times_suggested}× (first flagged {row.first_flagged_date})
+                    {terms.map((row) => {
+                      const key = last7Key(row.search_term, row.campaign_id, row.ad_group_id);
+                      const last7 = last7Map[key] || { impressions: 0, clicks: 0 };
+                      return (
+                        <tr key={row.id}>
+                          <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
+                            <strong>{row.search_term}</strong>
+                            {row.times_suggested > 1 && (
+                              <div style={{ fontSize: "11px", color: colors.textMuted }}>
+                                Suggested {row.times_suggested}× (first flagged {row.first_flagged_date})
+                              </div>
+                            )}
+                          </td>
+                          <td>{tierBadge(row.tier)}</td>
+                          <td className="num-cell">{fmtNum(last7.impressions)}</td>
+                          <td className="num-cell">{fmtNum(last7.clicks)}</td>
+                          <td className="num-cell">{fmtNum(row.clicks)}</td>
+                          <td className="num-cell">{fmtMoney(row.cost)}</td>
+                          <td className="num-cell">{fmtNum(row.conversions)}</td>
+                          <td
+                            style={{
+                              whiteSpace: "normal",
+                              wordBreak: "break-word",
+                              fontSize: "12px",
+                              color: colors.textMuted,
+                              lineHeight: 1.4,
+                            }}
+                          >
+                            {row.reason}
+                          </td>
+                          <td>
+                            <span className="geo-tag secondary">{row.suggested_scope}</span>
+                          </td>
+                          <td>
+                            <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                              <button
+                                disabled={busyIds[row.id]}
+                                onClick={() => handleApprove(row)}
+                                style={{
+                                  background: colors.green,
+                                  color: "#fff",
+                                  border: "none",
+                                  borderRadius: radius.sm,
+                                  padding: "6px 12px",
+                                  fontSize: "12px",
+                                  fontWeight: 600,
+                                  cursor: busyIds[row.id] ? "wait" : "pointer",
+                                  opacity: busyIds[row.id] ? 0.6 : 1,
+                                  whiteSpace: "nowrap",
+                                }}
+                              >
+                                {busyIds[row.id] ? "..." : "Approve"}
+                              </button>
+                              <button
+                                disabled={busyIds[row.id]}
+                                onClick={() => handleReject(row)}
+                                style={{
+                                  background: colors.surfaceAlt,
+                                  color: colors.textPrimary,
+                                  border: `1px solid ${colors.border}`,
+                                  borderRadius: radius.sm,
+                                  padding: "6px 12px",
+                                  fontSize: "12px",
+                                  fontWeight: 600,
+                                  cursor: busyIds[row.id] ? "wait" : "pointer",
+                                  opacity: busyIds[row.id] ? 0.6 : 1,
+                                  whiteSpace: "nowrap",
+                                }}
+                              >
+                                Reject
+                              </button>
                             </div>
-                          )}
-                        </td>
-                        <td>{tierBadge(row.tier)}</td>
-                        <td className="num-cell">{fmtNum(row.clicks)}</td>
-                        <td className="num-cell">{fmtMoney(row.cost)}</td>
-                        <td className="num-cell">{fmtNum(row.conversions)}</td>
-                        <td style={{ maxWidth: "320px", fontSize: "12px", color: colors.textMuted }}>
-                          {row.reason}
-                        </td>
-                        <td>
-                          <span className="geo-tag secondary">{row.suggested_scope}</span>
-                        </td>
-                        <td>
-                          <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
-                            <button
-                              disabled={busyIds[row.id]}
-                              onClick={() => handleApprove(row)}
-                              style={{
-                                background: colors.green,
-                                color: "#fff",
-                                border: "none",
-                                borderRadius: radius.sm,
-                                padding: "6px 12px",
-                                fontSize: "12px",
-                                fontWeight: 600,
-                                cursor: busyIds[row.id] ? "wait" : "pointer",
-                                opacity: busyIds[row.id] ? 0.6 : 1,
-                              }}
-                            >
-                              {busyIds[row.id] ? "..." : "Approve"}
-                            </button>
-                            <button
-                              disabled={busyIds[row.id]}
-                              onClick={() => handleReject(row)}
-                              style={{
-                                background: colors.surfaceAlt,
-                                color: colors.textPrimary,
-                                border: `1px solid ${colors.border}`,
-                                borderRadius: radius.sm,
-                                padding: "6px 12px",
-                                fontSize: "12px",
-                                fontWeight: 600,
-                                cursor: busyIds[row.id] ? "wait" : "pointer",
-                                opacity: busyIds[row.id] ? 0.6 : 1,
-                              }}
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
