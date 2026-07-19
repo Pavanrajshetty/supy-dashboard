@@ -1,6 +1,22 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "../lib/supabase";
-import { colors, radius } from "../theme";
+
+// Inlined design tokens to avoid any theme.js path resolution issues
+const colors = {
+  green: "#1f8f5f",
+  red: "#d64545",
+  accent: "#d4a62a",
+  textPrimary: "#2f2350",
+  textMuted: "#6f6784",
+  surfaceAlt: "#f8f5fc",
+  border: "#e7deef",
+};
+
+const radius = {
+  sm: "6px",
+};
+
+const fontSizeSm = "11px";
 
 const TIER_LABELS = {
   A_semantic: "Semantic mismatch",
@@ -224,7 +240,7 @@ export default function GoogleAdsNegativeKeywords() {
             <div key={adGroupName} style={{ marginBottom: "16px" }}>
               <div
                 style={{
-                  fontSize: font_sizeSm,
+                  fontSize: fontSizeSm,
                   color: colors.textMuted,
                   marginBottom: "6px",
                   fontWeight: 600,
