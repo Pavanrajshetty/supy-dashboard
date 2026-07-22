@@ -15,6 +15,7 @@ import GoogleAdsCampaigns from "./pages/GoogleAdsCampaigns";
 import GoogleAdsSearchTerms from "./pages/GoogleAdsSearchTerms";
 import GoogleAdsKeywords from "./pages/GoogleAdsKeywords";
 import GoogleAdsNegativeKeywords from "./pages/GoogleAdsNegativeKeywords";
+import GoogleAdsAssetReview from "./pages/GoogleAdsAssetReview";
 
 export default function App() {
   const [activePage, setActivePage] = useState("executive");
@@ -28,6 +29,7 @@ export default function App() {
     sql:       <SQL />,
     meetings:  <MeetingsBooked />,
     ga_negkw:     <GoogleAdsNegativeKeywords />,
+    ga_assets:    <GoogleAdsAssetReview />,
     ga_exec:      <GoogleAdsExecutive />,
     ga_geo:       <GoogleAdsGeo />,
     ga_campaigns: <GoogleAdsCampaigns />,
