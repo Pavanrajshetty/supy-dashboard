@@ -15,6 +15,7 @@ const TABS = [
   { id: "ga_terms",    label: "GAds: Search Terms"  },
   { id: "ga_keywords", label: "GAds: Keywords"      },
   { id: "ga_negkw", label: "AI Google Ads" },
+  { id: "ga_assets", label: "AI Headlines/Desc" },
 ];
 
 export default function Navbar({ activePage, setActivePage }) {
